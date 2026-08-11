@@ -762,7 +762,28 @@ function Balance() {
           </p>
         </div>
 
-      <div className="reveal mx-auto max-w-xl" style={{ transitionDelay: '120ms' }}>
+      <div className="grid md:grid-cols-12 gap-6 md:gap-8">
+        {/* LEFT — plan comparison */}
+        <div className="reveal md:col-span-5 grid gap-4" style={{ transitionDelay: '120ms' }}>
+          <PlanStat
+            kind="Regular plan"
+            from="$0.50"
+            to="$0.375"
+            save="25%"
+            qty="120 gallons for $45"
+            tint="ink"
+          />
+          <PlanStat
+            kind="Alkaline plan"
+            from="$1.30"
+            to="$0.90"
+            save="31%"
+            qty="100 gallons for $90"
+            tint="accent"
+          />
+        </div>
+
+        <div className="reveal md:col-span-7" style={{ transitionDelay: '200ms' }}>
           <div className="card !rounded-[28px] p-7 md:p-9 shadow-[0_40px_80px_-40px_rgba(10,18,32,0.18)]">
             <div className="flex items-center gap-2.5 mb-7">
               <span className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-[#0A1220] text-white">
@@ -899,9 +920,27 @@ function Balance() {
               )}
             </AnimatePresence>
           </div>
+        </div>
       </div>
       </div>
     </section>
+  )
+}
+
+function PlanStat({ kind, from, to, save, qty, tint = 'ink' }) {
+  const isAccent = tint === 'accent'
+  return (
+    <div className={`relative rounded-2xl p-6 md:p-7 border ${isAccent ? 'bg-[#ECF4F9] border-[#1E588A]/15' : 'bg-[#0A1220] border-transparent text-white'}`}>
+      <div className={`eyebrow ${isAccent ? 'text-[#1E588A]/70' : 'text-white/55'} mb-3`}>{kind}</div>
+      <div className="flex items-baseline gap-3">
+        <span className={`text-[14px] line-through ${isAccent ? 'text-[#0A1220]/40' : 'text-white/40'}`}>{from}/gal</span>
+        <span className={`display text-[36px] md:text-[42px] leading-none ${isAccent ? 'text-[#1E588A]' : 'text-white'}`}>{to}<span className="text-[15px] opacity-60">/gal</span></span>
+      </div>
+      <div className={`mt-3 text-[13px] ${isAccent ? 'text-[#0A1220]/65' : 'text-white/65'}`}>{qty}</div>
+      <span className={`absolute top-5 right-5 text-[10px] uppercase tracking-[0.16em] font-semibold px-2 py-1 rounded-full ${isAccent ? 'bg-[#1E588A] text-white' : 'bg-white text-[#0A1220]'}`}>
+        Save {save}
+      </span>
+    </div>
   )
 }
 
