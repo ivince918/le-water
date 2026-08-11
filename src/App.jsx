@@ -238,17 +238,18 @@ function Nav({ dark = false }) {
   return (
     <nav className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${bar}`}>
       <div className="mx-auto max-w-[1240px] px-6 md:px-10 py-5 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2 group">
-          <span className={`relative inline-flex w-7 h-7 items-center justify-center rounded-full ${chip}`}>
-            <JugMark className="w-4 h-4" />
+        <a href="#" className="flex items-center gap-2.5 group">
+          <span className={`relative inline-flex w-9 h-9 items-center justify-center rounded-full ${chip}`}>
+            <JugMark className="w-5 h-5" />
           </span>
-          <span className={`font-semibold tracking-tight text-[15px] ${txt}`}>Le Water</span>
+          <span className={`font-bold tracking-tight text-[19px] ${txt}`}>Le Water</span>
         </a>
         <div className={`hidden md:flex items-center gap-9 text-[13.5px] ${sub}`}>
+          <a href="#balance" className="link-u">Balance</a>
+          <a href="#reviews" className="link-u">Reviews</a>
+          <a href="#stores" className="link-u">Stores</a>
           <a href="#plans" className="link-u">Plans</a>
           <a href="#/bottles" className="link-u">Bottles</a>
-          <a href="#balance" className="link-u">Balance</a>
-          <a href="#stores" className="link-u">Stores</a>
         </div>
         <a href="#stores" className={`hidden md:inline-flex items-center text-[13px] px-4 py-2.5 rounded-full border backdrop-blur-md transition ${cta}`}>
           Find a store
@@ -367,26 +368,75 @@ function Hero() {
 /* ────────────────────────── REVIEWS ─────────────────────── */
 const REVIEWS = [
   {
-    quote: "The water quality is PERFECT! It tastes better than bottled water. My cousin has been coming here for water all the way from Redwood City. If the gas and the bridge tolls don't prove the loyalty, I don't know what will. I had to try this place for myself, and I was impressed.",
-    name: 'Norma D.',
-    city: 'Mesa, CA',
-  },
-  {
     quote: "I drive FAR to get water here. Why? Because their water is the best! Once you've started drinking their water, you won't be able to drink any other. It's almost insulting to buy Glacier water from Lucky's across the lot when you can get water from here instead.",
+    highlight: 'their water is the best',
     name: 'Mango T.',
-    city: 'East Bay, CA',
   },
   {
-    quote: "Love this place! We've been going here for more than 8 years and I can't see getting quality water anywhere else. My family and I are avid water drinkers, we usually go through 5 five-gallon containers a week. Trust me, this place is great!",
+    quote: "The water quality is PERFECT! It tastes better than bottled water. My cousin has been coming here all the way from Redwood City. If the gas and the bridge tolls don't prove the loyalty, I don't know what will.",
+    highlight: 'It tastes better than bottled water',
+    name: 'Norma D.',
+  },
+  {
+    quote: "Love this place! We've been going here for more than 8 years and I can't see getting quality water anywhere else. We go through 5 five-gallon containers a week. Trust me, this place is great!",
+    highlight: 'more than 8 years',
     name: 'Rochell S.',
-    city: 'Fremont, CA',
   },
   {
     quote: "A++ great water. Wish I had all that money back that we wasted on bottled water.",
+    highlight: 'money back that we wasted on bottled water',
     name: 'T J.',
-    city: 'Union City, CA',
   },
 ]
+
+function QuoteText({ quote, highlight, className }) {
+  const idx = highlight ? quote.indexOf(highlight) : -1
+  if (idx === -1) return <p className={className}>&ldquo;{quote}&rdquo;</p>
+  return (
+    <p className={className}>
+      &ldquo;{quote.slice(0, idx)}
+      <strong className="font-semibold text-[#0A1220]">{highlight}</strong>
+      {quote.slice(idx + highlight.length)}&rdquo;
+    </p>
+  )
+}
+
+function Stars({ size = 'w-5 h-5' }) {
+  return (
+    <div className="flex gap-0.5">
+      {Array.from({ length: 5 }).map((_, s) => (
+        <Star key={s} className={`${size} text-[#F5A623]`} fill="#F5A623" strokeWidth={0} />
+      ))}
+    </div>
+  )
+}
+
+function YelpTag() {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-[12px] text-[#0A1220]/45">
+      <span className="w-1 h-1 rounded-full bg-[#0A1220]/25" />
+      Verified <span className="font-bold text-[#d32323]">Yelp</span> review
+    </span>
+  )
+}
+
+function ReviewCard({ r, featured = false }) {
+  return (
+    <div className={`reveal card bg-white relative overflow-hidden flex flex-col ${featured ? 'p-8 md:p-12' : 'p-7 md:p-8'}`}>
+      <span className={`absolute -top-1 right-5 leading-none font-bold text-[#1E588A]/[0.07] select-none pointer-events-none ${featured ? 'text-[150px]' : 'text-[96px]'}`}>&rdquo;</span>
+      <Stars size={featured ? 'w-6 h-6' : 'w-5 h-5'} />
+      <QuoteText
+        quote={r.quote}
+        highlight={r.highlight}
+        className={`relative mt-5 flex-1 text-[#0A1220]/65 ${featured ? 'text-[20px] md:text-[26px] leading-[1.45] max-w-3xl' : 'text-[15.5px] leading-relaxed'}`}
+      />
+      <div className="relative mt-6 flex items-center gap-2.5">
+        <span className={`font-semibold text-[#0A1220] ${featured ? 'text-[16px]' : 'text-[14px]'}`}>{r.name}</span>
+        <YelpTag />
+      </div>
+    </div>
+  )
+}
 
 function Reviews() {
   return (
@@ -412,40 +462,24 @@ function Reviews() {
           </div>
         </div>
 
-        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
+        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 md:mb-12">
           <h2 className="display text-[clamp(2.2rem,5vw,3.8rem)] text-[#0A1220]">
             What our<br/><span className="text-[#0A1220]/40">customers say.</span>
           </h2>
-          <div className="flex items-center gap-3 text-[#0A1220]/60">
-            <div className="flex gap-0.5">
-              {Array.from({ length: 5 }).map((_, s) => (
-                <Star key={s} className="w-4 h-4 text-[#F5A623]" fill="#F5A623" strokeWidth={0} />
-              ))}
+          <div className="flex items-center gap-4">
+            <Stars size="w-6 h-6" />
+            <div className="text-[13.5px] leading-tight text-[#0A1220]/60">
+              <span className="font-semibold text-[#0A1220]">5-star</span> reviews on{' '}
+              <span className="font-bold text-[#d32323]">Yelp</span>
             </div>
-            <span className="text-[13.5px]">Reviewed 5 stars on Yelp</span>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-5">
-          {REVIEWS.map((r, i) => (
-            <div
-              key={r.name}
-              className="reveal card bg-white p-7 md:p-8 flex flex-col"
-              style={{ transitionDelay: `${i * 90}ms` }}
-            >
-              <div className="flex gap-0.5 mb-4">
-                {Array.from({ length: 5 }).map((_, s) => (
-                  <Star key={s} className="w-4 h-4 text-[#F5A623]" fill="#F5A623" strokeWidth={0} />
-                ))}
-              </div>
-              <p className="text-[15px] leading-relaxed text-[#0A1220]/80 flex-1">&ldquo;{r.quote}&rdquo;</p>
-              <div className="mt-6 flex items-center gap-3">
-                <span className="inline-flex w-9 h-9 items-center justify-center rounded-full bg-[#ECF4F9] text-[#1E588A] text-[13px] font-semibold shrink-0">
-                  {r.name[0]}
-                </span>
-                <div className="text-[13.5px] font-medium text-[#0A1220]">{r.name}</div>
-              </div>
-            </div>
+        <ReviewCard r={REVIEWS[0]} featured />
+
+        <div className="grid md:grid-cols-3 gap-5 mt-5">
+          {REVIEWS.slice(1).map((r) => (
+            <ReviewCard key={r.name} r={r} />
           ))}
         </div>
       </div>
@@ -578,7 +612,7 @@ function Plans() {
         <div className="reveal max-w-2xl mb-14">
           <h2 className="display text-[clamp(2.2rem,5vw,3.8rem)] text-[#0A1220]">
             Ultra pure water.
-            <span className="block text-[#0A1220]/40">Members save over 25%.</span>
+            <span className="block text-[#1E588A] whitespace-nowrap">Members save <span className="font-bold">over 25%</span>.</span>
           </h2>
           <p className="mt-5 text-[15px] leading-relaxed text-[#0A1220]/60 max-w-md">
             Pay as you go, or prepay once and save on every gallon. Your balance follows your phone number.
@@ -1168,10 +1202,10 @@ export default function App() {
         <>
           <Hero />
           <Reviews />
-          <Moments />
           <Balance />
-          <Plans />
           <Stores />
+          <Moments />
+          <Plans />
         </>
       )}
       <Footer />
