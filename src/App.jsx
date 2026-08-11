@@ -369,7 +369,7 @@ function Hero() {
 const REVIEWS = [
   {
     quote: "I drive FAR to get water here. Why? Because their water is the best! Once you've started drinking their water, you won't be able to drink any other. It's almost insulting to buy Glacier water from Lucky's across the lot when you can get water from here instead.",
-    highlights: ['their water is the best'],
+    highlights: ['their water is the best!'],
     name: 'Mango T.',
   },
   {
@@ -714,14 +714,6 @@ function Plans() {
                   ))}
                 </ul>
 
-                <button className={`btn mt-auto w-full justify-between ${
-                  c.featured
-                    ? 'bg-white text-[#0A1220] hover:bg-[#ECF4F9]'
-                    : 'btn-ghost'
-                }`}>
-                  {c.cta}
-                  <ArrowUpRight className="w-4 h-4 ml-2" strokeWidth={2.2} />
-                </button>
               </div>
             </div>
           ))}
