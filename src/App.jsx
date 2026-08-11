@@ -885,6 +885,7 @@ function Stores() {
     {
       name: 'Le Water Store',
       area: 'Fremont, North',
+      phone: '+15107425699',
       hours: 'Mon to Sun, 10a to 7p',
       img: IMG.heroPour,
       src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2355.5412405638453!2d-122.02463516558994!3d37.567202004484315!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fbfb8ef254513%3A0xd6d91d5ffd25f275!2sLe%20Water%20Store!5e0!3m2!1sen!2sus!4v1775966296778!5m2!1sen!2sus',
@@ -892,6 +893,7 @@ function Stores() {
     {
       name: 'Le Pure Water',
       area: 'Fremont, Central',
+      phone: '+15106561533',
       hours: 'Mon to Sun, 10a to 7p',
       img: IMG.heroSubject,
       src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d443.3435900306666!2d-121.9818062651175!3d37.54454328153434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fc099ea00a6df%3A0xd07f330bc4f9bc40!2sLe%20Pure%20Water!5e0!3m2!1sen!2sus!4v1775966346126!5m2!1sen!2sus',
@@ -899,6 +901,7 @@ function Stores() {
     {
       name: 'Lion Pure Water',
       area: 'Fremont, South',
+      phone: '+15107396225',
       hours: 'Mon to Sun, 10a to 7p',
       img: IMG.refillJug,
       src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12657.393896206348!2d-122.0254025128418!3d37.52328200000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fbf4f97bf0b91%3A0xfa73f395892b1f80!2sLion%20Pure%20Water!5e0!3m2!1sen!2sus!4v1775966372825!5m2!1sen!2sus',
@@ -944,6 +947,10 @@ function Stores() {
                   <MapPin className="w-3.5 h-3.5" strokeWidth={2} />
                   {s.hours}
                 </div>
+                <a href={`tel:${s.phone}`} className="text-[13px] text-[#0A1220]/60 flex items-center gap-2 mt-2 w-fit hover:text-[#1E588A] transition-colors">
+                  <Phone className="w-3.5 h-3.5" strokeWidth={2} />
+                  {formatPhone(s.phone.slice(-10))}
+                </a>
                 <a
                   href={`https://www.google.com/maps/search/${encodeURIComponent(s.name + ' Fremont')}`}
                   target="_blank" rel="noreferrer"
