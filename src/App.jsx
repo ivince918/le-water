@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Droplet, MapPin, Phone, ArrowRight, Check, ArrowUpRight } from 'lucide-react'
+import { Droplet, MapPin, Phone, ArrowRight, Check, ArrowUpRight, Star } from 'lucide-react'
 
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
@@ -372,7 +372,7 @@ function HeroIntro() {
         <WordReveal
           as="h2"
           className="md:col-span-9 display text-[clamp(1.6rem,3.4vw,2.6rem)] text-[#0A1220] leading-[1.2] tracking-[-0.03em]"
-          text="Serving Fremont's best water since 2008."
+          text="Delivering the best water for over 20 years."
         />
         <div className="reveal reveal-img md:col-span-3 relative" style={{ transitionDelay: '150ms' }}>
           <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-[0_30px_60px_-30px_rgba(30,88,138,0.45)] ring-1 ring-[#0A1220]/06">
@@ -392,6 +392,75 @@ function HeroIntro() {
 }
 
 
+/* ────────────────────────── REVIEWS ─────────────────────── */
+const REVIEWS = [
+  {
+    quote: "The water quality is PERFECT! It tastes better than bottled water. My cousin has been coming here for water all the way from Redwood City. If the gas and the bridge tolls don't prove the loyalty, I don't know what will. I had to try this place for myself, and I was impressed.",
+    name: 'Norma D.',
+    city: 'Mesa, CA',
+  },
+  {
+    quote: "I drive FAR to get water here. Why? Because their water is the best! Once you've started drinking their water, you won't be able to drink any other. It's almost insulting to buy Glacier water from Lucky's across the lot when you can get water from here instead.",
+    name: 'Mango T.',
+    city: 'East Bay, CA',
+  },
+  {
+    quote: "Love this place! We've been going here for more than 8 years and I can't see getting quality water anywhere else. My family and I are avid water drinkers, we usually go through 5 five-gallon containers a week. Trust me, this place is great!",
+    name: 'Rochell S.',
+    city: 'Fremont, CA',
+  },
+  {
+    quote: "A++ great water. Wish I had all that money back that we wasted on bottled water.",
+    name: 'T J.',
+    city: 'Union City, CA',
+  },
+]
+
+function Reviews() {
+  return (
+    <section id="reviews" className="relative py-24 md:py-32 px-6 md:px-10 bg-[#F4F7FA]">
+      <div className="mx-auto max-w-[1240px]">
+        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
+          <h2 className="display text-[clamp(2.2rem,5vw,3.8rem)] text-[#0A1220]">
+            What our<br/><span className="text-[#0A1220]/40">customers say.</span>
+          </h2>
+          <div className="flex items-center gap-3 text-[#0A1220]/60">
+            <div className="flex gap-0.5">
+              {Array.from({ length: 5 }).map((_, s) => (
+                <Star key={s} className="w-4 h-4 text-[#F5A623]" fill="#F5A623" strokeWidth={0} />
+              ))}
+            </div>
+            <span className="text-[13.5px]">Reviewed 5 stars on Yelp</span>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-5">
+          {REVIEWS.map((r, i) => (
+            <div
+              key={r.name}
+              className="reveal card bg-white p-7 md:p-8 flex flex-col"
+              style={{ transitionDelay: `${i * 90}ms` }}
+            >
+              <div className="flex gap-0.5 mb-4">
+                {Array.from({ length: 5 }).map((_, s) => (
+                  <Star key={s} className="w-4 h-4 text-[#F5A623]" fill="#F5A623" strokeWidth={0} />
+                ))}
+              </div>
+              <p className="text-[15px] leading-relaxed text-[#0A1220]/80 flex-1">&ldquo;{r.quote}&rdquo;</p>
+              <div className="mt-6 flex items-center gap-3">
+                <span className="inline-flex w-9 h-9 items-center justify-center rounded-full bg-[#ECF4F9] text-[#1E588A] text-[13px] font-semibold shrink-0">
+                  {r.name[0]}
+                </span>
+                <div className="text-[13.5px] font-medium text-[#0A1220]">{r.name}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /* ────────────────────────── MOMENTS (Bento gallery) ─────────────────────── */
 function Moments() {
   return (
@@ -399,7 +468,7 @@ function Moments() {
       {/* Trust row */}
       <div className="mx-auto max-w-[1280px] px-6 md:px-10 pt-12 pb-2">
         <div className="reveal flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[12.5px] text-[#0A1220]/55">
-          <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#1E588A]" strokeWidth={3} /> Family-owned since 2008</span>
+          <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#1E588A]" strokeWidth={3} /> Family-owned & operated</span>
           <span className="hidden md:inline-block w-px h-3 bg-[#0A1220]/15" />
           <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#1E588A]" strokeWidth={3} /> 3 Fremont locations</span>
           <span className="hidden md:inline-block w-px h-3 bg-[#0A1220]/15" />
@@ -1156,6 +1225,7 @@ export default function App() {
         <>
           <Hero />
           <HeroIntro />
+          <Reviews />
           <Moments />
           <Plans />
           <Balance />
