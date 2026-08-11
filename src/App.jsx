@@ -245,8 +245,8 @@ function Nav({ dark = false }) {
           <span className={`font-bold tracking-tight text-[19px] ${txt}`}>Le Water</span>
         </a>
         <div className={`hidden md:flex items-center gap-9 text-[13.5px] ${sub}`}>
-          <a href="#balance" className="link-u">Balance</a>
           <a href="#reviews" className="link-u">Reviews</a>
+          <a href="#balance" className="link-u">Balance</a>
           <a href="#stores" className="link-u">Stores</a>
           <a href="#plans" className="link-u">Plans</a>
           <a href="#bottles" className="link-u">Bottles</a>
@@ -471,7 +471,7 @@ function Reviews() {
           <WordReveal
             as="h2"
             className="display h-lead text-[#0A1220]"
-            text="Delivering the best water for over 20 years."
+            text="Delivering the best water in Fremont for over 20 years."
           />
           {/* Store gallery — TODO: swap these placeholder images for real store photos */}
           <div className="reveal mt-8 md:mt-10 grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2 md:gap-4 md:h-[460px]">
@@ -514,90 +514,6 @@ function Reviews() {
         </div>
       </div>
     </section>
-  )
-}
-
-/* ────────────────────────── MOMENTS (Bento gallery) ─────────────────────── */
-function Moments() {
-  return (
-    <section className="relative bg-white">
-      <div className="mx-auto max-w-[1240px] px-6 md:px-10 py-24 md:py-32">
-        <div className="reveal max-w-2xl mb-12 md:mb-16">
-          <h2 className="display h-title text-[#0A1220]">
-            How it works.
-          </h2>
-        </div>
-
-        {/* Bento grid with real images and copy tiles */}
-        <div className="grid grid-cols-6 grid-rows-2 gap-4 md:gap-5 h-auto md:h-[560px]">
-          {/* Tile 1 — big image */}
-          <BentoTile delay={0} className="col-span-6 md:col-span-3 row-span-2 min-h-[300px]">
-            <img src={IMG.refillJug} alt="Refilling a 5 gallon jug" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
-            <div className="relative h-full flex flex-col justify-end p-7">
-              <div className="text-white/75 text-[11px] tracking-[0.18em] uppercase font-medium mb-2">Step 01</div>
-              <div className="text-white display text-[28px] md:text-[34px] leading-[1.05]">Bring any clean<br/>bottle or jug.</div>
-              <p className="text-white/75 text-[13.5px] mt-3 max-w-xs">Any size bottle works, big or small.</p>
-            </div>
-          </BentoTile>
-
-          {/* Tile 2 — Step 02 over running water */}
-          <BentoTile delay={80} className="col-span-3 md:col-span-2 row-span-1 min-h-[180px]">
-            <img src={IMG.heroPour} alt="Running water from the dispenser" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0a1a26]/85 via-[#0a1a26]/55 to-[#0a1a26]/20" />
-            <div className="relative h-full flex flex-col justify-between p-6">
-              <div className="text-white/65 text-[11px] tracking-[0.18em] uppercase font-medium">Step 02</div>
-              <div>
-                <div className="text-white display text-[26px] leading-[1.05]">Pick regular<br/>or alkaline.</div>
-                <p className="text-white/70 text-[12.5px] mt-2">Both filtered on-site.</p>
-              </div>
-            </div>
-          </BentoTile>
-
-          {/* Tile 3 — bottle shop teaser */}
-          <BentoTile delay={160} className="col-span-3 md:col-span-1 row-span-1 min-h-[180px]" tone="tint">
-            <a href="#bottles" className="group relative h-full flex flex-col items-center justify-center gap-3 p-5 transition-colors hover:bg-[#ECF4F9]">
-              <JugMark className="w-9 h-9 text-[#1E588A] transition-transform duration-300 group-hover:-translate-y-0.5" />
-              <span className="text-[12.5px] font-medium text-[#0A1220] text-center leading-snug">Need a bottle?</span>
-              <span className="text-[11px] text-[#1E588A] font-medium inline-flex items-center gap-1">
-                Shop sizes <ArrowUpRight className="w-3 h-3" strokeWidth={2.4} />
-              </span>
-            </a>
-          </BentoTile>
-
-          {/* Tile 4 — stat */}
-          <BentoTile delay={220} className="col-span-3 md:col-span-2 row-span-1 min-h-[180px]" tone="tint">
-            <div className="relative h-full flex flex-col justify-center p-6">
-              <div className="display text-[44px] leading-none text-[#1E588A]">$0.50</div>
-              <div className="text-[#0A1220]/65 text-[13px] mt-2 max-w-[180px]">per gallon to start, paid at the counter.</div>
-            </div>
-          </BentoTile>
-
-          {/* Tile 5 — pH stat */}
-          <BentoTile delay={280} className="col-span-3 md:col-span-1 row-span-1 min-h-[180px]" tone="ink">
-            <div className="relative h-full flex flex-col justify-center items-center p-5 text-center">
-              <div className="display text-[40px] leading-none text-[#5BC8E6]">9.5</div>
-              <div className="text-white/60 text-[11px] tracking-[0.2em] uppercase font-medium mt-2">pH alkaline</div>
-            </div>
-          </BentoTile>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function BentoTile({ children, className = '', tone = 'image', delay = 0 }) {
-  const toneClass =
-    tone === 'ink' ? 'bg-[#0A1220]' :
-    tone === 'tint' ? 'bg-[#F4F7FA] border border-[#0A1220]/06' :
-    'bg-[#0A1220]'
-  return (
-    <div
-      className={`reveal reveal-img relative rounded-2xl overflow-hidden ${toneClass} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {children}
-    </div>
   )
 }
 
@@ -1108,12 +1024,8 @@ function BottlesSection() {
     <>
       {/* Header */}
       <section id="bottles" className="relative pt-24 md:pt-32 pb-12 md:pb-16 px-6 md:px-10 bg-white">
-        <div className="mx-auto max-w-[1240px] grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-8">
-            <div className="flex items-center gap-2 text-[#0A1220]/55 mb-6">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#1E588A]" />
-              <span className="eyebrow">The bottle shop</span>
-            </div>
+        <div className="mx-auto max-w-[1240px]">
+          <div className="max-w-2xl">
             <WordReveal
               as="h2"
               className="display h-title text-[#0A1220]"
@@ -1122,17 +1034,6 @@ function BottlesSection() {
             <p className="reveal mt-6 max-w-md text-[16px] leading-[1.55] text-[#0A1220]/65" style={{ transitionDelay: '250ms' }}>
               Every bottle is BPA-free, dispenser-ready, and made to be refilled for years, not tossed in a week.
             </p>
-          </div>
-          <div className="reveal reveal-img md:col-span-4" style={{ transitionDelay: '300ms' }}>
-            <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-[0_30px_60px_-30px_rgba(30,88,138,0.45)] ring-1 ring-[#0A1220]/06">
-              <img
-                src={IMG.introBottle}
-                alt="A refillable Le Water bottle"
-                className="absolute inset-0 w-full h-full object-cover"
-                loading="eager"
-              />
-              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#1E588A]/40 to-transparent" />
-            </div>
           </div>
         </div>
       </section>
@@ -1232,7 +1133,6 @@ export default function App() {
       <Reviews />
       <Balance />
       <Stores />
-      <Moments />
       <Plans />
       <BottlesSection />
       <Footer />
