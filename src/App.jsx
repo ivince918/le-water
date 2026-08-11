@@ -611,7 +611,6 @@ function Plans() {
         { label: 'Alkaline water', price: '$1.30', unit: '/gal' },
       ],
       bullets: ['No commitment', 'Any container welcome'],
-      cta: 'Walk in anytime',
     },
     {
       kind: 'Prepaid · Regular',
@@ -620,7 +619,6 @@ function Plans() {
       featured: true,
       highlight: { from: '$0.50', to: '$0.375', save: '25%', label: 'effective per gallon' },
       bullets: ['Tracked by phone number', 'Never expires', 'Use across all 3 stores'],
-      cta: 'Start regular plan',
     },
     {
       kind: 'Prepaid · Alkaline',
@@ -629,7 +627,6 @@ function Plans() {
       featured: true,
       highlight: { from: '$1.30', to: '$0.90', save: '31%', label: 'effective per gallon' },
       bullets: ['Tracked by phone number', 'Never expires', 'Use across all 3 stores'],
-      cta: 'Start alkaline plan',
     },
   ]
 
