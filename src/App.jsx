@@ -468,7 +468,7 @@ function Moments() {
       {/* Trust row */}
       <div className="mx-auto max-w-[1280px] px-6 md:px-10 pt-12 pb-2">
         <div className="reveal flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[12.5px] text-[#0A1220]/55">
-          <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#1E588A]" strokeWidth={3} /> Family-owned & operated</span>
+          <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#1E588A]" strokeWidth={3} /> Family-owned since 2008</span>
           <span className="hidden md:inline-block w-px h-3 bg-[#0A1220]/15" />
           <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#1E588A]" strokeWidth={3} /> 3 Fremont locations</span>
           <span className="hidden md:inline-block w-px h-3 bg-[#0A1220]/15" />
