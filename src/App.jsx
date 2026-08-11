@@ -999,7 +999,7 @@ function Stores() {
             </h2>
           </div>
           <p className="text-[15px] text-[#0A1220]/60 max-w-xs">
-            The same clean water at all three.
+            The same pure water at all three.
           </p>
         </div>
 
