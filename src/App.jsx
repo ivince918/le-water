@@ -364,34 +364,6 @@ function Hero() {
   )
 }
 
-/* ───────────────── INTRO STRIP — paragraph + single themed image ──────────────── */
-function HeroIntro() {
-  return (
-    <section className="relative bg-white pt-14 md:pt-20 pb-10 md:pb-14 px-6 md:px-10">
-      <div className="mx-auto max-w-[1240px] grid md:grid-cols-12 gap-8 md:gap-12 items-center">
-        <WordReveal
-          as="h2"
-          className="md:col-span-9 display text-[clamp(1.6rem,3.4vw,2.6rem)] text-[#0A1220] leading-[1.2] tracking-[-0.03em]"
-          text="Delivering the best water for over 20 years."
-        />
-        <div className="reveal reveal-img md:col-span-3 relative" style={{ transitionDelay: '150ms' }}>
-          <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-[0_30px_60px_-30px_rgba(30,88,138,0.45)] ring-1 ring-[#0A1220]/06">
-            <img
-              src={IMG.introBottle}
-              alt="A clean glass bottle filled with Le Water"
-              className="absolute inset-0 w-full h-full object-cover"
-              loading="lazy"
-            />
-            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#1E588A]/40 to-transparent" />
-          </div>
-          <div className="absolute -top-3 -right-3 w-20 h-20 rounded-full bg-[#5BC8E6]/35 blur-2xl pointer-events-none" />
-        </div>
-      </div>
-    </section>
-  )
-}
-
-
 /* ────────────────────────── REVIEWS ─────────────────────── */
 const REVIEWS = [
   {
@@ -420,6 +392,26 @@ function Reviews() {
   return (
     <section id="reviews" className="relative py-24 md:py-32 px-6 md:px-10 bg-[#F4F7FA]">
       <div className="mx-auto max-w-[1240px]">
+        <div className="grid md:grid-cols-12 gap-8 md:gap-12 items-center mb-16 md:mb-24">
+          <WordReveal
+            as="h2"
+            className="md:col-span-9 display text-[clamp(1.6rem,3.4vw,2.6rem)] text-[#0A1220] leading-[1.2] tracking-[-0.03em]"
+            text="Delivering the best water for over 20 years."
+          />
+          <div className="reveal reveal-img md:col-span-3 relative" style={{ transitionDelay: '150ms' }}>
+            <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-[0_30px_60px_-30px_rgba(30,88,138,0.45)] ring-1 ring-[#0A1220]/06">
+              <img
+                src={IMG.introBottle}
+                alt="A clean glass bottle filled with Le Water"
+                className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#1E588A]/40 to-transparent" />
+            </div>
+            <div className="absolute -top-3 -right-3 w-20 h-20 rounded-full bg-[#5BC8E6]/35 blur-2xl pointer-events-none" />
+          </div>
+        </div>
+
         <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
           <h2 className="display text-[clamp(2.2rem,5vw,3.8rem)] text-[#0A1220]">
             What our<br/><span className="text-[#0A1220]/40">customers say.</span>
@@ -465,21 +457,10 @@ function Reviews() {
 function Moments() {
   return (
     <section className="relative bg-white">
-      {/* Trust row */}
-      <div className="mx-auto max-w-[1280px] px-6 md:px-10 pt-12 pb-2">
-        <div className="reveal flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[12.5px] text-[#0A1220]/55">
-          <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#1E588A]" strokeWidth={3} /> Family-owned since 2008</span>
-          <span className="hidden md:inline-block w-px h-3 bg-[#0A1220]/15" />
-          <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#1E588A]" strokeWidth={3} /> 3 Fremont locations</span>
-          <span className="hidden md:inline-block w-px h-3 bg-[#0A1220]/15" />
-          <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#1E588A]" strokeWidth={3} /> Bring any container</span>
-        </div>
-      </div>
-
       <div className="mx-auto max-w-[1280px] px-6 md:px-10 py-16 md:py-24">
         <div className="reveal max-w-2xl mb-10">
           <h2 className="display text-[clamp(2rem,4.5vw,3.6rem)] text-[#0A1220]">
-            How it works,<br/><span className="text-[#0A1220]/40">in one minute.</span>
+            How it works.
           </h2>
         </div>
 
@@ -596,8 +577,8 @@ function Plans() {
       <div className="mx-auto max-w-[1240px]">
         <div className="reveal max-w-2xl mb-14">
           <h2 className="display text-[clamp(2.2rem,5vw,3.8rem)] text-[#0A1220]">
-            Ultra fresh water.
-            <span className="block text-[#0A1220]/40">Priced for every day.</span>
+            Ultra pure water.
+            <span className="block text-[#0A1220]/40">Members save over 25%.</span>
           </h2>
           <p className="mt-5 text-[15px] leading-relaxed text-[#0A1220]/60 max-w-md">
             Pay as you go, or prepay once and save on every gallon. Your balance follows your phone number.
@@ -731,50 +712,29 @@ function Balance() {
   // Whether the store name is worth showing (only if balances span >1 store)
   const multiStore = new Set(accounts.map((a) => a.store)).size > 1
   const showForm = state === 'idle' || state === 'loading'
+  const planStyle = (plan) => plan === 'Alkaline'
+    ? { backgroundColor: '#DBEAFE', color: '#2563EB' }
+    : { backgroundColor: '#E0F2FE', color: '#0891B2' }
 
   return (
     <section id="balance" className="relative py-24 md:py-32 px-6 md:px-10 bg-white overflow-hidden">
       <div className="mx-auto max-w-[1240px]">
         <div className="reveal max-w-2xl mb-14">
           <h2 className="display text-[clamp(2.2rem,5vw,3.8rem)] text-[#0A1220]">
-            Members save<br/><span className="text-[#1E588A]">over 25%.</span>
+            Check your<br/><span className="text-[#1E588A]">balance.</span>
           </h2>
           <p className="mt-5 text-[15px] leading-relaxed text-[#0A1220]/60 max-w-md">
             Prepaid plans are tracked by phone number. Look up your remaining gallons any time.
           </p>
         </div>
 
-      <div className="grid md:grid-cols-12 gap-6 md:gap-8">
-        {/* LEFT — visual plan compare */}
-        <div className="reveal md:col-span-5 grid gap-4" style={{ transitionDelay: '120ms' }}>
-          <PlanStat
-            kind="Regular plan"
-            from="$0.50"
-            to="$0.375"
-            save="25%"
-            qty="120 gallons for $45"
-            tint="ink"
-          />
-          <PlanStat
-            kind="Alkaline plan"
-            from="$1.30"
-            to="$0.90"
-            save="31%"
-            qty="100 gallons for $90"
-            tint="accent"
-          />
-        </div>
-
-        <div className="reveal md:col-span-7" style={{ transitionDelay: '200ms' }}>
+      <div className="reveal mx-auto max-w-xl" style={{ transitionDelay: '120ms' }}>
           <div className="card !rounded-[28px] p-7 md:p-9 shadow-[0_40px_80px_-40px_rgba(10,18,32,0.18)]">
-            <div className="flex items-center justify-between mb-7">
-              <div className="flex items-center gap-2.5">
-                <span className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-[#0A1220] text-white">
-                  <JugMark className="w-4 h-4" />
-                </span>
-                <span className="text-[13.5px] font-medium">Account lookup</span>
-              </div>
-              <span className="text-[11px] text-[#0A1220]/45 tracking-wide">No signup needed</span>
+            <div className="flex items-center gap-2.5 mb-7">
+              <span className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-[#0A1220] text-white">
+                <JugMark className="w-4 h-4" />
+              </span>
+              <span className="text-[13.5px] font-medium">Check your balance</span>
             </div>
 
             <AnimatePresence mode="wait">
@@ -830,13 +790,14 @@ function Balance() {
                         <motion.span
                           initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.6, delay: 0.05, ease: EASE }}
-                          className="display text-[80px] md:text-[96px] leading-none text-[#0A1220]"
+                          className="display text-[80px] md:text-[96px] leading-none"
+                          style={{ color: planStyle(accounts[0].plan).color }}
                         >
                           {accounts[0].gallons}
                         </motion.span>
                         <span className="text-[#0A1220]/55 text-[15px]">gallons</span>
                       </div>
-                      <div className="mt-3 inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#ECF4F9] text-[#1E588A] text-[12px]">
+                      <div className="mt-3 inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[12px]" style={planStyle(accounts[0].plan)}>
                         <Droplet className="w-3 h-3" strokeWidth={2.5} /> {accounts[0].plan} plan · active
                       </div>
                     </>
@@ -852,16 +813,16 @@ function Balance() {
                             className="flex items-center justify-between rounded-2xl border border-[#0A1220]/08 px-4 py-3.5"
                           >
                             <div className="flex items-center gap-2.5">
-                              <span className="inline-flex w-8 h-8 items-center justify-center rounded-full bg-[#ECF4F9] text-[#1E588A]">
+                              <span className="inline-flex w-8 h-8 items-center justify-center rounded-full" style={planStyle(a.plan)}>
                                 <Droplet className="w-4 h-4" strokeWidth={2.4} />
                               </span>
                               <div>
-                                <div className="text-[13.5px] font-medium text-[#0A1220]">{a.plan}</div>
+                                <div className="text-[13.5px] font-medium" style={{ color: planStyle(a.plan).color }}>{a.plan}</div>
                                 {multiStore && <div className="text-[11.5px] text-[#0A1220]/50">{a.store}</div>}
                               </div>
                             </div>
                             <div className="text-right">
-                              <span className="display text-[26px] leading-none text-[#0A1220]">{a.gallons}</span>
+                              <span className="display text-[26px] leading-none" style={{ color: planStyle(a.plan).color }}>{a.gallons}</span>
                               <span className="text-[#0A1220]/50 text-[12px] ml-1">gal</span>
                             </div>
                           </motion.div>
@@ -904,27 +865,9 @@ function Balance() {
               )}
             </AnimatePresence>
           </div>
-        </div>
       </div>
       </div>
     </section>
-  )
-}
-
-function PlanStat({ kind, from, to, save, qty, tint = 'ink' }) {
-  const isAccent = tint === 'accent'
-  return (
-    <div className={`relative rounded-2xl p-6 md:p-7 border ${isAccent ? 'bg-[#ECF4F9] border-[#1E588A]/15' : 'bg-[#0A1220] border-transparent text-white'}`}>
-      <div className={`eyebrow ${isAccent ? 'text-[#1E588A]/70' : 'text-white/55'} mb-3`}>{kind}</div>
-      <div className="flex items-baseline gap-3">
-        <span className={`text-[14px] line-through ${isAccent ? 'text-[#0A1220]/40' : 'text-white/40'}`}>{from}/gal</span>
-        <span className={`display text-[36px] md:text-[42px] leading-none ${isAccent ? 'text-[#1E588A]' : 'text-white'}`}>{to}<span className="text-[15px] opacity-60">/gal</span></span>
-      </div>
-      <div className={`mt-3 text-[13px] ${isAccent ? 'text-[#0A1220]/65' : 'text-white/65'}`}>{qty}</div>
-      <span className={`absolute top-5 right-5 text-[10px] uppercase tracking-[0.16em] font-semibold px-2 py-1 rounded-full ${isAccent ? 'bg-[#1E588A] text-white' : 'bg-white text-[#0A1220]'}`}>
-        Save {save}
-      </span>
-    </div>
   )
 }
 
@@ -1224,11 +1167,10 @@ export default function App() {
       ) : (
         <>
           <Hero />
-          <HeroIntro />
           <Reviews />
           <Moments />
-          <Plans />
           <Balance />
+          <Plans />
           <Stores />
         </>
       )}
