@@ -470,22 +470,22 @@ function Reviews() {
         <div className="mb-16 md:mb-24">
           <WordReveal
             as="h2"
-            className="display h-sub text-[#0A1220] max-w-3xl"
+            className="display h-lead text-[#0A1220]"
             text="Delivering the best water for over 20 years."
           />
           {/* Store gallery — TODO: swap these placeholder images for real store photos */}
           <div className="reveal mt-8 md:mt-10 grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2 md:gap-4 md:h-[460px]">
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto md:col-span-2 md:row-span-2 ring-1 ring-[#0A1220]/06">
-              <img src={IMG.refillJug} alt="Refilling a jug at Le Water" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.introBottle} alt="Le Water bottle" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto md:col-span-2 ring-1 ring-[#0A1220]/06">
-              <img src={IMG.heroPour} alt="Fresh water at the counter" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.splash} alt="Purified water" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto ring-1 ring-[#0A1220]/06">
-              <img src={IMG.storeShelf} alt="Inside a Le Water store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.glass} alt="A glass of Le Water" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto ring-1 ring-[#0A1220]/06">
-              <img src={IMG.bottleClose} alt="Le Water bottle" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.heroSubject} alt="A single water droplet" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
           </div>
         </div>
@@ -1098,9 +1098,6 @@ function ProductCard({ p, i }) {
           <span className="text-[18px] font-semibold tracking-tight text-[#0A1220] tabular-nums">{p.price}</span>
         </div>
         <p className="text-[13px] text-[#0A1220]/60 mt-2 leading-relaxed">{p.desc}</p>
-        <button className="btn btn-ghost mt-5 w-full justify-between !py-3">
-          View item <ArrowUpRight className="w-4 h-4" strokeWidth={2.2} />
-        </button>
       </div>
     </div>
   )
@@ -1149,27 +1146,6 @@ function BottlesSection() {
           <p className="reveal mt-8 text-center text-[12.5px] text-[#0A1220]/50">
             All bottles sold at the counter, at any of our three stores.
           </p>
-        </div>
-      </section>
-
-      {/* Bring-your-own strip */}
-      <section className="relative py-16 md:py-20 px-6 md:px-10 bg-[#0A1220] overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-40 right-1/4 w-[500px] h-[500px] rounded-full"
-               style={{ background: 'radial-gradient(circle, rgba(50,140,200,0.18), transparent 60%)', filter: 'blur(40px)' }} />
-        </div>
-        <div className="relative mx-auto max-w-[1240px] flex flex-col md:flex-row md:items-center justify-between gap-8">
-          <div className="reveal">
-            <h2 className="display h-sub text-white">Already have a container?</h2>
-            <p className="text-white/60 mt-3 text-[15px] max-w-md">
-              Bring it in. Refills start at $0.50 per gallon, and any clean bottle works.
-            </p>
-          </div>
-          <a href="#stores"
-             className="reveal btn bg-white text-[#0A1220] hover:bg-[#5BC8E6] !px-7 !py-[15px] shrink-0"
-             style={{ transitionDelay: '150ms' }}>
-            Find your store <ArrowRight className="w-4 h-4 ml-2" strokeWidth={2.2} />
-          </a>
         </div>
       </section>
     </>
