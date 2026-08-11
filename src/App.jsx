@@ -467,23 +467,26 @@ function Reviews() {
   return (
     <section id="reviews" className="relative py-24 md:py-32 px-6 md:px-10 bg-[#F4F7FA]">
       <div className="mx-auto max-w-[1240px]">
-        <div className="grid md:grid-cols-12 gap-8 md:gap-12 items-center mb-16 md:mb-24">
+        <div className="mb-16 md:mb-24">
           <WordReveal
             as="h2"
-            className="md:col-span-9 display text-[clamp(1.6rem,3.4vw,2.6rem)] text-[#0A1220] leading-[1.2] tracking-[-0.03em]"
+            className="display text-[clamp(1.6rem,3.4vw,2.6rem)] text-[#0A1220] leading-[1.2] tracking-[-0.03em] max-w-3xl"
             text="Delivering the best water for over 20 years."
           />
-          <div className="reveal reveal-img md:col-span-3 relative" style={{ transitionDelay: '150ms' }}>
-            <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-[0_30px_60px_-30px_rgba(30,88,138,0.45)] ring-1 ring-[#0A1220]/06">
-              <img
-                src={IMG.introBottle}
-                alt="A clean glass bottle filled with Le Water"
-                className="absolute inset-0 w-full h-full object-cover"
-                loading="lazy"
-              />
-              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#1E588A]/40 to-transparent" />
+          {/* Store gallery — TODO: swap these placeholder images for real store photos */}
+          <div className="reveal mt-8 md:mt-10 grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2 md:gap-4 md:h-[460px]">
+            <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto md:col-span-2 md:row-span-2 ring-1 ring-[#0A1220]/06">
+              <img src={IMG.refillJug} alt="Refilling a jug at Le Water" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
-            <div className="absolute -top-3 -right-3 w-20 h-20 rounded-full bg-[#5BC8E6]/35 blur-2xl pointer-events-none" />
+            <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto md:col-span-2 ring-1 ring-[#0A1220]/06">
+              <img src={IMG.heroPour} alt="Fresh water at the counter" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+            </div>
+            <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto ring-1 ring-[#0A1220]/06">
+              <img src={IMG.storeShelf} alt="Inside a Le Water store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+            </div>
+            <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto ring-1 ring-[#0A1220]/06">
+              <img src={IMG.bottleClose} alt="Le Water bottle" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+            </div>
           </div>
         </div>
 
@@ -996,7 +999,7 @@ function Stores() {
             </h2>
           </div>
           <p className="text-[15px] text-[#0A1220]/60 max-w-xs">
-            Bring your bottles. We handle the rest.
+            The same clean water at all three.
           </p>
         </div>
 
