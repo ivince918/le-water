@@ -625,21 +625,45 @@ function Plans() {
 /* ──────────────────────────── BALANCE PORTAL ──────────────────────────── */
 function Balance() {
   const [phone, setPhone] = useState('')
-  const [state, setState] = useState('idle')
-  const [result, setResult] = useState(null)
+  const [state, setState] = useState('idle') // idle | loading | result | notfound | error
+  const [accounts, setAccounts] = useState([])
+  const [error, setError] = useState('')
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault()
-    if (phone.replace(/\D/g, '').length < 10) return
+    const digits = phone.replace(/\D/g, '')
+    if (digits.length < 10) return
     setState('loading')
-    // TODO: Connect to backend API
-    setTimeout(() => {
-      setResult({ gallons: 42, total: 100, plan: 'Alkaline' })
-      setState('result')
-    }, 2000)
+    setError('')
+    try {
+      const res = await fetch('/api/balance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: digits }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setError(data.error || 'Something went wrong. Please try again.')
+        setState('error')
+        return
+      }
+      if (data.found && data.accounts?.length) {
+        setAccounts(data.accounts)
+        setState('result')
+      } else {
+        setState('notfound')
+      }
+    } catch {
+      setError('Could not reach the server. Please try again.')
+      setState('error')
+    }
   }
 
-  const reset = () => { setState('idle'); setResult(null); setPhone('') }
+  const reset = () => { setState('idle'); setAccounts([]); setError(''); setPhone('') }
+
+  // Whether the store name is worth showing (only if balances span >1 store)
+  const multiStore = new Set(accounts.map((a) => a.store)).size > 1
+  const showForm = state === 'idle' || state === 'loading'
 
   return (
     <section id="balance" className="relative py-24 md:py-32 px-6 md:px-10 bg-white overflow-hidden">
@@ -687,7 +711,7 @@ function Balance() {
             </div>
 
             <AnimatePresence mode="wait">
-              {state !== 'result' ? (
+              {showForm ? (
                 <motion.form
                   key="form" onSubmit={submit}
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -721,46 +745,93 @@ function Balance() {
                   </button>
 
                   <p className="text-[11.5px] text-[#0A1220]/40 mt-4 text-center">
-                    Type any 10 digits to try the demo.
+                    Enter the phone number on your prepaid plan.
                   </p>
                 </motion.form>
-              ) : (
+              ) : state === 'result' ? (
                 <motion.div
                   key="result"
                   initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                   transition={{ duration: 0.45, ease: EASE }}
                 >
-                  <div className="eyebrow text-[#0A1220]/50 mb-3">Remaining</div>
-                  <div className="flex items-baseline gap-2">
-                    <motion.span
-                      initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.05, ease: EASE }}
-                      className="display text-[80px] md:text-[96px] leading-none text-[#0A1220]"
-                    >
-                      {result.gallons}
-                    </motion.span>
-                    <span className="text-[#0A1220]/55 text-[15px]">gallons</span>
-                  </div>
-
-                  <div className="mt-3 inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#ECF4F9] text-[#1E588A] text-[12px]">
-                    <Droplet className="w-3 h-3" strokeWidth={2.5} /> {result.plan} plan · active
-                  </div>
-
-                  <div className="mt-7">
-                    <div className="flex justify-between text-[11px] text-[#0A1220]/50 mb-1.5">
-                      <span>Used {result.total - result.gallons}</span><span>{result.total} gal</span>
-                    </div>
-                    <div className="h-[6px] bg-[rgba(10,18,32,0.06)] rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }} animate={{ width: `${(result.gallons / result.total) * 100}%` }}
-                        transition={{ duration: 1.1, delay: 0.2, ease: EASE }}
-                        className="h-full bg-[#0A1220] rounded-full"
-                      />
-                    </div>
-                  </div>
+                  {accounts.length === 1 ? (
+                    <>
+                      <div className="eyebrow text-[#0A1220]/50 mb-3">
+                        {accounts[0].plan} remaining{multiStore ? ` · ${accounts[0].store}` : ''}
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <motion.span
+                          initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.6, delay: 0.05, ease: EASE }}
+                          className="display text-[80px] md:text-[96px] leading-none text-[#0A1220]"
+                        >
+                          {accounts[0].gallons}
+                        </motion.span>
+                        <span className="text-[#0A1220]/55 text-[15px]">gallons</span>
+                      </div>
+                      <div className="mt-3 inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#ECF4F9] text-[#1E588A] text-[12px]">
+                        <Droplet className="w-3 h-3" strokeWidth={2.5} /> {accounts[0].plan} plan · active
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="eyebrow text-[#0A1220]/50 mb-4">Your balances</div>
+                      <div className="space-y-3">
+                        {accounts.map((a, i) => (
+                          <motion.div
+                            key={`${a.store}-${a.plan}`}
+                            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.05 + i * 0.06, ease: EASE }}
+                            className="flex items-center justify-between rounded-2xl border border-[#0A1220]/08 px-4 py-3.5"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <span className="inline-flex w-8 h-8 items-center justify-center rounded-full bg-[#ECF4F9] text-[#1E588A]">
+                                <Droplet className="w-4 h-4" strokeWidth={2.4} />
+                              </span>
+                              <div>
+                                <div className="text-[13.5px] font-medium text-[#0A1220]">{a.plan}</div>
+                                {multiStore && <div className="text-[11.5px] text-[#0A1220]/50">{a.store}</div>}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <span className="display text-[26px] leading-none text-[#0A1220]">{a.gallons}</span>
+                              <span className="text-[#0A1220]/50 text-[12px] ml-1">gal</span>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </>
+                  )}
 
                   <button onClick={reset} className="btn btn-ghost w-full mt-7">
                     Check another number
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="empty"
+                  initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4, ease: EASE }}
+                  className="text-center py-4"
+                >
+                  <div className="inline-flex w-12 h-12 items-center justify-center rounded-full bg-[#ECF4F9] text-[#1E588A] mb-4">
+                    <Droplet className="w-5 h-5" strokeWidth={2.2} />
+                  </div>
+                  {state === 'notfound' ? (
+                    <>
+                      <div className="text-[16px] font-medium text-[#0A1220]">No plan on that number</div>
+                      <p className="text-[13.5px] text-[#0A1220]/55 mt-2 max-w-xs mx-auto">
+                        We could not find a prepaid plan for that phone. Start one at any store, or double-check the number.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-[16px] font-medium text-[#0A1220]">Lookup failed</div>
+                      <p className="text-[13.5px] text-[#0A1220]/55 mt-2 max-w-xs mx-auto">{error}</p>
+                    </>
+                  )}
+                  <button onClick={reset} className="btn btn-ghost w-full mt-6">
+                    Try another number
                   </button>
                 </motion.div>
               )}
