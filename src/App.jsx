@@ -411,6 +411,24 @@ function Stars({ size = 'w-5 h-5' }) {
   )
 }
 
+function RatingStars({ rating }) {
+  const pct = Math.max(0, Math.min(100, (rating / 5) * 100))
+  return (
+    <div className="relative inline-flex w-fit">
+      <div className="flex gap-0.5">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Star key={i} className="w-5 h-5 text-[#0A1220]/15" fill="currentColor" strokeWidth={0} />
+        ))}
+      </div>
+      <div className="absolute inset-y-0 left-0 flex gap-0.5 overflow-hidden" style={{ width: `${pct}%` }}>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Star key={i} className="w-5 h-5 shrink-0 text-[#F5A623]" fill="#F5A623" strokeWidth={0} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function YelpTag() {
   return (
     <span className="inline-flex items-center gap-1.5 text-[12px] text-[#0A1220]/45">
@@ -467,10 +485,12 @@ function Reviews() {
             What our<br/><span className="text-[#0A1220]/40">customers say.</span>
           </h2>
           <div className="flex items-center gap-4">
-            <Stars size="w-6 h-6" />
-            <div className="text-[13.5px] leading-tight text-[#0A1220]/60">
-              <span className="font-semibold text-[#0A1220]">5-star</span> reviews on{' '}
-              <span className="font-bold text-[#d32323]">Yelp</span>
+            <span className="display text-[52px] leading-none text-[#0A1220]">4.4</span>
+            <div>
+              <RatingStars rating={4.4} />
+              <div className="text-[13px] text-[#0A1220]/55 mt-1.5">
+                <span className="font-semibold text-[#0A1220]">68</span> Google reviews
+              </div>
             </div>
           </div>
         </div>
