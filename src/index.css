@@ -32,6 +32,11 @@ body {
   font-weight: 500;
 }
 
+/* Heading scale — single source of truth. Pair with .display for font + weight. */
+.h-hero  { font-size: clamp(2.8rem, 7.2vw, 7rem);    line-height: 1.0;  letter-spacing: -0.045em; }
+.h-title { font-size: clamp(2.2rem, 5vw, 3.8rem);    line-height: 1.05; letter-spacing: -0.035em; }
+.h-sub   { font-size: clamp(1.75rem, 3.4vw, 2.6rem); line-height: 1.15; letter-spacing: -0.02em; }
+
 /* Hero gradient — confident, single direction, no animation */
 .hero-bg {
   background:

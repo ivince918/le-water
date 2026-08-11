@@ -337,8 +337,8 @@ function Hero() {
 
       {/* CONTENT (scroll-fades) */}
       <div className="absolute inset-0 z-10 flex">
-        <div ref={contentRef} className="mx-auto max-w-[1280px] w-full px-6 md:px-10 flex flex-col justify-end pb-[14vh] md:pb-[16vh] will-change-transform">
-          <h1 className="display text-white text-[clamp(2.8rem,7.2vw,7rem)] leading-[1.02] tracking-[-0.045em] max-w-4xl drop-shadow-[0_4px_30px_rgba(0,0,0,0.35)]">
+        <div ref={contentRef} className="mx-auto max-w-[1240px] w-full px-6 md:px-10 flex flex-col justify-end pb-[14vh] md:pb-[16vh] will-change-transform">
+          <h1 className="display h-hero text-white max-w-4xl drop-shadow-[0_4px_30px_rgba(0,0,0,0.35)]">
             <span className="word-rise inline-block" style={{ animationDelay: '0.15s' }}>Where</span>{' '}
             <span className="word-rise inline-block" style={{ animationDelay: '0.30s' }}>pure</span>{' '}
             <span className="word-rise inline-block" style={{ animationDelay: '0.45s' }}>water</span>
@@ -470,7 +470,7 @@ function Reviews() {
         <div className="mb-16 md:mb-24">
           <WordReveal
             as="h2"
-            className="display text-[clamp(1.6rem,3.4vw,2.6rem)] text-[#0A1220] leading-[1.2] tracking-[-0.03em] max-w-3xl"
+            className="display h-sub text-[#0A1220] max-w-3xl"
             text="Delivering the best water for over 20 years."
           />
           {/* Store gallery — TODO: swap these placeholder images for real store photos */}
@@ -490,8 +490,8 @@ function Reviews() {
           </div>
         </div>
 
-        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 md:mb-12">
-          <h2 className="display text-[clamp(2.2rem,5vw,3.8rem)] text-[#0A1220]">
+        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
+          <h2 className="display h-title text-[#0A1220]">
             What our<br/><span className="text-[#0A1220]/40">customers say.</span>
           </h2>
           <div className="flex items-center gap-4">
@@ -521,9 +521,9 @@ function Reviews() {
 function Moments() {
   return (
     <section className="relative bg-white">
-      <div className="mx-auto max-w-[1280px] px-6 md:px-10 py-16 md:py-24">
-        <div className="reveal max-w-2xl mb-10">
-          <h2 className="display text-[clamp(2rem,4.5vw,3.6rem)] text-[#0A1220]">
+      <div className="mx-auto max-w-[1240px] px-6 md:px-10 py-24 md:py-32">
+        <div className="reveal max-w-2xl mb-12 md:mb-16">
+          <h2 className="display h-title text-[#0A1220]">
             How it works.
           </h2>
         </div>
@@ -636,8 +636,8 @@ function Plans() {
   return (
     <section id="plans" className="relative py-24 md:py-32 px-6 md:px-10 bg-[#F4F7FA]">
       <div className="mx-auto max-w-[1240px]">
-        <div className="reveal max-w-2xl mb-14">
-          <h2 className="display text-[clamp(2.2rem,5vw,3.8rem)] text-[#0A1220]">
+        <div className="reveal max-w-2xl mb-12 md:mb-16">
+          <h2 className="display h-title text-[#0A1220]">
             Ultra pure water.
             <span className="block text-[#1E588A] whitespace-nowrap">Members save <span className="font-bold">over 25%</span>.</span>
           </h2>
@@ -772,8 +772,8 @@ function Balance() {
   return (
     <section id="balance" className="relative py-24 md:py-32 px-6 md:px-10 bg-white overflow-hidden">
       <div className="mx-auto max-w-[1240px]">
-        <div className="reveal max-w-2xl mb-14">
-          <h2 className="display text-[clamp(2.2rem,5vw,3.8rem)] text-[#0A1220]">
+        <div className="reveal max-w-2xl mb-12 md:mb-16">
+          <h2 className="display h-title text-[#0A1220]">
             Check your<br/><span className="text-[#1E588A]">balance.</span>
           </h2>
           <p className="mt-5 text-[15px] leading-relaxed text-[#0A1220]/60 max-w-md">
@@ -994,7 +994,7 @@ function Stores() {
       <div className="mx-auto max-w-[1240px]">
         <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
           <div>
-            <h2 className="display text-[clamp(2.2rem,5vw,3.8rem)] text-[#0A1220]">
+            <h2 className="display h-title text-[#0A1220]">
               Three stores.<br/><span className="text-[#0A1220]/40">One promise.</span>
             </h2>
           </div>
@@ -1110,7 +1110,7 @@ function BottlesSection() {
   return (
     <>
       {/* Header */}
-      <section id="bottles" className="relative pt-20 md:pt-28 pb-12 md:pb-16 px-6 md:px-10 bg-white">
+      <section id="bottles" className="relative pt-24 md:pt-32 pb-12 md:pb-16 px-6 md:px-10 bg-white">
         <div className="mx-auto max-w-[1240px] grid md:grid-cols-12 gap-10 items-center">
           <div className="md:col-span-8">
             <div className="flex items-center gap-2 text-[#0A1220]/55 mb-6">
@@ -1119,7 +1119,7 @@ function BottlesSection() {
             </div>
             <WordReveal
               as="h2"
-              className="display text-[clamp(2.6rem,6vw,5rem)] text-[#0A1220] leading-[1.02] tracking-[-0.04em]"
+              className="display h-title text-[#0A1220]"
               text="Bottles, sized for every home."
             />
             <p className="reveal mt-6 max-w-md text-[16px] leading-[1.55] text-[#0A1220]/65" style={{ transitionDelay: '250ms' }}>
@@ -1141,7 +1141,7 @@ function BottlesSection() {
       </section>
 
       {/* Product grid */}
-      <section className="px-6 md:px-10 pb-20 md:pb-28 bg-white">
+      <section className="px-6 md:px-10 pb-24 md:pb-32 bg-white">
         <div className="mx-auto max-w-[1240px]">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {PRODUCTS.map((p, i) => <ProductCard key={p.name} p={p} i={i} />)}
@@ -1160,7 +1160,7 @@ function BottlesSection() {
         </div>
         <div className="relative mx-auto max-w-[1240px] flex flex-col md:flex-row md:items-center justify-between gap-8">
           <div className="reveal">
-            <h2 className="display text-white text-[clamp(1.9rem,3.8vw,3rem)]">Already have a container?</h2>
+            <h2 className="display h-sub text-white">Already have a container?</h2>
             <p className="text-white/60 mt-3 text-[15px] max-w-md">
               Bring it in. Refills start at $0.50 per gallon, and any clean bottle works.
             </p>
@@ -1193,7 +1193,7 @@ function Footer() {
               </span>
               <span className="font-semibold text-white">Le Water</span>
             </div>
-            <h3 className="display text-[clamp(2rem,4.5vw,3.5rem)] text-white max-w-xl">
+            <h3 className="display h-title text-white max-w-xl">
               Pure water,<br/>
               <span className="text-white/40">poured with care.</span>
             </h3>
