@@ -369,36 +369,43 @@ function Hero() {
 const REVIEWS = [
   {
     quote: "I drive FAR to get water here. Why? Because their water is the best! Once you've started drinking their water, you won't be able to drink any other. It's almost insulting to buy Glacier water from Lucky's across the lot when you can get water from here instead.",
-    highlight: 'their water is the best',
+    highlights: ['their water is the best'],
     name: 'Mango T.',
   },
   {
     quote: "The water quality is PERFECT! It tastes better than bottled water. My cousin has been coming here all the way from Redwood City. If the gas and the bridge tolls don't prove the loyalty, I don't know what will.",
-    highlight: 'It tastes better than bottled water',
+    highlights: ['The water quality is PERFECT!', 'coming here all the way from Redwood City'],
     name: 'Norma D.',
   },
   {
     quote: "Love this place! We've been going here for more than 8 years and I can't see getting quality water anywhere else. We go through 5 five-gallon containers a week. Trust me, this place is great!",
-    highlight: 'more than 8 years',
+    highlights: ["I can't see getting quality water anywhere else.", 'more than 8 years'],
     name: 'Rochell S.',
   },
   {
     quote: "A++ great water. Wish I had all that money back that we wasted on bottled water.",
-    highlight: 'money back that we wasted on bottled water',
+    highlights: ['A++ great water.'],
     name: 'T J.',
   },
 ]
 
-function QuoteText({ quote, highlight, className }) {
-  const idx = highlight ? quote.indexOf(highlight) : -1
-  if (idx === -1) return <p className={className}>&ldquo;{quote}&rdquo;</p>
-  return (
-    <p className={className}>
-      &ldquo;{quote.slice(0, idx)}
-      <strong className="font-semibold text-[#0A1220]">{highlight}</strong>
-      {quote.slice(idx + highlight.length)}&rdquo;
-    </p>
-  )
+function QuoteText({ quote, highlights = [], className }) {
+  const parts = []
+  let rest = quote
+  let k = 0
+  while (rest.length) {
+    let best = null
+    for (const h of highlights) {
+      if (!h) continue
+      const idx = rest.indexOf(h)
+      if (idx !== -1 && (best === null || idx < best.idx)) best = { idx, h }
+    }
+    if (!best) { parts.push(rest); break }
+    if (best.idx > 0) parts.push(rest.slice(0, best.idx))
+    parts.push(<strong key={k++} className="font-semibold text-[#0A1220]">{best.h}</strong>)
+    rest = rest.slice(best.idx + best.h.length)
+  }
+  return <p className={className}>&ldquo;{parts}&rdquo;</p>
 }
 
 function Stars({ size = 'w-5 h-5' }) {
@@ -445,7 +452,7 @@ function ReviewCard({ r, featured = false }) {
       <Stars size={featured ? 'w-6 h-6' : 'w-5 h-5'} />
       <QuoteText
         quote={r.quote}
-        highlight={r.highlight}
+        highlights={r.highlights}
         className={`relative mt-5 flex-1 text-[#0A1220]/65 ${featured ? 'text-[20px] md:text-[26px] leading-[1.45] max-w-3xl' : 'text-[15.5px] leading-relaxed'}`}
       />
       <div className="relative mt-6 flex items-center gap-2.5">
