@@ -103,7 +103,7 @@ function Loader() {
           <span className="loader-ring" style={{ animationDelay: '0.78s' }} />
           <span className="loader-ring" style={{ animationDelay: '0.96s' }} />
 
-          <div className="absolute top-1/2 -translate-y-1/2 inset-x-0 text-center">
+          <div className="absolute top-[148px] inset-x-0 text-center">
             <div className="loader-mark inline-flex">
               <JugMark className="w-9 h-9 text-[#5BC8E6]" />
             </div>
@@ -423,7 +423,7 @@ function Moments() {
             <div className="relative h-full flex flex-col justify-end p-7">
               <div className="text-white/75 text-[11px] tracking-[0.18em] uppercase font-medium mb-2">Step 01</div>
               <div className="text-white display text-[28px] md:text-[34px] leading-[1.05]">Bring any clean<br/>bottle or jug.</div>
-              <p className="text-white/75 text-[13.5px] mt-3 max-w-xs">Bring a 5 gallon, a 1 gallon, or a glass growler.</p>
+              <p className="text-white/75 text-[13.5px] mt-3 max-w-xs">Any size bottle works, big or small.</p>
             </div>
           </BentoTile>
 
