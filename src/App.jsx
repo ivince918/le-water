@@ -372,7 +372,7 @@ function HeroIntro() {
         <WordReveal
           as="h2"
           className="md:col-span-9 display text-[clamp(1.6rem,3.4vw,2.6rem)] text-[#0A1220] leading-[1.2] tracking-[-0.03em]"
-          text="Pouring alkaline water, tracking your prepaid gallons, and serving the tri city area since 2008."
+          text="Serving Fremont's best water since 2008."
         />
         <div className="reveal reveal-img md:col-span-3 relative" style={{ transitionDelay: '150ms' }}>
           <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-[0_30px_60px_-30px_rgba(30,88,138,0.45)] ring-1 ring-[#0A1220]/06">
