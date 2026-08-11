@@ -124,7 +124,7 @@ function Loader() {
   )
 }
 
-/* ─────────── HASH ROUTER — '#/bottles' renders the shop page ─────────── */
+/* ─────────── HASH ROUTER — '#bottles' renders the shop page ─────────── */
 function useHashRoute() {
   const [hash, setHash] = useState(() => window.location.hash)
   useEffect(() => {
@@ -249,7 +249,7 @@ function Nav({ dark = false }) {
           <a href="#reviews" className="link-u">Reviews</a>
           <a href="#stores" className="link-u">Stores</a>
           <a href="#plans" className="link-u">Plans</a>
-          <a href="#/bottles" className="link-u">Bottles</a>
+          <a href="#bottles" className="link-u">Bottles</a>
         </div>
         <a href="#stores" className={`hidden md:inline-flex items-center text-[13px] px-4 py-2.5 rounded-full border backdrop-blur-md transition ${cta}`}>
           Find a store
@@ -546,7 +546,7 @@ function Moments() {
 
           {/* Tile 3 — bottle shop teaser */}
           <BentoTile delay={160} className="col-span-3 md:col-span-1 row-span-1 min-h-[180px]" tone="tint">
-            <a href="#/bottles" className="group relative h-full flex flex-col items-center justify-center gap-3 p-5 transition-colors hover:bg-[#ECF4F9]">
+            <a href="#bottles" className="group relative h-full flex flex-col items-center justify-center gap-3 p-5 transition-colors hover:bg-[#ECF4F9]">
               <JugMark className="w-9 h-9 text-[#1E588A] transition-transform duration-300 group-hover:-translate-y-0.5" />
               <span className="text-[12.5px] font-medium text-[#0A1220] text-center leading-snug">Need a bottle?</span>
               <span className="text-[11px] text-[#1E588A] font-medium inline-flex items-center gap-1">
@@ -1107,11 +1107,11 @@ function ProductCard({ p, i }) {
   )
 }
 
-function BottlesPage() {
+function BottlesSection() {
   return (
     <>
       {/* Header */}
-      <section className="relative pt-32 md:pt-36 pb-12 md:pb-16 px-6 md:px-10 bg-white">
+      <section id="bottles" className="relative pt-20 md:pt-28 pb-12 md:pb-16 px-6 md:px-10 bg-white">
         <div className="mx-auto max-w-[1240px] grid md:grid-cols-12 gap-10 items-center">
           <div className="md:col-span-8">
             <div className="flex items-center gap-2 text-[#0A1220]/55 mb-6">
@@ -1119,7 +1119,7 @@ function BottlesPage() {
               <span className="eyebrow">The bottle shop</span>
             </div>
             <WordReveal
-              as="h1"
+              as="h2"
               className="display text-[clamp(2.6rem,6vw,5rem)] text-[#0A1220] leading-[1.02] tracking-[-0.04em]"
               text="Bottles, sized for every home."
             />
@@ -1203,7 +1203,7 @@ function Footer() {
             <div className="space-y-3">
               <div className="eyebrow text-white/35 mb-2">Explore</div>
               <a href="#plans" className="block link-u">Plans</a>
-              <a href="#/bottles" className="block link-u">Bottles</a>
+              <a href="#bottles" className="block link-u">Bottles</a>
               <a href="#balance" className="block link-u">Balance</a>
               <a href="#stores" className="block link-u">Stores</a>
             </div>
@@ -1228,7 +1228,6 @@ function Footer() {
 export default function App() {
   useScrollReveal()
   const route = useHashRoute()
-  const onBottles = route.startsWith('#/bottles')
 
   const [booting, setBooting] = useState(() => !prefersReducedMotion())
   const [curtain, setCurtain] = useState(() => !prefersReducedMotion())
@@ -1240,33 +1239,27 @@ export default function App() {
     return () => { clearTimeout(a); clearTimeout(b) }
   }, [])
 
-  // Route transitions: bottles page scrolls to top; home section anchors scroll into view
+  // Anchor links scroll their section into view
   useEffect(() => {
-    if (onBottles) { window.scrollTo(0, 0); return }
-    if (route && route.length > 1 && !route.startsWith('#/')) {
+    if (route && route.length > 1) {
       requestAnimationFrame(() => {
         document.querySelector(route)?.scrollIntoView({ behavior: 'smooth' })
       })
     }
-  }, [route, onBottles])
+  }, [route])
 
   return (
     <main className={curtain ? 'preloading relative' : 'relative'}>
       {booting && <Loader />}
       <ScrollProgress />
-      <Nav dark={onBottles} />
-      {onBottles ? (
-        <BottlesPage />
-      ) : (
-        <>
-          <Hero />
-          <Reviews />
-          <Balance />
-          <Stores />
-          <Moments />
-          <Plans />
-        </>
-      )}
+      <Nav />
+      <Hero />
+      <Reviews />
+      <Balance />
+      <Stores />
+      <Moments />
+      <Plans />
+      <BottlesSection />
       <Footer />
     </main>
   )
