@@ -103,7 +103,7 @@ function Loader() {
           <span className="loader-ring" style={{ animationDelay: '0.78s' }} />
           <span className="loader-ring" style={{ animationDelay: '0.96s' }} />
 
-          <div className="absolute top-[148px] inset-x-0 text-center">
+          <div className="absolute top-1/2 -translate-y-1/2 inset-x-0 text-center">
             <div className="loader-mark inline-flex">
               <JugMark className="w-9 h-9 text-[#5BC8E6]" />
             </div>
@@ -403,8 +403,6 @@ function Moments() {
           <span className="hidden md:inline-block w-px h-3 bg-[#0A1220]/15" />
           <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#1E588A]" strokeWidth={3} /> 3 Fremont locations</span>
           <span className="hidden md:inline-block w-px h-3 bg-[#0A1220]/15" />
-          <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#1E588A]" strokeWidth={3} /> 320+ refills every week</span>
-          <span className="hidden md:inline-block w-px h-3 bg-[#0A1220]/15" />
           <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#1E588A]" strokeWidth={3} /> Bring any container</span>
         </div>
       </div>
@@ -425,7 +423,7 @@ function Moments() {
             <div className="relative h-full flex flex-col justify-end p-7">
               <div className="text-white/75 text-[11px] tracking-[0.18em] uppercase font-medium mb-2">Step 01</div>
               <div className="text-white display text-[28px] md:text-[34px] leading-[1.05]">Bring any clean<br/>bottle or jug.</div>
-              <p className="text-white/75 text-[13.5px] mt-3 max-w-xs">5 gallon, 1 gallon, even a glass growler. We work with what you bring.</p>
+              <p className="text-white/75 text-[13.5px] mt-3 max-w-xs">Bring a 5 gallon, a 1 gallon, or a glass growler.</p>
             </div>
           </BentoTile>
 
@@ -533,7 +531,7 @@ function Plans() {
             <span className="block text-[#0A1220]/40">Priced for every day.</span>
           </h2>
           <p className="mt-5 text-[15px] leading-relaxed text-[#0A1220]/60 max-w-md">
-            Pay as you go, or prepay once and save on every gallon. Your balance follows your phone number, nothing to download.
+            Pay as you go, or prepay once and save on every gallon. Your balance follows your phone number.
           </p>
         </div>
 
@@ -545,7 +543,7 @@ function Plans() {
               style={{ transitionDelay: `${i * 100}ms` }}
             >
               <div
-                className={`card relative h-full p-7 md:p-8 flex flex-col ${c.featured ? 'md:py-10 text-white border-transparent' : ''}`}
+                className={`card relative h-full p-7 md:p-8 flex flex-col ${c.featured ? 'text-white border-transparent' : ''}`}
                 style={c.featured ? { background: '#0A1220' } : undefined}
               >
                 {c.tag && (
@@ -670,10 +668,10 @@ function Balance() {
       <div className="mx-auto max-w-[1240px]">
         <div className="reveal max-w-2xl mb-14">
           <h2 className="display text-[clamp(2.2rem,5vw,3.8rem)] text-[#0A1220]">
-            Members save<br/><span className="text-[#1E588A]">25-31%.</span>
+            Members save<br/><span className="text-[#1E588A]">over 25%.</span>
           </h2>
           <p className="mt-5 text-[15px] leading-relaxed text-[#0A1220]/60 max-w-md">
-            Prepaid plans are tracked by phone number. No app, no card to carry. Look up your remaining gallons any time.
+            Prepaid plans are tracked by phone number. Look up your remaining gallons any time.
           </p>
         </div>
 
