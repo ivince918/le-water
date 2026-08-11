@@ -809,7 +809,7 @@ function Balance() {
               <span className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-[#0A1220] text-white">
                 <JugMark className="w-4 h-4" />
               </span>
-              <span className="text-[13.5px] font-medium">Check your balance</span>
+              <span className="text-[13.5px] font-medium">Look up your account</span>
             </div>
 
             <AnimatePresence mode="wait">
