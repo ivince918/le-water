@@ -568,7 +568,7 @@ function Plans() {
   ]
 
   return (
-    <section id="plans" className="relative py-24 md:py-32 px-6 md:px-10 bg-[#F4F7FA]">
+    <section id="plans" className="relative py-24 md:py-32 px-6 md:px-10 bg-white">
       <div className="mx-auto max-w-[1240px]">
         <div className="reveal max-w-2xl mb-12 md:mb-16">
           <h2 className="display h-title text-[#0A1220]">
@@ -936,8 +936,10 @@ const directionsUrl = (s) =>
 
 function StoreCard({ s, i, status }) {
   return (
-    <article
-      className="reveal card overflow-hidden flex flex-col"
+    <motion.article
+      layout
+      transition={{ layout: { duration: 0.5, ease: EASE } }}
+      className="reveal card overflow-hidden flex flex-col h-full"
       style={{ transitionDelay: `${i * 90}ms` }}
     >
       {/* Map */}
@@ -969,7 +971,7 @@ function StoreCard({ s, i, status }) {
               status.open ? 'bg-[#E4F5EC] text-[#127a45]' : 'bg-[#0A1220]/06 text-[#0A1220]/55'
             }`}
           >
-            <span className={`w-1.5 h-1.5 rounded-full ${status.open ? 'bg-[#1B9E57]' : 'bg-[#0A1220]/35'}`} />
+            <span className={`w-1.5 h-1.5 rounded-full ${status.open ? 'bg-[#1B9E57] live-dot' : 'bg-[#0A1220]/35'}`} />
             {status.label}
           </span>
         </div>
@@ -989,9 +991,9 @@ function StoreCard({ s, i, status }) {
             href={directionsUrl(s)}
             target="_blank" rel="noreferrer"
             onClick={() => trackEvent('get_directions', { store: s.name })}
-            className="btn btn-primary !py-3 text-[13.5px]"
+            className="group btn btn-primary !py-3 text-[13.5px]"
           >
-            <Navigation className="w-4 h-4 mr-1.5" strokeWidth={2.2} /> Directions
+            <Navigation className="w-4 h-4 mr-1.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={2.2} /> Directions
           </a>
           <a
             href={`tel:${s.phone}`}
@@ -1002,7 +1004,7 @@ function StoreCard({ s, i, status }) {
           </a>
         </div>
       </div>
-    </article>
+    </motion.article>
   )
 }
 
@@ -1127,7 +1129,7 @@ function BottlesSection() {
   return (
     <>
       {/* Header */}
-      <section id="bottles" className="relative pt-24 md:pt-32 pb-12 md:pb-16 px-6 md:px-10 bg-white">
+      <section id="bottles" className="relative pt-24 md:pt-32 pb-12 md:pb-16 px-6 md:px-10 bg-[#F4F7FA]">
         <div className="mx-auto max-w-[1240px]">
           <div className="max-w-2xl">
             <WordReveal
@@ -1143,7 +1145,7 @@ function BottlesSection() {
       </section>
 
       {/* Product grid */}
-      <section className="px-6 md:px-10 pb-24 md:pb-32 bg-white">
+      <section className="px-6 md:px-10 pb-24 md:pb-32 bg-[#F4F7FA]">
         <div className="mx-auto max-w-[1240px]">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {PRODUCTS.map((p, i) => <ProductCard key={p.name} p={p} i={i} />)}

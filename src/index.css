@@ -102,6 +102,14 @@ body {
 /* Hairline */
 .hairline { background: linear-gradient(to right, transparent, rgba(10,18,32,0.1), transparent); height: 1px; }
 
+/* Live "open now" indicator — soft outward pulse */
+@keyframes live-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(27, 158, 87, 0.45); }
+  70%  { box-shadow: 0 0 0 5px rgba(27, 158, 87, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(27, 158, 87, 0); }
+}
+.live-dot { animation: live-pulse 2.4s ease-out infinite; }
+
 /* Scrollbar — invisible */
 ::-webkit-scrollbar { width: 0; }
 
