@@ -23,15 +23,22 @@ against the live POS database.
 ## Page structure (order matters — front-loaded by visitor intent)
 
 `src/App.jsx` renders, in order:
-1. **Hero** — full-bleed Ken-Burns stock image + "Where pure water flows daily" + "Find your nearest store" CTA.
+1. **Hero** — full-bleed Ken-Burns stock image + "Where pure water flows daily" + three actions: `Find your nearest store` (primary, → `#stores`), `Check your balance` (secondary glass button, → `#balance`), `See plans` (text link, → `#plans`).
 2. **Reviews** (`#reviews`) — merged section: the "Delivering the best water in Fremont for over 20 years." lead + a 4-image **store gallery** (STOCK PLACEHOLDERS) + "What our customers say" with a **4.4 / 68 Google reviews** aggregate header + 1 featured Yelp quote + 3 supporting cards.
 3. **Balance** (`#balance`) — "Check your balance." Plan comparison boxes (Regular/Alkaline) on the left, the phone → gallon lookup card ("Look up your account") on the right.
-4. **Stores** (`#stores`) — 3 cards: embedded Google map, hours, tap-to-call phone, Get directions.
+4. **Stores** (`#stores`) — 3 cards, each with an embedded Google map, **full street address**, live **Open now / Closed** pill (computed client-side from the 10a-7p hours), and two one-tap actions: **Directions** (Google Maps `dir/?api=1`) + **Call** (`tel:`). Section header has a **"Find my nearest store"** geolocation button that haversine-sorts the cards nearest-first, appends "· X.X mi away", and badges the closest "Nearest you". Graceful no-op if location is denied. Store data + `openStatus()` + `milesBetween()` helpers live at the top of the Stores block / module scope in `App.jsx`.
 5. **Plans** (`#plans`) — "Ultra pure water. Members save **over 25%**." 3 pricing cards (No plan / Regular / Alkaline). No CTA buttons (removed by request).
 6. **Bottles** (`#bottles`) — product grid (5/3/1 gal). Header intentionally has no image (awaiting real product photos).
 7. **Footer**.
 
 Nav order mirrors the page: Reviews · Balance · Stores · Plans · Bottles.
+
+**Section background rhythm (alternating):** Hero (dark) → Reviews (tint `#F4F7FA`) → Balance (white) → Stores (tint) → Plans (white) → Bottles (tint) → Footer (dark). Keep this alternation when adding/reordering sections — two adjacent same-color sections read as one.
+
+**Store addresses / NAP (source of truth, also in the JSON-LD schema — keep in sync):**
+- **Le Water Store** — 35762 Fremont Blvd, Fremont, CA 94536 · (510) 742-5699 · North Fremont
+- **Le Pure Water** — 39409 Fremont Blvd, Fremont, CA 94538 · (510) 656-1533 · Central Fremont
+- **Lion Pure Water** — 39131 Cedar Blvd, **Newark**, CA 94560 · (510) 739-6225 · (in Lion Supermarket / Mowry Plaza — this one is Newark, NOT "Fremont South")
 
 ## The balance lookup (the one backend piece)
 
@@ -43,10 +50,10 @@ Browser POSTs `/api/balance` → Vercel function holds the Supabase **service ro
 
 ## Deploy
 
-GitHub auto-deploy is **NOT** connected (the Vercel GitHub app lacks access to the `ivince918` repo). Deploys are **CLI-direct** from the repo root:
+GitHub auto-deploy is **NOT** connected (the Vercel GitHub app lacks access to the `ivince918` repo). Deploys are **CLI-direct** from the repo root. The `vercel` CLI is **not installed globally** on this machine — invoke via `npx`:
 
 ```bash
-vercel deploy --prod --yes     # from le-water/ ; auto-links project le-water
+npx --yes vercel@latest deploy --prod --yes    # from le-water/ ; auto-links project le-water, aliases lewaterstore.com
 ```
 
 - **Auth:** the Vercel CLI OAuth token in `~/Library/Application Support/com.vercel.cli/auth.json` is NOT valid as `VERCEL_TOKEN` for the CLI — **let the CLI use its native auth; do NOT set `VERCEL_TOKEN`**. That SAME token DOES work as a `Bearer` against `api.vercel.com` REST (used it to toggle deployment protection + read project state).
@@ -70,23 +77,53 @@ Domain registered at **Squarespace** (ex-Google Domains); nameservers are **Goog
 
 Spacing standard: sections `py-24 md:py-32 px-6 md:px-10`, container `max-w-[1240px]`, section-header margin `mb-12 md:mb-16`.
 
-Palette: ink `#0A1220`, blue `#1E588A`, cyan accent `#5BC8E6`. Plan color-coding (pulled from the POS `globals.css`): **Regular = cyan** `#0891B2` / bg `#E0F2FE`; **Alkaline = blue** `#2563EB` / bg `#DBEAFE`. Review stars gold `#F5A623`; Yelp badge red `#d32323`. Font: Inter.
+Palette: ink `#0A1220`, blue `#1E588A`, cyan accent `#5BC8E6`. Plan color-coding (pulled from the POS `globals.css`): **Regular = cyan** `#0891B2` / bg `#E0F2FE`; **Alkaline = blue** `#2563EB` / bg `#DBEAFE`. Review stars gold `#F5A623`; Yelp badge red `#d32323`. Open-now status green `#1B9E57` / text `#127a45` / bg `#E4F5EC`. Font: Inter.
+
+Browser-surface theming (in `index.css`): `::selection` uses brand blue at 16%, and a `:focus-visible` ring (2px `#1E588A`) is applied to all interactive elements — don't strip these.
+
+**Motion:** deliberately restrained (the design already carries a loader, Ken-Burns, hero parallax/ripple, scroll-progress bar). Section entrances use a single `.reveal` fade-up via IntersectionObserver (the old per-word `WordReveal` blur-stagger was collapsed to one clean fade — do not reintroduce per-word staggers, they read as AI slop). Store-card micro-interactions: card hover-lift, button press (`scale .97`), a `.live-dot` pulse on the open-now indicator, a Directions-icon nudge on hover, and framer-motion `layout` on the cards so they animate when re-sorted by distance. All motion respects `prefers-reduced-motion`.
 
 ## Reviews / ratings (real data — do not fabricate)
 
 - 4 real Yelp reviews are hard-coded in the `REVIEWS` array (Mango T. featured, Norma D., Rochell S., T J.), each with a `highlights: []` array of phrases that render bold.
 - Aggregate header shows **4.4 ★ · 68 Google reviews** (the real Google Business number; Yelp counts are low/mixed across the 3 locations so Google is the stronger trust signal).
 
+## Local SEO & structured data
+
+- **`index.html` `<head>`** carries: meta description, Open Graph + Twitter tags, canonical, and a **LocalBusiness JSON-LD `@graph`** with one `WaterStore` node per location (name, full `PostalAddress`, `telephone`, `GeoCoordinates`, `openingHoursSpecification` Mo-Su 10:00-19:00). **Keep the JSON-LD addresses in sync with the NAP list above and with Google Business Profile.**
+- **`public/robots.txt`** — allows all, points to the sitemap.
+- **`public/sitemap.xml`** — single URL (root), `lastmod` is hand-set (bump it on meaningful content changes). `public/` is copied to dist root by Vite, so both serve at `/robots.txt` and `/sitemap.xml`.
+- **Google Search Console:** verify `lewaterstore.com` as a **Domain** property via a TXT record added in the Squarespace DNS panel, then Request Indexing + submit `sitemap.xml`. (Not yet done as of 2026-08-12.)
+- **Higher-leverage than the site for "water store near me":** claim/clean all 3 **Google Business Profiles**; NAP must match the schema exactly.
+
 ## Analytics
 
 `@vercel/analytics` installed; `<Analytics />` rendered in `src/main.jsx`. Web Analytics is enabled on the Vercel project. Data: Vercel dashboard → `le-water` → Analytics tab.
 
+**Conversion events** (fired via `track()` through the `trackEvent()` wrapper in `App.jsx`, which swallows errors so analytics never throws into the UI):
+- `hero_find_store`, `hero_check_balance`, `hero_see_plans` — hero CTAs
+- `balance_lookup` `{ result: 'found' | 'not_found' | 'error' }`
+- `get_directions` `{ store }`, `call_store` `{ store }` — per store card
+- `use_my_location` — the nearest-store geolocation button
+
 ## Open items / TODO
 
-1. **REAL PHOTOS (highest-value).** The store gallery (4 images in the Reviews section, marked `TODO` in code), the Bottles product cards, and the hero are all **stock placeholders**. Per the CRO research done for this site, real photos are THE lever for the "feels stale/stock" problem (real photos beat stock 35–161% in cited studies). Swap: gallery `<img src={IMG.*}>` in the Reviews section, add product photos to `PRODUCTS`, swap the hero `IMG.heroSubject`.
-2. **New-customer offer CTA** — the Lion acquisition promo ($50 / 150 gal + free jug) is NOT on the site. It's the main acquisition lever for a local store; recommend a hero banner or dedicated strip.
-3. **GitHub auto-deploy** not connected (see Deploy).
-4. Loader intro `translateY(-60px)` (`.loader-stage` in index.css) is an eyeball-centered value; nudge if needed.
+1. **REAL PHOTOS (highest-value, still open).** The store gallery (4 images in the Reviews section, marked `TODO` in code), the Bottles product cards, and the hero are all **stock placeholders**. Per the CRO research done for this site, real photos are THE lever for the "feels stale/stock" problem (real photos beat stock 35–161% in cited studies). Swap: gallery `<img src={IMG.*}>` in the Reviews section, add product photos to `PRODUCTS`, swap the hero `IMG.heroSubject`.
+2. **New-customer offer CTA (still open).** The Lion acquisition promo ($50 / 150 gal + free jug) is NOT on the site. It's the main acquisition lever for a local store; recommend a hero banner or dedicated strip.
+3. **Google Search Console + GBP** — verify the domain in GSC, request indexing, submit sitemap; claim/clean the 3 Google Business Profiles (see Local SEO section). Not started.
+4. **No social OG image** — link shares have no preview image (og:image not set). Add once brand imagery exists.
+5. **GitHub auto-deploy** not connected (see Deploy).
+6. Loader intro `translateY(-60px)` (`.loader-stage` in index.css) is an eyeball-centered value; nudge if needed.
+
+### Done 2026-08-12 (pm session)
+- Local SEO: meta description + OG/Twitter + canonical + LocalBusiness JSON-LD (3 stores) + robots.txt + sitemap.xml.
+- Stores rebuilt for first-timers: real addresses, live open-now status, "find my nearest store" geolocation sort, one-tap Directions + Call. Corrected Lion → Newark.
+- Conversion tracking events wired (see Analytics).
+- Fixed mobile 42px horizontal overflow (Plans headline `whitespace-nowrap` → `md:whitespace-nowrap`).
+- Slop pass: per-word reveal → single fade; added `::selection` + `:focus-visible` theming. Impeccable detector clean.
+- Alternating section background rhythm (flipped Plans → white, Bottles → tint).
+- Store-card micro-interactions + hero "Check your balance" button.
+- Website-audit baseline: Overall C(67), Function D(62), Design C(74), no gates. Top remaining levers = items 1 + 2 above.
 
 ## Gotchas
 
