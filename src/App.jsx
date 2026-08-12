@@ -363,14 +363,20 @@ function Hero() {
             <span className="word-rise inline-block" style={{ animationDelay: '0.65s' }}>flows</span>{' '}
             <span className="word-rise inline-block" style={{ animationDelay: '0.80s' }}>daily.</span>
           </h1>
-          <div className="mt-9 flex items-center gap-5 fade-up" style={{ animationDelay: '1.05s' }}>
+          <div className="mt-9 flex flex-wrap items-center gap-x-4 gap-y-3 fade-up" style={{ animationDelay: '1.05s' }}>
             <a href="#stores"
                onClick={() => trackEvent('hero_find_store')}
                className="group inline-flex items-center justify-center px-7 py-[15px] rounded-full bg-white text-[#0a1a26] font-medium text-[14.5px] transition-all duration-200 ease-out hover:bg-[#5BC8E6] hover:-translate-y-0.5 active:scale-[0.97]">
               Find your nearest store
               <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-200 group-hover:translate-x-0.5" strokeWidth={2.2} />
             </a>
-            <a href="#plans" onClick={() => trackEvent('hero_see_plans')} className="text-[14px] text-white font-medium underline underline-offset-4 decoration-[#5BC8E6] decoration-2 hover:decoration-white transition-colors">
+            <a href="#balance"
+               onClick={() => trackEvent('hero_check_balance')}
+               className="group inline-flex items-center justify-center px-6 py-[14px] rounded-full bg-white/10 border border-white/30 backdrop-blur-md text-white font-medium text-[14.5px] transition-all duration-200 ease-out hover:bg-white/20 hover:-translate-y-0.5 active:scale-[0.97]">
+              <Droplet className="w-4 h-4 mr-2" strokeWidth={2.2} />
+              Check your balance
+            </a>
+            <a href="#plans" onClick={() => trackEvent('hero_see_plans')} className="text-[14px] text-white font-medium underline underline-offset-4 decoration-[#5BC8E6] decoration-2 hover:decoration-white transition-colors ml-1">
               See plans
             </a>
           </div>
