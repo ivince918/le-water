@@ -105,6 +105,15 @@ body {
 /* Scrollbar — invisible */
 ::-webkit-scrollbar { width: 0; }
 
+/* Text selection — themed from the brand blue, not the browser default */
+::selection { background: rgba(30, 88, 138, 0.16); color: #0A1220; }
+
+/* Keyboard focus — visible, on-palette ring for every interactive element */
+:where(a, button, input, [tabindex]):focus-visible {
+  outline: 2px solid #1E588A;
+  outline-offset: 2px;
+}
+
 /* Loading dots */
 @keyframes pulse-dot {
   0%, 80%, 100% { opacity: 0.2; transform: translateY(0); }

@@ -1,6 +1,36 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Droplet, MapPin, Phone, ArrowRight, Check, ArrowUpRight, Star } from 'lucide-react'
+import { track } from '@vercel/analytics'
+import { Droplet, MapPin, Phone, ArrowRight, Check, Star, Navigation, Clock } from 'lucide-react'
+
+/* Conversion events — never let analytics throw into the UI */
+const trackEvent = (name, props) => {
+  try { track(name, props) } catch { /* analytics is best-effort */ }
+}
+
+/* Store hours are identical across locations: open daily 10a-7p (local time) */
+const OPEN_HOUR = 10
+const CLOSE_HOUR = 19
+const openStatus = (now = new Date()) => {
+  const h = now.getHours() + now.getMinutes() / 60
+  if (h >= OPEN_HOUR && h < CLOSE_HOUR) {
+    const closesSoon = h >= CLOSE_HOUR - 1
+    return { open: true, label: closesSoon ? `Open · closes 7 PM` : 'Open now', closesSoon }
+  }
+  return { open: false, label: h < OPEN_HOUR ? 'Opens 10 AM' : 'Closed · opens 10 AM' }
+}
+
+/* Great-circle distance in miles, for "nearest store" sorting */
+const milesBetween = (a, b) => {
+  const R = 3958.8
+  const toRad = (d) => (d * Math.PI) / 180
+  const dLat = toRad(b.lat - a.lat)
+  const dLng = toRad(b.lng - a.lng)
+  const s =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2
+  return R * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s))
+}
 
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
@@ -135,22 +165,9 @@ function useHashRoute() {
   return hash
 }
 
-/* ─────────── WORD-BY-WORD REVEAL — text fades up one word at a time ─────────── */
-function WordReveal({ text, as: Tag = 'span', className = '', perWordDelay = 55, baseDelay = 0 }) {
-  const words = text.split(' ')
-  return (
-    <Tag className={`reveal-words ${className}`}>
-      {words.map((w, i) => (
-        <span
-          key={i}
-          className="word"
-          style={{ transitionDelay: `${baseDelay + i * perWordDelay}ms` }}
-        >
-          {w}{i < words.length - 1 ? ' ' : ''}
-        </span>
-      ))}
-    </Tag>
-  )
+/* ─────────── HEADLINE REVEAL — one clean fade-up, no per-word stagger ─────────── */
+function WordReveal({ text, as: Tag = 'span', className = '' }) {
+  return <Tag className={`reveal ${className}`}>{text}</Tag>
 }
 
 /* ─────────── SCROLL PROGRESS — water level rising at the top ─────────── */
@@ -348,11 +365,12 @@ function Hero() {
           </h1>
           <div className="mt-9 flex items-center gap-5 fade-up" style={{ animationDelay: '1.05s' }}>
             <a href="#stores"
+               onClick={() => trackEvent('hero_find_store')}
                className="group inline-flex items-center justify-center px-7 py-[15px] rounded-full bg-white text-[#0a1a26] font-medium text-[14.5px] transition-all duration-200 ease-out hover:bg-[#5BC8E6] hover:-translate-y-0.5 active:scale-[0.97]">
               Find your nearest store
               <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-200 group-hover:translate-x-0.5" strokeWidth={2.2} />
             </a>
-            <a href="#plans" className="text-[14px] text-white font-medium underline underline-offset-4 decoration-[#5BC8E6] decoration-2 hover:decoration-white transition-colors">
+            <a href="#plans" onClick={() => trackEvent('hero_see_plans')} className="text-[14px] text-white font-medium underline underline-offset-4 decoration-[#5BC8E6] decoration-2 hover:decoration-white transition-colors">
               See plans
             </a>
           </div>
@@ -555,7 +573,7 @@ function Plans() {
         <div className="reveal max-w-2xl mb-12 md:mb-16">
           <h2 className="display h-title text-[#0A1220]">
             Ultra pure water.
-            <span className="block text-[#1E588A] whitespace-nowrap">Members save <span className="font-bold">over 25%</span>.</span>
+            <span className="block text-[#1E588A] md:whitespace-nowrap">Members save <span className="font-bold">over 25%</span>.</span>
           </h2>
           <p className="mt-5 text-[15px] leading-relaxed text-[#0A1220]/60 max-w-md">
             Pay as you go, or prepay once and save on every gallon. Your balance follows your phone number.
@@ -667,12 +685,15 @@ function Balance() {
       if (data.found && data.accounts?.length) {
         setAccounts(data.accounts)
         setState('result')
+        trackEvent('balance_lookup', { result: 'found' })
       } else {
         setState('notfound')
+        trackEvent('balance_lookup', { result: 'not_found' })
       }
     } catch {
       setError('Could not reach the server. Please try again.')
       setState('error')
+      trackEvent('balance_lookup', { result: 'error' })
     }
   }
 
@@ -880,33 +901,133 @@ function PlanStat({ kind, from, to, save, qty, tint = 'ink' }) {
 }
 
 /* ──────────────────────────────── STORES ──────────────────────────────── */
+const STORES = [
+  {
+    name: 'Le Water Store',
+    area: 'North Fremont',
+    address: '35762 Fremont Blvd',
+    city: 'Fremont, CA 94536',
+    phone: '+15107425699',
+    lat: 37.567202, lng: -122.024635,
+    src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2355.5412405638453!2d-122.02463516558994!3d37.567202004484315!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fbfb8ef254513%3A0xd6d91d5ffd25f275!2sLe%20Water%20Store!5e0!3m2!1sen!2sus!4v1775966296778!5m2!1sen!2sus',
+  },
+  {
+    name: 'Le Pure Water',
+    area: 'Central Fremont',
+    address: '39409 Fremont Blvd',
+    city: 'Fremont, CA 94538',
+    phone: '+15106561533',
+    lat: 37.544543, lng: -121.981806,
+    src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d443.3435900306666!2d-121.9818062651175!3d37.54454328153434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fc099ea00a6df%3A0xd07f330bc4f9bc40!2sLe%20Pure%20Water!5e0!3m2!1sen!2sus!4v1775966346126!5m2!1sen!2sus',
+  },
+  {
+    name: 'Lion Pure Water',
+    area: 'Newark',
+    address: '39131 Cedar Blvd',
+    city: 'Newark, CA 94560',
+    phone: '+15107396225',
+    lat: 37.523282, lng: -122.025403,
+    src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12657.393896206348!2d-122.0254025128418!3d37.52328200000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fbf4f97bf0b91%3A0xfa73f395892b1f80!2sLion%20Pure%20Water!5e0!3m2!1sen!2sus!4v1775966372825!5m2!1sen!2sus',
+  },
+]
+
+const directionsUrl = (s) =>
+  `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${s.name}, ${s.address}, ${s.city}`)}`
+
+function StoreCard({ s, i, status }) {
+  return (
+    <article
+      className="reveal card overflow-hidden flex flex-col"
+      style={{ transitionDelay: `${i * 90}ms` }}
+    >
+      {/* Map */}
+      <div className="relative h-[200px] overflow-hidden border-b border-[#0A1220]/06">
+        <iframe
+          src={s.src}
+          className="absolute inset-0 w-full h-full"
+          style={{ border: 0 }}
+          loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+          title={`Map to ${s.name}`}
+        />
+        {s.nearest && (
+          <span className="absolute top-3 left-3 inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[#0A1220] text-white shadow-sm">
+            <Navigation className="w-3 h-3" strokeWidth={2.4} /> Nearest you
+          </span>
+        )}
+      </div>
+
+      <div className="p-6 flex-1 flex flex-col">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h3 className="font-semibold text-[18px] tracking-tight text-[#0A1220]">{s.name}</h3>
+            <p className="text-[13px] text-[#0A1220]/55 mt-0.5">
+              {s.area}{typeof s.miles === 'number' ? ` · ${s.miles.toFixed(1)} mi away` : ''}
+            </p>
+          </div>
+          <span
+            className={`shrink-0 inline-flex items-center gap-1.5 text-[11.5px] font-medium px-2.5 py-1 rounded-full ${
+              status.open ? 'bg-[#E4F5EC] text-[#127a45]' : 'bg-[#0A1220]/06 text-[#0A1220]/55'
+            }`}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full ${status.open ? 'bg-[#1B9E57]' : 'bg-[#0A1220]/35'}`} />
+            {status.label}
+          </span>
+        </div>
+
+        <div className="mt-4 flex items-start gap-2 text-[13.5px] leading-snug text-[#0A1220]/70">
+          <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-[#1E588A]" strokeWidth={2} />
+          <span>{s.address}<br />{s.city}</span>
+        </div>
+        <div className="mt-2 flex items-center gap-2 text-[13px] text-[#0A1220]/55">
+          <Clock className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
+          Open daily, 10a to 7p
+        </div>
+
+        {/* Primary actions — get there or call, one tap each */}
+        <div className="mt-5 grid grid-cols-2 gap-2.5">
+          <a
+            href={directionsUrl(s)}
+            target="_blank" rel="noreferrer"
+            onClick={() => trackEvent('get_directions', { store: s.name })}
+            className="btn btn-primary !py-3 text-[13.5px]"
+          >
+            <Navigation className="w-4 h-4 mr-1.5" strokeWidth={2.2} /> Directions
+          </a>
+          <a
+            href={`tel:${s.phone}`}
+            onClick={() => trackEvent('call_store', { store: s.name })}
+            className="btn btn-ghost !py-3 text-[13.5px]"
+          >
+            <Phone className="w-4 h-4 mr-1.5" strokeWidth={2.2} /> Call
+          </a>
+        </div>
+      </div>
+    </article>
+  )
+}
+
 function Stores() {
-  const stores = [
-    {
-      name: 'Le Water Store',
-      area: 'Fremont, North',
-      phone: '+15107425699',
-      hours: 'Mon to Sun, 10a to 7p',
-      img: IMG.heroPour,
-      src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2355.5412405638453!2d-122.02463516558994!3d37.567202004484315!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fbfb8ef254513%3A0xd6d91d5ffd25f275!2sLe%20Water%20Store!5e0!3m2!1sen!2sus!4v1775966296778!5m2!1sen!2sus',
-    },
-    {
-      name: 'Le Pure Water',
-      area: 'Fremont, Central',
-      phone: '+15106561533',
-      hours: 'Mon to Sun, 10a to 7p',
-      img: IMG.heroSubject,
-      src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d443.3435900306666!2d-121.9818062651175!3d37.54454328153434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fc099ea00a6df%3A0xd07f330bc4f9bc40!2sLe%20Pure%20Water!5e0!3m2!1sen!2sus!4v1775966346126!5m2!1sen!2sus',
-    },
-    {
-      name: 'Lion Pure Water',
-      area: 'Fremont, South',
-      phone: '+15107396225',
-      hours: 'Mon to Sun, 10a to 7p',
-      img: IMG.refillJug,
-      src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12657.393896206348!2d-122.0254025128418!3d37.52328200000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fbf4f97bf0b91%3A0xfa73f395892b1f80!2sLion%20Pure%20Water!5e0!3m2!1sen!2sus!4v1775966372825!5m2!1sen!2sus',
-    },
-  ]
+  const [userLoc, setUserLoc] = useState(null)
+  const [locState, setLocState] = useState('idle') // idle | locating | done | denied
+  const status = openStatus()
+
+  const useMyLocation = () => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) { setLocState('denied'); return }
+    setLocState('locating')
+    trackEvent('use_my_location')
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { setUserLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude }); setLocState('done') },
+      () => setLocState('denied'),
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+    )
+  }
+
+  const ordered = userLoc
+    ? STORES
+        .map((s) => ({ ...s, miles: milesBetween(userLoc, s) }))
+        .sort((a, b) => a.miles - b.miles)
+        .map((s, idx) => ({ ...s, nearest: idx === 0 }))
+    : STORES
 
   return (
     <section id="stores" className="relative py-24 md:py-32 px-6 md:px-10 bg-[#F4F7FA]">
@@ -916,50 +1037,26 @@ function Stores() {
             <h2 className="display h-title text-[#0A1220]">
               Three stores.<br/><span className="text-[#0A1220]/40">One promise.</span>
             </h2>
+            <p className="mt-4 text-[15px] text-[#0A1220]/60 max-w-sm">
+              Same pure water at all three. Walk in with any container, we fill it on the spot.
+            </p>
           </div>
-          <p className="text-[15px] text-[#0A1220]/60 max-w-xs">
-            The same pure water at all three.
-          </p>
+          <button
+            onClick={useMyLocation}
+            disabled={locState === 'locating'}
+            className="btn btn-ghost !py-2.5 !px-4 text-[13.5px] shrink-0 w-fit disabled:opacity-60"
+          >
+            <Navigation className="w-4 h-4 mr-1.5" strokeWidth={2.2} />
+            {locState === 'locating' ? 'Finding you…'
+              : locState === 'done' ? 'Sorted by nearest'
+              : locState === 'denied' ? 'Location off — showing all'
+              : 'Find my nearest store'}
+          </button>
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
-          {stores.map((s, i) => (
-            <article
-              key={s.name}
-              className="reveal reveal-img card overflow-hidden flex flex-col"
-              style={{ transitionDelay: `${i * 100}ms` }}
-            >
-              {/* Map */}
-              <div className="relative h-[220px] overflow-hidden border-b border-[#0A1220]/06">
-                <iframe
-                  src={s.src}
-                  className="absolute inset-0 w-full h-full"
-                  style={{ border: 0 }}
-                  loading="lazy" referrerPolicy="no-referrer-when-downgrade"
-                  title={s.name}
-                />
-              </div>
-
-              <div className="p-6 flex-1 flex flex-col">
-                <h3 className="font-semibold text-[18px] tracking-tight text-[#0A1220]">{s.name}</h3>
-                <p className="text-[13px] text-[#0A1220]/55 mt-1">{s.area}</p>
-                <div className="text-[13px] text-[#0A1220]/60 flex items-center gap-2 mt-3">
-                  <MapPin className="w-3.5 h-3.5" strokeWidth={2} />
-                  {s.hours}
-                </div>
-                <a href={`tel:${s.phone}`} className="text-[13px] text-[#0A1220]/60 flex items-center gap-2 mt-2 w-fit hover:text-[#1E588A] transition-colors">
-                  <Phone className="w-3.5 h-3.5" strokeWidth={2} />
-                  {formatPhone(s.phone.slice(-10))}
-                </a>
-                <a
-                  href={`https://www.google.com/maps/search/${encodeURIComponent(s.name + ' Fremont')}`}
-                  target="_blank" rel="noreferrer"
-                  className="mt-5 inline-flex items-center text-[13.5px] font-medium text-[#0A1220] link-u w-fit"
-                >
-                  Get directions <ArrowUpRight className="w-3.5 h-3.5 ml-1" strokeWidth={2.2} />
-                </a>
-              </div>
-            </article>
+          {ordered.map((s, i) => (
+            <StoreCard key={s.name} s={s} i={i} status={status} />
           ))}
         </div>
       </div>
