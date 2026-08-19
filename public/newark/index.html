@@ -156,8 +156,8 @@
     @media (max-width: 720px) { .taps { grid-template-columns: 1fr; } }
 
     /* Visit details */
-    .details { margin-top: 40px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 26px; align-items: start; }
-    .info { display: flex; flex-direction: column; gap: 22px; }
+    .details { margin-top: 40px; }
+    .info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px 32px; }
     .row { display: grid; grid-template-columns: 40px 1fr; gap: 14px; }
     .row .ic { width: 40px; height: 40px; border-radius: 12px; background: rgba(30,88,138,0.08); display: flex; align-items: center; justify-content: center; }
     .row .ic svg { width: 19px; height: 19px; color: var(--blue); }
@@ -169,7 +169,7 @@
     .hours .hrow { display: flex; justify-content: space-between; padding: 9px 0; font-size: 0.98rem; border-bottom: 1px solid rgba(10,18,32,0.07); }
     .hours .hrow:last-child { border-bottom: 0; }
     .hours .hrow span:last-child { font-variant-numeric: tabular-nums; color: rgba(10,18,32,0.7); }
-    @media (max-width: 720px) { .details { grid-template-columns: 1fr; } }
+    @media (max-width: 720px) { .info { grid-template-columns: 1fr; } }
 
     /* Membership strip */
     .member { margin-top: 40px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; background: linear-gradient(160deg, #0a1a26, #0A1220); color: #fff; border-radius: 24px; padding: 34px 36px; position: relative; overflow: hidden; }
@@ -211,10 +211,10 @@
         <span>Le Water</span>
       </a>
       <nav class="nav-links" aria-label="Primary">
-        <a href="/our-water">Our Water</a>
+        <a href="/#balance">Balance</a>
         <a href="/#stores">Stores</a>
         <a href="/#plans">Plans</a>
-        <a href="/#balance">Balance</a>
+        <a href="/our-water">Our Water</a>
       </nav>
       <a class="nav-cta" href="tel:+15107396225">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
@@ -290,16 +290,6 @@
             <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
             <div><div class="lbl">Hours</div><div class="val">Open every day, 10:00am to 6:30pm</div></div>
           </div>
-        </div>
-        <div class="hours rise">
-          <div class="ht">Store hours</div>
-          <div class="hrow"><span>Monday</span><span>10:00a &ndash; 6:30p</span></div>
-          <div class="hrow"><span>Tuesday</span><span>10:00a &ndash; 6:30p</span></div>
-          <div class="hrow"><span>Wednesday</span><span>10:00a &ndash; 6:30p</span></div>
-          <div class="hrow"><span>Thursday</span><span>10:00a &ndash; 6:30p</span></div>
-          <div class="hrow"><span>Friday</span><span>10:00a &ndash; 6:30p</span></div>
-          <div class="hrow"><span>Saturday</span><span>10:00a &ndash; 6:30p</span></div>
-          <div class="hrow"><span>Sunday</span><span>10:00a &ndash; 6:30p</span></div>
         </div>
       </div>
 

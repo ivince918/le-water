@@ -265,13 +265,12 @@ function Nav({ dark = false }) {
   }, [])
 
   const MOBILE_LINKS = [
-    ['/our-water', 'Our Water'],
     ['#balance', 'Check balance'],
     ['#stores', 'Stores'],
     ['#plans', 'Plans'],
     ['#bottles', 'Bottles'],
-    ['#reviews', 'Reviews'],
     ['#faq', 'FAQ'],
+    ['/our-water', 'Our Water'],
   ]
 
   const txt = dark ? 'text-[#0A1220]' : 'text-white'
@@ -298,11 +297,10 @@ function Nav({ dark = false }) {
           <span className={`font-bold tracking-tight text-[19px] ${txt}`}>Le Water</span>
         </a>
         <div className={`hidden md:flex items-center gap-9 text-[13.5px] ${sub}`}>
-          <a href="/our-water" className="link-u">Our Water</a>
           <a href="#balance" className="link-u">Balance</a>
           <a href="#stores" className="link-u">Stores</a>
           <a href="#plans" className="link-u">Plans</a>
-          <a href="#reviews" className="link-u">Reviews</a>
+          <a href="/our-water" className="link-u">Our Water</a>
         </div>
         <a href="#stores" className={`hidden md:inline-flex items-center text-[13px] px-4 py-2.5 rounded-full border backdrop-blur-md transition ${cta}`}>
           Find a store
@@ -1038,7 +1036,8 @@ function StoreCard({ s, i }) {
     <motion.article
       layout
       transition={{ layout: { duration: 0.5, ease: EASE } }}
-      className="reveal card overflow-hidden flex flex-col h-full"
+      onClick={(e) => { if (s.slug && !e.target.closest('a, button, iframe')) window.location.href = `/${s.slug}` }}
+      className={`reveal card overflow-hidden flex flex-col h-full ${s.slug ? 'cursor-pointer' : ''}`}
       style={{ transitionDelay: `${i * 90}ms` }}
     >
       {/* Map */}
