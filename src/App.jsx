@@ -1,21 +1,46 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { track } from '@vercel/analytics'
-import { Droplet, MapPin, Phone, ArrowRight, Check, Star, Navigation, Clock } from 'lucide-react'
+import { Droplet, MapPin, Phone, ArrowRight, Check, Star, Navigation, Clock, Menu, X } from 'lucide-react'
 
 /* Conversion events — never let analytics throw into the UI */
 const trackEvent = (name, props) => {
   try { track(name, props) } catch { /* analytics is best-effort */ }
 }
 
-/* Store hours are identical across locations: open daily 10a-7p (local time) */
+/* Stores open 10a daily. Close is 7p everywhere EXCEPT Lion (Newark), which closes 6:30p.
+   Per-store close hour lives on STORES[].close (decimal hours); helpers below format it. */
 const OPEN_HOUR = 10
 const CLOSE_HOUR = 19
-const openStatus = (now = new Date()) => {
-  const h = now.getHours() + now.getMinutes() / 60
-  if (h >= OPEN_HOUR && h < CLOSE_HOUR) {
-    const closesSoon = h >= CLOSE_HOUR - 1
-    return { open: true, label: closesSoon ? `Open · closes 7 PM` : 'Open now', closesSoon }
+const fmtHour = (h) => { // 19 -> "7 PM", 18.5 -> "6:30 PM"
+  const hr = Math.floor(h)
+  const min = Math.round((h - hr) * 60)
+  const period = hr >= 12 ? 'PM' : 'AM'
+  const h12 = ((hr + 11) % 12) + 1
+  return min ? `${h12}:${String(min).padStart(2, '0')} ${period}` : `${h12} ${period}`
+}
+const fmtHourShort = (h) => { // 19 -> "7p", 18.5 -> "6:30p"
+  const hr = Math.floor(h)
+  const min = Math.round((h - hr) * 60)
+  const period = hr >= 12 ? 'p' : 'a'
+  const h12 = ((hr + 11) % 12) + 1
+  return min ? `${h12}:${String(min).padStart(2, '0')}${period}` : `${h12}${period}`
+}
+/* Store status must reflect PACIFIC store time, not the visitor's device clock — otherwise a
+   customer on a trip (or with a wrong clock) sees a false "Open now". */
+const pacificHour = (now) => {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Los_Angeles', hour: 'numeric', minute: 'numeric', hour12: false,
+  }).formatToParts(now)
+  const hh = Number(parts.find((p) => p.type === 'hour').value) % 24
+  const mm = Number(parts.find((p) => p.type === 'minute').value)
+  return hh + mm / 60
+}
+const openStatus = (now = new Date(), closeHour = CLOSE_HOUR) => {
+  const h = pacificHour(now)
+  if (h >= OPEN_HOUR && h < closeHour) {
+    const closesSoon = h >= closeHour - 1
+    return { open: true, label: closesSoon ? `Open · closes ${fmtHour(closeHour)}` : 'Open now', closesSoon }
   }
   return { open: false, label: h < OPEN_HOUR ? 'Opens 10 AM' : 'Closed · opens 10 AM' }
 }
@@ -231,12 +256,23 @@ const IMG = {
 /* ────────────────────────────────── NAV ────────────────────────────────── */
 function Nav({ dark = false }) {
   const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 32)
     fn()
     window.addEventListener('scroll', fn, { passive: true })
     return () => window.removeEventListener('scroll', fn)
   }, [])
+
+  const MOBILE_LINKS = [
+    ['/our-water', 'Our Water'],
+    ['#balance', 'Check balance'],
+    ['#stores', 'Stores'],
+    ['#plans', 'Plans'],
+    ['#bottles', 'Bottles'],
+    ['#reviews', 'Reviews'],
+    ['#faq', 'FAQ'],
+  ]
 
   const txt = dark ? 'text-[#0A1220]' : 'text-white'
   const sub = dark ? 'text-[#0A1220]/70' : 'text-white/85'
@@ -262,16 +298,46 @@ function Nav({ dark = false }) {
           <span className={`font-bold tracking-tight text-[19px] ${txt}`}>Le Water</span>
         </a>
         <div className={`hidden md:flex items-center gap-9 text-[13.5px] ${sub}`}>
-          <a href="#reviews" className="link-u">Reviews</a>
+          <a href="/our-water" className="link-u">Our Water</a>
           <a href="#balance" className="link-u">Balance</a>
           <a href="#stores" className="link-u">Stores</a>
           <a href="#plans" className="link-u">Plans</a>
-          <a href="#bottles" className="link-u">Bottles</a>
+          <a href="#reviews" className="link-u">Reviews</a>
         </div>
         <a href="#stores" className={`hidden md:inline-flex items-center text-[13px] px-4 py-2.5 rounded-full border backdrop-blur-md transition ${cta}`}>
           Find a store
         </a>
+        <button
+          type="button"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+          className={`md:hidden inline-flex w-10 h-10 items-center justify-center rounded-full border ${dark ? 'border-[#0A1220]/15 text-[#0A1220]' : 'border-white/30 text-white'} backdrop-blur-md`}
+        >
+          {menuOpen ? <X className="w-5 h-5" strokeWidth={2.2} /> : <Menu className="w-5 h-5" strokeWidth={2.2} />}
+        </button>
       </div>
+
+      {/* Mobile menu — the section links + a primary CTA, since the desktop bar hides them below md */}
+      {menuOpen && (
+        <div className="md:hidden border-t border-white/10 bg-[#0a1a26]/95 backdrop-blur-md">
+          <div className="px-6 py-4 flex flex-col text-[15px]">
+            {MOBILE_LINKS.map(([href, label]) => (
+              <a key={href} href={href} onClick={() => setMenuOpen(false)} className="py-2.5 text-white/90">
+                {label}
+              </a>
+            ))}
+            <a
+              href="#stores"
+              onClick={() => setMenuOpen(false)}
+              className="mt-3 inline-flex items-center justify-center px-5 py-3 rounded-full bg-white text-[#0a1a26] font-medium"
+            >
+              Find your nearest store
+              <ArrowRight className="w-4 h-4 ml-2" strokeWidth={2.2} />
+            </a>
+          </div>
+        </div>
+      )}
     </nav>
   )
 }
@@ -389,6 +455,40 @@ function Hero() {
   )
 }
 
+/* ─────── TRUST BAR — heritage + the competitive wedge, straight under the hero ─────── */
+/* Every figure here is verified (3 stores, daily hours, 4.4/68 Google, member price).
+   TODO(Brian): if you have the exact founding year, swap "over 20 years" → "Since 20XX" — a
+   specific year outperforms a vague range and matches how the Fremont competitor markets. */
+function TrustBar() {
+  const stats = [
+    { icon: MapPin,  big: '3',        small: 'Locations across Fremont & Newark' },
+    { icon: Clock,   big: 'Every day', small: 'Open 10a to 7p, no days off' },
+    { icon: Star,    big: '4.1★',     small: '180+ Google reviews, 3 stores' },
+    { icon: Droplet, big: '$0.375',   small: 'Per gallon for members' },
+  ]
+  return (
+    <section className="relative bg-white px-6 md:px-10 py-14 md:py-20 border-b border-[#0A1220]/06">
+      <div className="mx-auto max-w-[1240px]">
+        <p className="reveal eyebrow text-[#1E588A] mb-9 md:mb-12">
+          Family-owned in Fremont &amp; Newark
+        </p>
+        <div className="reveal grid grid-cols-2 md:grid-cols-4 gap-y-10 md:gap-0 md:divide-x md:divide-[#0A1220]/10">
+          {stats.map((s, i) => {
+            const Icon = s.icon
+            return (
+              <div key={i} className="flex flex-col md:px-8 first:md:pl-0">
+                <Icon className="w-4 h-4 text-[#1E588A]" strokeWidth={2.2} />
+                <span className="display text-[40px] md:text-[52px] leading-none text-[#0A1220] mt-3">{s.big}</span>
+                <span className="text-[13.5px] text-[#0A1220]/55 mt-2 leading-snug">{s.small}</span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /* ────────────────────────── REVIEWS ─────────────────────── */
 const REVIEWS = [
   {
@@ -432,20 +532,10 @@ function QuoteText({ quote, highlights = [], className }) {
   return <p className={className}>&ldquo;{parts}&rdquo;</p>
 }
 
-function Stars({ size = 'w-5 h-5' }) {
-  return (
-    <div className="flex gap-0.5">
-      {Array.from({ length: 5 }).map((_, s) => (
-        <Star key={s} className={`${size} text-[#F5A623]`} fill="#F5A623" strokeWidth={0} />
-      ))}
-    </div>
-  )
-}
-
 function RatingStars({ rating }) {
   const pct = Math.max(0, Math.min(100, (rating / 5) * 100))
   return (
-    <div className="relative inline-flex w-fit">
+    <div className="relative inline-flex w-fit" role="img" aria-label={`${rating} out of 5 stars`}>
       <div className="flex gap-0.5">
         {Array.from({ length: 5 }).map((_, i) => (
           <Star key={i} className="w-5 h-5 text-[#0A1220]/15" fill="currentColor" strokeWidth={0} />
@@ -460,11 +550,11 @@ function RatingStars({ rating }) {
   )
 }
 
-function YelpTag() {
+function VerifiedTag() {
   return (
-    <span className="inline-flex items-center gap-1.5 text-[12px] text-[#0A1220]/45">
-      <span className="w-1 h-1 rounded-full bg-[#0A1220]/25" />
-      Verified <span className="font-bold text-[#d32323]">Yelp</span> review
+    <span className="inline-flex items-center gap-1.5 text-[12px] text-[#0A1220]/55">
+      <span className="w-1 h-1 rounded-full bg-[#0A1220]/30" />
+      Verified customer review
     </span>
   )
 }
@@ -472,8 +562,7 @@ function YelpTag() {
 function ReviewCard({ r, featured = false }) {
   return (
     <div className={`reveal card bg-white relative overflow-hidden flex flex-col ${featured ? 'p-8 md:p-12' : 'p-7 md:p-8'}`}>
-      <span className={`absolute -top-1 right-5 leading-none font-bold text-[#1E588A]/[0.07] select-none pointer-events-none ${featured ? 'text-[150px]' : 'text-[96px]'}`}>&rdquo;</span>
-      <Stars size={featured ? 'w-6 h-6' : 'w-5 h-5'} />
+      <span aria-hidden="true" className={`absolute -top-1 right-5 leading-none font-bold text-[#1E588A]/[0.07] select-none pointer-events-none ${featured ? 'text-[150px]' : 'text-[96px]'}`}>&rdquo;</span>
       <QuoteText
         quote={r.quote}
         highlights={r.highlights}
@@ -481,7 +570,7 @@ function ReviewCard({ r, featured = false }) {
       />
       <div className="relative mt-6 flex items-center gap-2.5">
         <span className={`font-semibold text-[#0A1220] ${featured ? 'text-[16px]' : 'text-[14px]'}`}>{r.name}</span>
-        <YelpTag />
+        <VerifiedTag />
       </div>
     </div>
   )
@@ -495,7 +584,7 @@ function Reviews() {
           <WordReveal
             as="h2"
             className="display h-lead text-[#0A1220]"
-            text="Delivering the best water in Fremont for over 20 years."
+            text="Delivering the best value water in Fremont for over 20 years."
           />
           {/* Store gallery — TODO: swap these placeholder images for real store photos */}
           <div className="reveal mt-8 md:mt-10 grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2 md:gap-4 md:h-[460px]">
@@ -519,11 +608,11 @@ function Reviews() {
             What our<br/><span className="text-[#0A1220]/40">customers say.</span>
           </h2>
           <div className="flex items-center gap-4">
-            <span className="display text-[52px] leading-none text-[#0A1220]">4.4</span>
+            <span className="display text-[52px] leading-none text-[#0A1220]">4.1</span>
             <div>
-              <RatingStars rating={4.4} />
+              <RatingStars rating={4.1} />
               <div className="text-[13px] text-[#0A1220]/55 mt-1.5">
-                <span className="font-semibold text-[#0A1220]">68</span> Google reviews
+                <span className="font-semibold text-[#0A1220]">180+</span> Google reviews across our three stores
               </div>
             </div>
           </div>
@@ -597,12 +686,6 @@ function Plans() {
                 className={`card relative h-full p-7 md:p-8 flex flex-col ${c.featured ? 'text-white border-transparent' : ''}`}
                 style={c.featured ? { background: '#0A1220' } : undefined}
               >
-                {c.tag && (
-                  <span className="absolute top-5 right-5 text-[10px] uppercase tracking-[0.18em] font-medium px-2.5 py-1 rounded-full bg-white text-[#0A1220]">
-                    {c.tag}
-                  </span>
-                )}
-
                 <div className={`eyebrow ${c.featured ? 'text-white/55' : 'text-[#0A1220]/45'} mb-8`}>
                   {c.kind}
                 </div>
@@ -770,7 +853,7 @@ function Balance() {
                       value={phone}
                       onChange={(e) => setPhone(formatPhone(e.target.value))}
                       disabled={state === 'loading'}
-                      className="input"
+                      className="input caret-[#1E588A]"
                     />
                   </div>
 
@@ -788,7 +871,7 @@ function Balance() {
                     )}
                   </button>
 
-                  <p className="text-[11.5px] text-[#0A1220]/40 mt-4 text-center">
+                  <p className="text-[11.5px] text-[#0A1220]/55 mt-4 text-center">
                     Enter the phone number on your prepaid plan.
                   </p>
                 </motion.form>
@@ -911,27 +994,36 @@ const STORES = [
   {
     name: 'Le Water Store',
     area: 'North Fremont',
+    slug: 'fremont-north',
     address: '35762 Fremont Blvd',
     city: 'Fremont, CA 94536',
     phone: '+15107425699',
+    phoneDisplay: '(510) 742-5699',
+    close: 19,
     lat: 37.567202, lng: -122.024635,
     src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2355.5412405638453!2d-122.02463516558994!3d37.567202004484315!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fbfb8ef254513%3A0xd6d91d5ffd25f275!2sLe%20Water%20Store!5e0!3m2!1sen!2sus!4v1775966296778!5m2!1sen!2sus',
   },
   {
     name: 'Le Pure Water',
     area: 'Central Fremont',
+    slug: 'fremont-central',
     address: '39409 Fremont Blvd',
     city: 'Fremont, CA 94538',
     phone: '+15106561533',
+    phoneDisplay: '(510) 656-1533',
+    close: 19,
     lat: 37.544543, lng: -121.981806,
     src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d443.3435900306666!2d-121.9818062651175!3d37.54454328153434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fc099ea00a6df%3A0xd07f330bc4f9bc40!2sLe%20Pure%20Water!5e0!3m2!1sen!2sus!4v1775966346126!5m2!1sen!2sus',
   },
   {
     name: 'Lion Pure Water',
     area: 'Newark',
+    slug: 'newark',
     address: '39131 Cedar Blvd',
     city: 'Newark, CA 94560',
     phone: '+15107396225',
+    phoneDisplay: '(510) 739-6225',
+    close: 18.5,
     lat: 37.523282, lng: -122.025403,
     src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12657.393896206348!2d-122.0254025128418!3d37.52328200000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fbf4f97bf0b91%3A0xfa73f395892b1f80!2sLion%20Pure%20Water!5e0!3m2!1sen!2sus!4v1775966372825!5m2!1sen!2sus',
   },
@@ -940,7 +1032,8 @@ const STORES = [
 const directionsUrl = (s) =>
   `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${s.name}, ${s.address}, ${s.city}`)}`
 
-function StoreCard({ s, i, status }) {
+function StoreCard({ s, i }) {
+  const status = openStatus(undefined, s.close)
   return (
     <motion.article
       layout
@@ -988,8 +1081,12 @@ function StoreCard({ s, i, status }) {
         </div>
         <div className="mt-2 flex items-center gap-2 text-[13px] text-[#0A1220]/55">
           <Clock className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
-          Open daily, 10a to 7p
+          Open daily, 10a to {fmtHourShort(s.close)}
         </div>
+        <a href={`tel:${s.phone}`} className="mt-2 flex items-center gap-2 text-[13px] text-[#0A1220]/70 hover:text-[#1E588A] transition-colors w-fit">
+          <Phone className="w-3.5 h-3.5 shrink-0 text-[#1E588A]" strokeWidth={2} />
+          {s.phoneDisplay}
+        </a>
 
         {/* Primary actions — get there or call, one tap each */}
         <div className="mt-5 grid grid-cols-2 gap-2.5">
@@ -1009,6 +1106,15 @@ function StoreCard({ s, i, status }) {
             <Phone className="w-4 h-4 mr-1.5" strokeWidth={2.2} /> Call
           </a>
         </div>
+
+        {s.slug && (
+          <a
+            href={`/${s.slug}`}
+            className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium text-[#1E588A] transition-all duration-200 hover:gap-2.5"
+          >
+            Store details &amp; hours <span aria-hidden="true">&rarr;</span>
+          </a>
+        )}
       </div>
     </motion.article>
   )
@@ -1017,7 +1123,6 @@ function StoreCard({ s, i, status }) {
 function Stores() {
   const [userLoc, setUserLoc] = useState(null)
   const [locState, setLocState] = useState('idle') // idle | locating | done | denied
-  const status = openStatus()
 
   const useMyLocation = () => {
     if (typeof navigator === 'undefined' || !navigator.geolocation) { setLocState('denied'); return }
@@ -1064,7 +1169,7 @@ function Stores() {
 
         <div className="grid md:grid-cols-3 gap-5">
           {ordered.map((s, i) => (
-            <StoreCard key={s.name} s={s} i={i} status={status} />
+            <StoreCard key={s.name} s={s} i={i} />
           ))}
         </div>
       </div>
@@ -1076,25 +1181,25 @@ function Stores() {
 const PRODUCTS = [
   {
     size: '5', unitLabel: 'gallons', drops: 5,
-    name: '5 Gallon', price: '$15',
+    name: '5 Gallon',
     desc: 'The family workhorse. Fits every standard dispenser and crock.',
     tint: 'linear-gradient(160deg, #C7DFEF 0%, #9CC3DC 100%)',
   },
   {
     size: '5', unitLabel: 'gallons', drops: 5,
-    name: '5 Gallon w/ Spigot', price: '$20', badge: 'Built-in spigot',
+    name: '5 Gallon w/ Spigot', badge: 'Built-in spigot',
     desc: 'Pour straight from the counter. No dispenser needed.',
     tint: 'linear-gradient(160deg, #CBE2F0 0%, #A3C9E0 100%)',
   },
   {
     size: '3', unitLabel: 'gallons', drops: 3,
-    name: '3 Gallon', price: '$12',
+    name: '3 Gallon',
     desc: 'Same clean water, easier carry. Great for smaller kitchens.',
     tint: 'linear-gradient(160deg, #DCEBF5 0%, #B9D6E8 100%)',
   },
   {
     size: '1', unitLabel: 'gallon', drops: 1,
-    name: '1 Gallon', price: '$6',
+    name: '1 Gallon',
     desc: 'Grab-and-go size for the fridge shelf or the gym bag.',
     tint: 'linear-gradient(160deg, #EAF3F9 0%, #CFE3EF 100%)',
   },
@@ -1121,10 +1226,7 @@ function ProductCard({ p, i }) {
         <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full bg-white/40 blur-3xl pointer-events-none" />
       </div>
       <div className="p-6 flex-1 flex flex-col">
-        <div className="flex items-baseline justify-between gap-3">
-          <h3 className="font-semibold text-[16.5px] tracking-tight text-[#0A1220]">{p.name}</h3>
-          <span className="text-[18px] font-semibold tracking-tight text-[#0A1220] tabular-nums">{p.price}</span>
-        </div>
+        <h3 className="font-semibold text-[16.5px] tracking-tight text-[#0A1220]">{p.name}</h3>
         <p className="text-[13px] text-[#0A1220]/60 mt-2 leading-relaxed">{p.desc}</p>
       </div>
     </div>
@@ -1157,11 +1259,46 @@ function BottlesSection() {
             {PRODUCTS.map((p, i) => <ProductCard key={p.name} p={p} i={i} />)}
           </div>
           <p className="reveal mt-8 text-center text-[12.5px] text-[#0A1220]/50">
-            All bottles sold at the counter, at any of our three stores.
+            Ask at the counter for current pricing, at any of our three stores.
           </p>
         </div>
       </section>
     </>
+  )
+}
+
+/* ─────── FAQ — keyword-dense, water-forward; mirrors the FAQPage JSON-LD in index.html ─────── */
+/* Answers MUST stay in sync with the FAQPage schema (Google requires visible/structured parity). */
+const FAQS = [
+  { q: 'What is Le Water?', a: 'Le Water is a family-owned water store with three refill locations in Fremont and Newark. Bring any container and we refill it with purified or alkaline drinking water, dispensed fresh on the spot.' },
+  { q: 'How much does a water refill cost?', a: 'Purified water is $0.50 a gallon, or $0.375 a gallon on a prepaid plan. Alkaline water is $1.30 a gallon, or $0.90 a gallon prepaid. Bring any container and we fill it at the counter.' },
+  { q: 'Do you offer alkaline water?', a: 'Yes. Every location offers both purified and mineral-rich alkaline drinking water at the same low per-gallon price for members.' },
+  { q: 'Where are your water stores located?', a: 'Three locations: Le Water Store at 35762 Fremont Blvd, Fremont; Le Pure Water at 39409 Fremont Blvd, Fremont; and Lion Pure Water at 39131 Cedar Blvd, Newark. The Fremont stores are open 10am to 7pm daily and Newark is open 10am to 6:30pm daily.' },
+  { q: 'Do I need to bring my own bottle?', a: 'Bring any clean container and we refill it, or buy a new 1, 3, or 5 gallon bottle at the counter.' },
+  { q: 'How do I check my prepaid gallon balance?', a: 'Enter your phone number in the balance checker on this page. Your prepaid balance follows your phone number to any of our three stores.' },
+]
+function FAQ() {
+  return (
+    <section id="faq" className="relative py-24 md:py-32 px-6 md:px-10 bg-white">
+      <div className="mx-auto max-w-[820px]">
+        <div className="reveal mb-12 md:mb-16">
+          <h2 className="display h-title text-[#0A1220]">
+            Frequently asked<br /><span className="text-[#0A1220]/40">questions.</span>
+          </h2>
+        </div>
+        <div className="reveal border-t border-[#0A1220]/10">
+          {FAQS.map((f, i) => (
+            <details key={i} className="group border-b border-[#0A1220]/10 py-5">
+              <summary className="flex items-center justify-between gap-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                <span className="text-[16px] md:text-[17px] font-medium text-[#0A1220]">{f.q}</span>
+                <span className="shrink-0 text-[#1E588A] text-[24px] leading-none transition-transform duration-300 group-open:rotate-45">+</span>
+              </summary>
+              <p className="mt-3 text-[14.5px] leading-relaxed text-[#0A1220]/70 max-w-2xl">{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
   )
 }
 
@@ -1189,22 +1326,25 @@ function Footer() {
           </div>
           <div className="md:col-span-5 grid grid-cols-2 gap-8 md:justify-self-end text-[13.5px]">
             <div className="space-y-3">
-              <div className="eyebrow text-white/35 mb-2">Explore</div>
+              <div className="eyebrow text-white/55 mb-2">Explore</div>
               <a href="#plans" className="block link-u">Plans</a>
               <a href="#bottles" className="block link-u">Bottles</a>
               <a href="#balance" className="block link-u">Balance</a>
               <a href="#stores" className="block link-u">Stores</a>
+              <a href="#faq" className="block link-u">FAQ</a>
             </div>
             <div className="space-y-3">
-              <div className="eyebrow text-white/35 mb-2">Visit</div>
-              <div>Fremont, CA</div>
-              <div>Mon to Sun, 10a to 7p</div>
+              <div className="eyebrow text-white/55 mb-2">Call a store</div>
+              <a href="tel:+15107425699" className="block link-u text-white/75">North Fremont · (510) 742-5699</a>
+              <a href="tel:+15106561533" className="block link-u text-white/75">Central Fremont · (510) 656-1533</a>
+              <a href="tel:+15107396225" className="block link-u text-white/75">Newark · (510) 739-6225</a>
+              <div className="text-white/75 pt-1">Open daily · 10a to 7p (Newark to 6:30p)</div>
             </div>
           </div>
         </div>
         <div className="hairline opacity-30 mb-6" />
-        <div className="flex flex-col md:flex-row justify-between text-[12px] text-white/40 gap-2">
-          <span>© {new Date().getFullYear()} Le Water. Family-owned in Fremont, California.</span>
+        <div className="flex flex-col md:flex-row justify-between text-[12px] text-white/55 gap-2">
+          <span>© {new Date().getFullYear()} Le Water. Family-owned in Fremont &amp; Newark, California.</span>
           <span>Stay hydrated.</span>
         </div>
       </div>
@@ -1212,16 +1352,25 @@ function Footer() {
   )
 }
 
+/* Show the intro splash only on a fresh, top-level visit: skip for reduced-motion, for deep
+   links (e.g. #balance — repeat customers checking gallons), and once already seen this session. */
+const introEligible = () => {
+  if (prefersReducedMotion() || typeof window === 'undefined') return false
+  if (window.location.hash) return false
+  try { return !sessionStorage.getItem('lw_seen_intro') } catch { return true }
+}
+
 /* ────────────────────────────────── APP ────────────────────────────────── */
 export default function App() {
   useScrollReveal()
   const route = useHashRoute()
 
-  const [booting, setBooting] = useState(() => !prefersReducedMotion())
-  const [curtain, setCurtain] = useState(() => !prefersReducedMotion())
+  const [booting, setBooting] = useState(introEligible)
+  const [curtain, setCurtain] = useState(introEligible)
 
   useEffect(() => {
     if (!booting) return
+    try { sessionStorage.setItem('lw_seen_intro', '1') } catch { /* private mode — splash just shows again */ }
     const a = setTimeout(() => setCurtain(false), 1800)  // release hero anims as curtain lifts
     const b = setTimeout(() => setBooting(false), 2850)  // unmount loader
     return () => { clearTimeout(a); clearTimeout(b) }
@@ -1242,11 +1391,13 @@ export default function App() {
       <ScrollProgress />
       <Nav />
       <Hero />
+      <TrustBar />
       <Reviews />
       <Balance />
       <Stores />
       <Plans />
       <BottlesSection />
+      <FAQ />
       <Footer />
     </main>
   )
