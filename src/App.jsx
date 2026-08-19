@@ -455,8 +455,8 @@ function Hero() {
 
 /* ─────── TRUST BAR — heritage + the competitive wedge, straight under the hero ─────── */
 /* Every figure here is verified (3 stores, daily hours, 4.4/68 Google, member price).
-   TODO(Brian): if you have the exact founding year, swap "over 20 years" → "Since 20XX" — a
-   specific year outperforms a vague range and matches how the Fremont competitor markets. */
+   Founded 1998 (first store) — heritage copy uses "since 1998", a specific year that
+   matches how the Fremont competitor markets ("since 1985"). */
 function TrustBar() {
   const stats = [
     { icon: MapPin,  big: '3',        small: 'Locations across Fremont & Newark' },
@@ -582,7 +582,7 @@ function Reviews() {
           <WordReveal
             as="h2"
             className="display h-lead text-[#0A1220]"
-            text="Delivering the best value water in Fremont for over 20 years."
+            text="Delivering the best value water in Fremont since 1998."
           />
           {/* Store gallery — TODO: swap these placeholder images for real store photos */}
           <div className="reveal mt-8 md:mt-10 grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2 md:gap-4 md:h-[460px]">
