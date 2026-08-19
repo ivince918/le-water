@@ -749,6 +749,7 @@ function Balance() {
   const [phone, setPhone] = useState('')
   const [state, setState] = useState('idle') // idle | loading | result | notfound | error
   const [accounts, setAccounts] = useState([])
+  const [recent, setRecent] = useState([])
   const [error, setError] = useState('')
 
   const submit = async (e) => {
@@ -771,6 +772,7 @@ function Balance() {
       }
       if (data.found && data.accounts?.length) {
         setAccounts(data.accounts)
+        setRecent(Array.isArray(data.recent) ? data.recent : [])
         setState('result')
         trackEvent('balance_lookup', { result: 'found' })
       } else {
@@ -784,10 +786,16 @@ function Balance() {
     }
   }
 
-  const reset = () => { setState('idle'); setAccounts([]); setError(''); setPhone('') }
+  const reset = () => { setState('idle'); setAccounts([]); setRecent([]); setError(''); setPhone('') }
 
   // Whether the store name is worth showing (only if balances span >1 store)
   const multiStore = new Set(accounts.map((a) => a.store)).size > 1
+  const multiPlan = new Set(accounts.map((a) => a.plan)).size > 1
+  const fmtActivityDate = (s) => {
+    const d = new Date(s)
+    // Pin to store-local (Pacific) so the date is the same for every viewer.
+    return isNaN(d) ? '' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/Los_Angeles' })
+  }
   const showForm = state === 'idle' || state === 'loading'
   const planStyle = (plan) => plan === 'Alkaline'
     ? { backgroundColor: '#DBEAFE', color: '#2563EB' }
@@ -927,6 +935,40 @@ function Balance() {
                         ))}
                       </div>
                     </>
+                  )}
+
+                  {recent.length > 0 && (
+                    <div className="mt-7">
+                      <div className="eyebrow text-[#0A1220]/50 mb-3">Recent activity</div>
+                      <div className="rounded-2xl border border-[#0A1220]/08 divide-y divide-[#0A1220]/06 overflow-hidden">
+                        {recent.map((r, i) => (
+                          <motion.div
+                            key={`${r.date}-${i}`}
+                            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.35, delay: 0.05 + i * 0.05, ease: EASE }}
+                            className="flex items-center justify-between gap-3 px-4 py-3"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <span className="text-[12px] text-[#0A1220]/45 tabular-nums w-12 shrink-0">{fmtActivityDate(r.date)}</span>
+                              <span className="text-[13.5px] text-[#0A1220] truncate">
+                                {r.label}
+                                {(multiPlan || multiStore) && (
+                                  <span className="text-[#0A1220]/45">
+                                    {multiPlan ? ` · ${r.plan}` : ''}{multiStore ? ` · ${r.store}` : ''}
+                                  </span>
+                                )}
+                              </span>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <span className="text-[13.5px] font-medium tabular-nums" style={{ color: r.delta < 0 ? '#0A1220' : '#127a45' }}>
+                                {r.delta > 0 ? '+' : ''}{r.delta} gal
+                              </span>
+                              <span className="text-[11.5px] text-[#0A1220]/45 ml-2 tabular-nums">{r.balance} left</span>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
                   )}
 
                   <button onClick={reset} className="btn btn-ghost w-full mt-7">

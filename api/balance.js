@@ -29,6 +29,40 @@ function rateLimited(ip, now) {
 
 const PLAN_LABEL = { 0: 'Regular', 1: 'Alkaline' };
 
+// customer_record.report_code -> customer-facing label (see 0005 / 0042).
+const REPORT_LABEL = {
+  1: 'Fill-up', 2: 'New member', 3: 'Renewal', 6: 'Refund',
+  7: 'Bonus', 8: 'Adjustment', 9: 'Transfer', 10: 'Plan conversion',
+};
+
+// Fetch the phone's last few balance-affecting records. Optional enrichment:
+// any failure returns [] so the core balance lookup is never affected.
+async function fetchRecent(digits) {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/public_lookup_transactions`, {
+      method: 'POST',
+      headers: {
+        apikey: SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ p_phone: digits, p_limit: 3 }),
+    });
+    if (!r.ok) return [];
+    const rows = await r.json();
+    return (Array.isArray(rows) ? rows : []).map((row) => ({
+      date: row.record_at,
+      label: REPORT_LABEL[row.report_code] ?? 'Activity',
+      delta: Number(row.affected_amount),
+      balance: Number(row.balance),
+      plan: PLAN_LABEL[row.plan_type] ?? 'Plan',
+      store: row.store_name,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -72,7 +106,8 @@ export default async function handler(req, res) {
       gallons: Number(row.gallons),
     }));
 
-    return res.status(200).json({ found: accounts.length > 0, accounts });
+    const recent = accounts.length > 0 ? await fetchRecent(digits) : [];
+    return res.status(200).json({ found: accounts.length > 0, accounts, recent });
   } catch (err) {
     return res.status(502).json({ error: 'Lookup failed. Please try again.' });
   }
