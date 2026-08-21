@@ -665,7 +665,7 @@ function Plans() {
       <div className="mx-auto max-w-[1240px]">
         <div className="reveal max-w-2xl mb-12 md:mb-16">
           <h2 className="display h-title text-[#0A1220]">
-            Ultra pure water.
+            Ultra fresh pure water.
             <span className="block text-[#1E588A] md:whitespace-nowrap">Members save <span className="font-bold">over 25%</span>.</span>
           </h2>
           <p className="mt-5 text-[15px] leading-relaxed text-[#0A1220]/60 max-w-md">
