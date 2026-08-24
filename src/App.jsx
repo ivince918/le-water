@@ -160,7 +160,7 @@ function Loader() {
 
           <div className="absolute top-[148px] inset-x-0 text-center">
             <div className="loader-mark inline-flex">
-              <JugMark className="w-9 h-9 text-[#5BC8E6]" />
+              <img src="/logo-mark.png" alt="Le Water" className="w-14 h-14 object-contain" />
             </div>
             <div className="display text-white text-[38px] leading-none tracking-[-0.03em] mt-3">
               {'LE WATER'.split('').map((ch, i) =>
@@ -291,9 +291,7 @@ function Nav({ dark = false }) {
     <nav className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${bar}`}>
       <div className="mx-auto max-w-[1240px] px-6 md:px-10 py-5 flex items-center justify-between">
         <a href="#" className="flex items-center gap-2.5 group">
-          <span className={`relative inline-flex w-9 h-9 items-center justify-center rounded-full ${chip}`}>
-            <JugMark className="w-5 h-5" />
-          </span>
+          <img src="/logo-mark.png" alt="Le Water" draggable="false" className="w-9 h-9 object-contain" />
           <span className={`font-bold tracking-tight text-[19px] ${txt}`}>Le Water</span>
         </a>
         <div className={`hidden md:flex items-center gap-9 text-[13.5px] ${sub}`}>
@@ -1355,9 +1353,7 @@ function Footer() {
         <div className="grid md:grid-cols-12 gap-10 pb-12">
           <div className="md:col-span-7">
             <div className="flex items-center gap-2 mb-6">
-              <span className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-white text-[#0A1220]">
-                <JugMark className="w-4 h-4" />
-              </span>
+              <img src="/logo-mark.png" alt="Le Water" className="w-8 h-8 object-contain" />
               <span className="font-semibold text-white">Le Water</span>
             </div>
             <h3 className="display h-title text-white max-w-xl">
