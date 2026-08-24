@@ -23,7 +23,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <script type="application/ld+json">
   {
@@ -100,6 +100,9 @@
     .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.02em; font-size: 19px; }
     .brand .mark { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; } .brand .mark img { width: 100%; height: 100%; object-fit: contain; }
     .brand .mark svg { width: 20px; height: 20px; }
+    .brand .wm { line-height: 1; font-family: 'Montserrat', sans-serif; }
+    .brand .wm-name { display: block; font-weight: 700; text-transform: uppercase; font-size: 15px; letter-spacing: 0.04em; color: var(--ink); }
+    .brand .wm-tag { display: block; font-weight: 600; text-transform: uppercase; font-size: 8px; letter-spacing: 0.22em; color: rgba(10,18,32,0.5); margin-top: 3px; }
     .nav-links { display: flex; align-items: center; gap: 30px; font-size: 13.5px; color: rgba(10,18,32,0.7); }
     .nav-links a { position: relative; transition: color 200ms var(--ease-out); }
     .nav-links a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform 320ms var(--ease-out); }
@@ -208,7 +211,7 @@
     <div class="nav-in">
       <a class="brand" href="/" aria-label="Le Water home">
         <span class="mark"><img src="/logo-mark.png" alt="Le Water"></span>
-        <span>Le Water</span>
+        <span class="wm"><span class="wm-name">Le Water Store</span><span class="wm-tag">Premium Water Refill</span></span>
       </a>
       <nav class="nav-links" aria-label="Primary">
         <a href="/#balance">Balance</a>

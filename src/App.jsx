@@ -292,7 +292,10 @@ function Nav({ dark = false }) {
       <div className="mx-auto max-w-[1240px] px-6 md:px-10 py-5 flex items-center justify-between">
         <a href="#" className="flex items-center gap-2.5 group">
           <img src="/logo-mark.png" alt="Le Water" draggable="false" className="w-9 h-9 object-contain" />
-          <span className={`font-bold tracking-tight text-[19px] ${txt}`}>Le Water</span>
+          <span className="leading-none" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+            <span className={`block font-bold uppercase text-[15px] tracking-[0.04em] ${txt}`}>Le Water Store</span>
+            <span className={`block uppercase text-[8px] font-semibold tracking-[0.22em] mt-[3px] ${sub}`}>Premium Water Refill</span>
+          </span>
         </a>
         <div className={`hidden md:flex items-center gap-9 text-[13.5px] ${sub}`}>
           <a href="#balance" className="link-u">Balance</a>
