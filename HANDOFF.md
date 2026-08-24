@@ -1,10 +1,24 @@
 # Le Water — Project Handoff
 
-_Last updated: 2026-08-12_
+_Last updated: 2026-08-24_
 
 Public marketing site for Le Water, a family-owned water store with 3 Fremont/Newark
 locations. Doubles as a member self-service surface (phone → gallon balance lookup)
 against the live POS database.
+
+## Recent updates (Aug 18–24, 2026)
+
+- **SEO overhaul.** `index.html` `<title>` shortened to "Le Water Store | Alkaline & Purified Water Refill". Added JSON-LD `Organization` node (`#org`) with `aggregateRating` 4.1/180 + `foundingDate` 1998, and `parentOrganization` links on the 3 `WaterStore` nodes.
+- **New static content pages** (real HTML in `public/<slug>/index.html`, self-contained inline CSS, own title/meta/canonical/JSON-LD — served directly, NOT SPA-rendered):
+  - `/our-water` — RO + coconut carbon process, alkaline explainer, FAQ (`Article` + `Breadcrumb`).
+  - `/fremont-north`, `/fremont-central`, `/newark` — per-store location pages (`WaterStore` + `Breadcrumb`), map embed, hours, cross-links.
+- **`vercel.json` added** (`cleanUrls:true, trailingSlash:false`) — REQUIRED so `/our-water` serves the static file instead of the SPA. `public/sitemap.xml` now lists all 5 URLs.
+- **Homepage nav** cleaned: dropped "Reviews", added "Our Water" (at the end), both desktop + `MOBILE_LINKS`. **Store cards are click-through** to their location page (`STORES[].slug`, `onClick` guarded against inner links).
+- **"Our Story" section** added (`<Story/>`, after `<TrustBar/>`) with the real brand copy + "Since 1998".
+- **Real water process everywhere.** Replaced fabricated "six-stage RO + UV sterilization" with the true process (local Alameda County supply → reverse osmosis → **coconut carbon filter** → made fresh daily, **no preservatives**) on `/our-water`, all 3 location pages, and FAQ. Plans heading → "Ultra fresh great tasting water."
+- **Balance lookup now shows last 3 transactions** (date · type · ±gallons · resulting balance). New Supabase RPC `public_lookup_transactions` (migration `0042` in the WaterStore repo, applied live; `service_role`-only, same hardening as 0039/0040). `api/balance.js` calls it via `fetchRecent()` (resilient — failure returns `[]`), returns `recent[]`. `App.jsx` Balance renders "Recent activity"; dates pinned to `America/Los_Angeles`.
+- **Brand (decisions):** GBP profiles to be unified to **"Le Water Store"** (see JarvisEA `decisions/log.md`). Logo direction = **water droplet + wave** (gradient), explored in a Claude artifact; final mark + favicon still TBD.
+- **Deploy:** still CLI-direct `npx vercel@latest deploy --prod --yes`. The first attempt often returns `Not authorized` — a straight RETRY succeeds (transient).
 
 ## Live
 
