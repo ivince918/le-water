@@ -1408,7 +1408,10 @@ function Story() {
       <div className="mx-auto max-w-[760px]">
         <div className="reveal">
           <p className="eyebrow text-[#1E588A] mb-4">Our Story</p>
-          <h2 className="display h-sub text-[#0A1220]">Ultra fresh, great tasting water. Since 1998.</h2>
+          <h2 className="display h-sub text-[#0A1220]">
+            <span className="block md:whitespace-nowrap">Ultra fresh great tasting water.</span>
+            <span className="block text-[#1E588A]">Since 1998.</span>
+          </h2>
           <div className="mt-7 space-y-5 text-[16px] md:text-[17px] leading-relaxed text-[#0A1220]/70">
             <p>We start with the local Alameda County supply, purify it through reverse osmosis, then run it through a coconut carbon filter for a clean, crisp finish.</p>
             <p>Most bottled water carries preservatives to stop algae from forming while it sits in trucks and on store shelves. We make ours fresh every day, so it never needs them. Every jug is pure water and nothing else.</p>
