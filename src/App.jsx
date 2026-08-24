@@ -1402,6 +1402,25 @@ const introEligible = () => {
 }
 
 /* ────────────────────────────────── APP ────────────────────────────────── */
+function Story() {
+  return (
+    <section id="story" className="relative py-24 md:py-32 px-6 md:px-10 bg-white border-t border-[#0A1220]/06">
+      <div className="mx-auto max-w-[760px]">
+        <div className="reveal">
+          <p className="eyebrow text-[#1E588A] mb-4">Our Story</p>
+          <h2 className="display h-sub text-[#0A1220]">Ultra fresh, great tasting water. Since 1998.</h2>
+          <div className="mt-7 space-y-5 text-[16px] md:text-[17px] leading-relaxed text-[#0A1220]/70">
+            <p>We start with the local Alameda County supply, purify it through reverse osmosis, then run it through a coconut carbon filter for a clean, crisp finish.</p>
+            <p>Most bottled water carries preservatives to stop algae from forming while it sits in trucks and on store shelves. We make ours fresh every day, so it never needs them. Every jug is pure water and nothing else.</p>
+            <p>Bring any clean container to any of our three stores and fill up on purified or alkaline water from $0.375 a gallon. We also carry BPA-free bottles and jugs.</p>
+            <p className="text-[#0A1220] font-medium">We&rsquo;re the same family that&rsquo;s filled your jugs for years, and we still do it the same careful way.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function App() {
   useScrollReveal()
   const route = useHashRoute()
@@ -1433,6 +1452,7 @@ export default function App() {
       <Nav />
       <Hero />
       <TrustBar />
+      <Story />
       <Reviews />
       <Balance />
       <Stores />
