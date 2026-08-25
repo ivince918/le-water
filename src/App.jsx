@@ -92,7 +92,7 @@ function useScrollReveal() {
       const vh = window.innerHeight
       document.querySelectorAll('.reveal:not(.is-in), .reveal-words:not(.is-in)').forEach(el => {
         const top = el.getBoundingClientRect().top
-        if (top < vh * 0.92) {          // includes anything already scrolled past
+        if (top < vh * 0.92) {   // includes content already scrolled past
           el.classList.add('is-in')
           io.unobserve(el)
         }
@@ -102,14 +102,11 @@ function useScrollReveal() {
       if (!ticking) { ticking = true; requestAnimationFrame(sweep) }
     }
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll, { passive: true })
-    requestAnimationFrame(sweep)
 
     return () => {
       io.disconnect()
       mo.disconnect()
       window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
     }
   }, [])
 }
@@ -163,7 +160,7 @@ function Loader() {
 
           <div className="absolute top-[148px] inset-x-0 text-center">
             <div className="loader-mark inline-flex">
-              <img src="/logo-mark.png" alt="" width="56" height="56" className="w-14 h-14 object-contain" />
+              <img src="/logo-mark.png" alt="Le Water" className="w-14 h-14 object-contain" />
             </div>
             <div className="text-white text-[24px] md:text-[30px] leading-none font-bold uppercase tracking-[0.04em] mt-3 whitespace-nowrap" style={{ fontFamily: "'Montserrat', sans-serif" }}>
               {'LE WATER STORE'.split('').map((ch, i) =>
@@ -240,42 +237,29 @@ const formatPhone = (v) => {
 }
 
 /* Stock photography seeds tuned for water / refill / store aesthetic */
-/* Homepage photography. `w` is the intrinsic width of the master file; `variants`
-   are the pre-generated widths in /public/photos. srcSet() below turns these into a
-   real responsive image so a 390px phone stops downloading a 2200px hero. */
-const IMG = {
-  hero:     { src: '/photos/hero-storefront.webp',      w: 2200, h: 1633, variants: [480, 960, 1440],
-              alt: 'The Le Water Store storefront in North Fremont' },
-  gallery1: { src: '/photos/fremont-central-wide.webp', w: 1600, h: 1139, variants: [480, 960, 1440],
-              alt: 'Inside our Central Fremont store' },
-  gallery2: { src: '/photos/walk-in.webp',              w: 1600, h: 1144, variants: [480, 960, 1440],
-              alt: 'Walking in to our North Fremont store' },
-  gallery3: { src: '/photos/bottles.webp',              w: 1100, h: 1167, variants: [480, 960],
-              alt: 'BPA-free bottles and jugs for sale at our Central Fremont store' },
-  gallery4: { src: '/photos/purification-window.webp',  w: 1100, h: 699,  variants: [480, 960],
-              alt: 'Looking through the window into our Newark purification room' },
+/* Width variants live alongside each master in /public/photos. Deriving the srcset
+   from the filename keeps the markup identical — only the bytes fetched change. */
+const VARIANTS = {
+  '/photos/hero-storefront.webp':      [[480, 960, 1440], 2200],
+  '/photos/fremont-central-wide.webp': [[480, 960, 1440], 1600],
+  '/photos/walk-in.webp':              [[480, 960, 1440], 1600],
+  '/photos/bottles.webp':              [[480, 960], 1100],
+  '/photos/purification-window.webp':  [[480, 960], 1100],
+}
+const srcSet = (src) => {
+  const v = VARIANTS[src]
+  if (!v) return undefined
+  const [widths, full] = v
+  return [...widths.map(w => `${src.replace(/\.webp$/, `-${w}.webp`)} ${w}w`), `${src} ${full}w`].join(', ')
 }
 
-const srcSet = (img) =>
-  [...img.variants.map((w) => `${img.src.replace(/\.webp$/, `-${w}.webp`)} ${w}w`),
-   `${img.src} ${img.w}w`].join(', ')
-
-/* Photo — always emits srcset + intrinsic width/height. */
-function Photo({ img, sizes, className = '', priority = false, alt }) {
-  return (
-    <img
-      src={img.src}
-      srcSet={srcSet(img)}
-      sizes={sizes}
-      width={img.w}
-      height={img.h}
-      alt={alt ?? img.alt}
-      className={className}
-      loading={priority ? 'eager' : 'lazy'}
-      decoding={priority ? 'sync' : 'async'}
-      fetchPriority={priority ? 'high' : undefined}
-    />
-  )
+const IMG = {
+  /* Real store photography — shot on location, served from /public/photos */
+  hero:       '/photos/hero-storefront.webp',      // North Fremont storefront
+  gallery1:   '/photos/fremont-central-wide.webp', // Central Fremont interior
+  gallery2:   '/photos/walk-in.webp',              // North Fremont, walking in
+  gallery3:   '/photos/bottles.webp',              // Central Fremont, bottles for sale
+  gallery4:   '/photos/purification-window.webp',  // Newark, through the purification window
 }
 
 /* ────────────────────────────────── NAV ────────────────────────────────── */
@@ -331,7 +315,7 @@ function Nav({ dark = false }) {
     <nav className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${bar}`}>
       <div className="relative mx-auto max-w-[1240px] px-6 md:px-10 py-5 flex items-center justify-between">
         <a href="/" className="flex items-center gap-2.5 group">
-          <img src="/logo-mark.png" alt="" width="36" height="36" draggable="false" className="w-9 h-9 object-contain" />
+          <img src="/logo-mark.png" alt="Le Water" draggable="false" className="w-9 h-9 object-contain" />
           <span className="leading-none" style={{ fontFamily: "'Montserrat', sans-serif" }}>
             <span className={`block font-bold uppercase text-[15px] tracking-[0.04em] ${txt}`}>Le Water Store</span>
             <span className={`block uppercase text-[8px] font-semibold tracking-[0.22em] mt-[3px] ${sub}`}>Premium Water Refill</span>
@@ -351,7 +335,7 @@ function Nav({ dark = false }) {
           onClick={() => setMenuOpen((v) => !v)}
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={menuOpen}
-          className={`md:hidden inline-flex w-11 h-11 items-center justify-center rounded-full border ${dark ? 'border-[#0A1220]/15 text-[#0A1220]' : 'border-white/30 text-white'} backdrop-blur-md`}
+          className={`md:hidden inline-flex w-10 h-10 items-center justify-center rounded-full border ${dark ? 'border-[#0A1220]/15 text-[#0A1220]' : 'border-white/30 text-white'} backdrop-blur-md`}
         >
           {menuOpen ? <X className="w-5 h-5" strokeWidth={2.2} /> : <Menu className="w-5 h-5" strokeWidth={2.2} />}
         </button>
@@ -382,10 +366,7 @@ function Nav({ dark = false }) {
 }
 
 /* ────────────────────────────────── HERO ────────────────────────────────── */
-function Hero({ animate = true }) {
-  const rise = (delay) => animate
-    ? { className: 'word-rise inline-block', style: { animationDelay: delay } }
-    : { className: 'inline-block' }
+function Hero() {
   const imgRef = useRef(null)
   const contentRef = useRef(null)
   const sectionRef = useRef(null)
@@ -449,15 +430,12 @@ function Hero({ animate = true }) {
       <div className="absolute inset-0 overflow-hidden">
         <img
           ref={imgRef}
-          src={IMG.hero.src}
+          src={IMG.hero}
           srcSet={srcSet(IMG.hero)}
           sizes="100vw"
-          width={IMG.hero.w}
-          height={IMG.hero.h}
-          alt={IMG.hero.alt}
+          alt="The Le Water Store storefront in North Fremont"
           className="ken-burns absolute inset-0 w-full h-full object-cover will-change-transform"
           loading="eager"
-          decoding="sync"
           fetchPriority="high"
         />
       </div>
@@ -476,14 +454,14 @@ function Hero({ animate = true }) {
       <div className="absolute inset-0 z-10 flex">
         <div ref={contentRef} className="mx-auto max-w-[1240px] w-full px-6 md:px-10 flex flex-col justify-end pb-[14vh] md:pb-[16vh] will-change-transform">
           <h1 className="display h-hero text-white max-w-4xl drop-shadow-[0_4px_30px_rgba(0,0,0,0.35)]">
-            <span {...rise('0.15s')}>Where</span>{' '}
-            <span {...rise('0.30s')}>pure</span>{' '}
-            <span {...rise('0.45s')}>water</span>
+            <span className="word-rise inline-block" style={{ animationDelay: '0.15s' }}>Where</span>{' '}
+            <span className="word-rise inline-block" style={{ animationDelay: '0.30s' }}>pure</span>{' '}
+            <span className="word-rise inline-block" style={{ animationDelay: '0.45s' }}>water</span>
             <br/>
-            <span {...rise('0.65s')}>flows</span>{' '}
-            <span {...rise('0.80s')}>daily.</span>
+            <span className="word-rise inline-block" style={{ animationDelay: '0.65s' }}>flows</span>{' '}
+            <span className="word-rise inline-block" style={{ animationDelay: '0.80s' }}>daily.</span>
           </h1>
-          <div className={`mt-9 flex flex-wrap items-center gap-x-4 gap-y-3${animate ? ' fade-up' : ''}`} style={animate ? { animationDelay: '1.05s' } : undefined}>
+          <div className="mt-9 flex flex-wrap items-center gap-x-4 gap-y-3 fade-up" style={{ animationDelay: '1.05s' }}>
             <a href="#stores"
                onClick={() => trackEvent('hero_find_store')}
                className="group inline-flex items-center justify-center px-7 py-[15px] rounded-full bg-white text-[#0a1a26] font-medium text-[14.5px] transition-all duration-200 ease-out hover:bg-[#5BC8E6] hover:-translate-y-0.5 active:scale-[0.97]">
@@ -510,16 +488,15 @@ function Hero({ animate = true }) {
 }
 
 /* ─────── TRUST BAR — heritage + the competitive wedge, straight under the hero ─────── */
-/* Every figure here must match a live source before it ships. Rating/count are the
-   combined Google figures across all three profiles — re-pull from the GBP dashboards
-   whenever they are updated here, and keep them in sync with the Reviews section.
+/* Aggregate rating/count are the combined Google figures (per-store 4.4/4.0/4.0 verified
+   2026-08-25). The quote cards below are Yelp — different source, labelled separately.
    Founded 1998 (first store) — heritage copy uses "since 1998", a specific year that
    matches how the Fremont competitor markets ("since 1985"). */
 function TrustBar() {
   const stats = [
     { icon: MapPin,  big: '3',        small: 'Locations across Fremont & Newark' },
     { icon: Clock,   big: 'Every day', small: '10a to 7p, Newark to 6:30p' },
-    { icon: Star,    big: '4.1★',     small: '180+ Google reviews across 3 stores' },
+    { icon: Star,    big: '4.1★',     small: '180+ Google reviews, 3 stores' },
     { icon: Droplet, big: '$0.375',   small: 'Per gallon for members' },
   ]
   return (
@@ -535,7 +512,7 @@ function TrustBar() {
               <div key={i} className="flex flex-col md:px-8 first:md:pl-0">
                 <Icon className="w-4 h-4 text-[#1E588A]" strokeWidth={2.2} />
                 <span className="display text-[40px] md:text-[52px] leading-none text-[#0A1220] mt-3">{s.big}</span>
-                <span className="text-[13.5px] text-[#0A1220]/62 mt-2 leading-snug">{s.small}</span>
+                <span className="text-[13.5px] text-[#0A1220]/55 mt-2 leading-snug">{s.small}</span>
               </div>
             )
           })}
@@ -544,17 +521,6 @@ function TrustBar() {
     </section>
   )
 }
-
-/* Google Business Profile links, resolved from each store's Maps place id (cid) and
-   verified live 2026-08-25. Per-store ratings the same day: 4.4 / 4.0 / 4.0, combining
-   to the 4.1 average shown on the page across 180+ reviews (count confirmed by Brian
-   from the GBP dashboards — it is not exposed publicly, so re-pull it from there).
-   Every figure on the page is attributed to these profiles and links out to them. */
-const GOOGLE_PROFILES = [
-  { name: 'North Fremont',   rating: 4.4, url: 'https://www.google.com/maps?cid=15481437492169011829' },
-  { name: 'Central Fremont', rating: 4.0, url: 'https://www.google.com/maps?cid=15023783007573621824' },
-  { name: 'Newark',          rating: 4.0, url: 'https://www.google.com/maps?cid=18047035955380690816' },
-]
 
 /* ────────────────────────── REVIEWS ─────────────────────── */
 const REVIEWS = [
@@ -619,7 +585,7 @@ function RatingStars({ rating }) {
 
 function VerifiedTag() {
   return (
-    <span className="inline-flex items-center gap-1.5 text-[12px] text-[#0A1220]/62">
+    <span className="inline-flex items-center gap-1.5 text-[12px] text-[#0A1220]/55">
       <span className="w-1 h-1 rounded-full bg-[#0A1220]/30" />
       From our Yelp reviews
     </span>
@@ -656,35 +622,30 @@ function Reviews() {
           {/* Store gallery — real photos, one or more from each of the three stores */}
           <div className="reveal mt-8 md:mt-10 grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2 md:gap-4 md:h-[460px]">
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto md:col-span-2 md:row-span-2 ring-1 ring-[#0A1220]/06">
-              <Photo img={IMG.gallery1} sizes="(min-width: 768px) 25vw, 100vw" className="absolute inset-0 w-full h-full object-cover" />
+              <img src={IMG.gallery1} srcSet={srcSet(IMG.gallery1)} sizes="(min-width: 768px) 25vw, 100vw" alt="Inside our Central Fremont store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto md:col-span-2 ring-1 ring-[#0A1220]/06">
-              <Photo img={IMG.gallery2} sizes="(min-width: 768px) 25vw, 100vw" className="absolute inset-0 w-full h-full object-cover" />
+              <img src={IMG.gallery2} srcSet={srcSet(IMG.gallery2)} sizes="(min-width: 768px) 25vw, 100vw" alt="Walking in to our North Fremont store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto ring-1 ring-[#0A1220]/06">
-              <Photo img={IMG.gallery3} sizes="(min-width: 768px) 25vw, 100vw" className="absolute inset-0 w-full h-full object-cover" />
+              <img src={IMG.gallery3} srcSet={srcSet(IMG.gallery3)} sizes="(min-width: 768px) 25vw, 100vw" alt="BPA-free bottles and jugs for sale at our Central Fremont store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto ring-1 ring-[#0A1220]/06">
-              <Photo img={IMG.gallery4} sizes="(min-width: 768px) 25vw, 100vw" className="absolute inset-0 w-full h-full object-cover" />
+              <img src={IMG.gallery4} srcSet={srcSet(IMG.gallery4)} sizes="(min-width: 768px) 25vw, 100vw" alt="Looking through the window into our Newark purification room" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
           </div>
         </div>
 
         <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
           <h2 className="display h-title text-[#0A1220]">
-            What our<br/><span className="text-[#0A1220]/62">customers say.</span>
+            What our<br/><span className="text-[#0A1220]/40">customers say.</span>
           </h2>
           <div className="flex items-center gap-4">
             <span className="display text-[52px] leading-none text-[#0A1220]">4.1</span>
             <div>
               <RatingStars rating={4.1} />
-              <div className="text-[13px] text-[#0A1220]/62 mt-1.5">
-                <span className="font-semibold text-[#0A1220]">180+</span> reviews across our{' '}
-                <a href={GOOGLE_PROFILES[0].url} target="_blank" rel="noopener noreferrer"
-                   onClick={() => trackEvent('view_google_profile', { store: GOOGLE_PROFILES[0].name })}
-                   className="font-semibold text-[#0A1220] underline underline-offset-2 decoration-[#0A1220]/25 hover:decoration-[#1E588A]">three Google profiles</a>
-                {/* Aggregate = Google (4.1 matches the verified per-store 4.4/4.0/4.0).
-                    The quote cards below are Yelp — different source, labelled separately. */}
+              <div className="text-[13px] text-[#0A1220]/55 mt-1.5">
+                <span className="font-semibold text-[#0A1220]">180+</span> Google reviews across our three stores
               </div>
             </div>
           </div>
@@ -692,7 +653,7 @@ function Reviews() {
 
         <ReviewCard r={REVIEWS[0]} featured />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+        <div className="grid md:grid-cols-3 gap-5 mt-5">
           {REVIEWS.slice(1).map((r) => (
             <ReviewCard key={r.name} r={r} />
           ))}
@@ -742,12 +703,12 @@ function Plans() {
             <span className="block md:whitespace-nowrap">Ultra fresh great tasting water.</span>
             <span className="block text-[#1E588A] md:whitespace-nowrap">Members save <span className="font-bold">over 25%</span>.</span>
           </h2>
-          <p className="mt-5 text-[15px] leading-relaxed text-[#0A1220]/62 max-w-md">
+          <p className="mt-5 text-[15px] leading-relaxed text-[#0A1220]/60 max-w-md">
             Pay as you go, or prepay once and save on every gallon. Your balance follows your phone number.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
+        <div className="grid md:grid-cols-3 gap-5 items-stretch">
           {cards.map((c, i) => (
             <div
               key={c.title}
@@ -758,7 +719,7 @@ function Plans() {
                 className={`card relative h-full p-7 md:p-8 flex flex-col ${c.featured ? 'text-white border-transparent' : ''}`}
                 style={c.featured ? { background: '#0A1220' } : undefined}
               >
-                <div className={`eyebrow ${c.featured ? 'text-white/55' : 'text-[#0A1220]/62'} mb-8`}>
+                <div className={`eyebrow ${c.featured ? 'text-white/55' : 'text-[#0A1220]/45'} mb-8`}>
                   {c.kind}
                 </div>
 
@@ -766,7 +727,7 @@ function Plans() {
                   <div className={`display text-[40px] md:text-[44px] leading-[0.95] ${c.featured ? 'text-white' : 'text-[#0A1220]'}`}>
                     {c.title}
                   </div>
-                  <div className={`mt-2 text-[14px] ${c.featured ? 'text-white/55' : 'text-[#0A1220]/62'}`}>{c.sub}</div>
+                  <div className={`mt-2 text-[14px] ${c.featured ? 'text-white/55' : 'text-[#0A1220]/50'}`}>{c.sub}</div>
                 </div>
 
                 {c.lines && (
@@ -776,7 +737,7 @@ function Plans() {
                         <span className="text-[14.5px] text-[#0A1220]/75">{l.label}</span>
                         <span className="text-[#0A1220]">
                           <span className="text-[20px] font-semibold tracking-tight">{l.price}</span>
-                          <span className="text-[#0A1220]/62 text-[11px] ml-1">{l.unit}</span>
+                          <span className="text-[#0A1220]/45 text-[11px] ml-1">{l.unit}</span>
                         </span>
                       </div>
                     ))}
@@ -882,12 +843,12 @@ function Balance() {
           <h2 className="display h-title text-[#0A1220]">
             Check your<br/><span className="text-[#1E588A]">balance.</span>
           </h2>
-          <p className="mt-5 text-[15px] leading-relaxed text-[#0A1220]/62 max-w-md">
+          <p className="mt-5 text-[15px] leading-relaxed text-[#0A1220]/60 max-w-md">
             Prepaid plans are tracked by phone number. Look up your remaining gallons any time.
           </p>
         </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
+      <div className="grid md:grid-cols-12 gap-6 md:gap-8">
         {/* RIGHT on desktop — plan comparison */}
         <div className="reveal md:col-span-5 md:order-2 grid gap-4" style={{ transitionDelay: '120ms' }}>
           <PlanStat
@@ -925,7 +886,7 @@ function Balance() {
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                   transition={{ duration: 0.25, ease: EASE }}
                 >
-                  <label htmlFor="balance-phone" className="block eyebrow text-[#0A1220]/62 mb-2.5">Phone number</label>
+                  <label htmlFor="balance-phone" className="block eyebrow text-[#0A1220]/50 mb-2.5">Phone number</label>
                   <div className="relative">
                     <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A1220]/35" strokeWidth={2} />
                     <input
@@ -933,7 +894,6 @@ function Balance() {
                       name="phone"
                       type="tel" inputMode="numeric"
                       autoComplete="tel"
-                      aria-describedby="balance-hint"
                       placeholder="(555) 123-4567"
                       value={phone}
                       onChange={(e) => setPhone(formatPhone(e.target.value))}
@@ -949,14 +909,14 @@ function Balance() {
                   >
                     {state === 'loading' ? (
                       <span className="flex items-center gap-1.5">
-                        <span className="dot" /><span className="dot" style={{ animationDelay: '0.04s' }} /><span className="dot" style={{ animationDelay: '0.3s' }} />
+                        <span className="dot" /><span className="dot" style={{ animationDelay: '0.15s' }} /><span className="dot" style={{ animationDelay: '0.3s' }} />
                       </span>
                     ) : (
                       <>Check balance <ArrowRight className="w-4 h-4 ml-2" strokeWidth={2.2} /></>
                     )}
                   </button>
 
-                  <p id="balance-hint" className="text-[12px] text-[#0A1220]/65 mt-4 text-center">
+                  <p className="text-[11.5px] text-[#0A1220]/55 mt-4 text-center">
                     Enter the phone number on your prepaid plan.
                   </p>
                 </motion.form>
@@ -968,7 +928,7 @@ function Balance() {
                 >
                   {accounts.length === 1 ? (
                     <>
-                      <div className="eyebrow text-[#0A1220]/62 mb-3">
+                      <div className="eyebrow text-[#0A1220]/50 mb-3">
                         {accounts[0].plan} remaining{multiStore ? ` · ${accounts[0].store}` : ''}
                       </div>
                       <div className="flex items-baseline gap-2">
@@ -980,7 +940,7 @@ function Balance() {
                         >
                           {accounts[0].gallons}
                         </motion.span>
-                        <span className="text-[#0A1220]/62 text-[15px]">gallons</span>
+                        <span className="text-[#0A1220]/55 text-[15px]">gallons</span>
                       </div>
                       <div className="mt-3 inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[12px]" style={planStyle(accounts[0].plan)}>
                         <Droplet className="w-3 h-3" strokeWidth={2.5} /> {accounts[0].plan} plan · active
@@ -988,7 +948,7 @@ function Balance() {
                     </>
                   ) : (
                     <>
-                      <div className="eyebrow text-[#0A1220]/62 mb-4">Your balances</div>
+                      <div className="eyebrow text-[#0A1220]/50 mb-4">Your balances</div>
                       <div className="space-y-3">
                         {accounts.map((a, i) => (
                           <motion.div
@@ -1003,12 +963,12 @@ function Balance() {
                               </span>
                               <div>
                                 <div className="text-[13.5px] font-medium" style={{ color: planStyle(a.plan).color }}>{a.plan}</div>
-                                {multiStore && <div className="text-[11.5px] text-[#0A1220]/62">{a.store}</div>}
+                                {multiStore && <div className="text-[11.5px] text-[#0A1220]/50">{a.store}</div>}
                               </div>
                             </div>
                             <div className="text-right">
                               <span className="display text-[26px] leading-none" style={{ color: planStyle(a.plan).color }}>{a.gallons}</span>
-                              <span className="text-[#0A1220]/62 text-[12px] ml-1">gal</span>
+                              <span className="text-[#0A1220]/50 text-[12px] ml-1">gal</span>
                             </div>
                           </motion.div>
                         ))}
@@ -1018,7 +978,7 @@ function Balance() {
 
                   {recent.length > 0 && (
                     <div className="mt-7">
-                      <div className="eyebrow text-[#0A1220]/62 mb-3">Recent activity</div>
+                      <div className="eyebrow text-[#0A1220]/50 mb-3">Recent activity</div>
                       <div className="rounded-2xl border border-[#0A1220]/08 divide-y divide-[#0A1220]/06 overflow-hidden">
                         {recent.map((r, i) => (
                           <motion.div
@@ -1028,11 +988,11 @@ function Balance() {
                             className="flex items-center justify-between gap-3 px-4 py-3"
                           >
                             <div className="flex items-center gap-3 min-w-0">
-                              <span className="text-[12px] text-[#0A1220]/62 tabular-nums w-12 shrink-0">{fmtActivityDate(r.date)}</span>
+                              <span className="text-[12px] text-[#0A1220]/45 tabular-nums w-12 shrink-0">{fmtActivityDate(r.date)}</span>
                               <span className="text-[13.5px] text-[#0A1220] truncate">
                                 {r.label}
                                 {(multiPlan || multiStore) && (
-                                  <span className="text-[#0A1220]/62">
+                                  <span className="text-[#0A1220]/45">
                                     {multiPlan ? ` · ${r.plan}` : ''}{multiStore ? ` · ${r.store}` : ''}
                                   </span>
                                 )}
@@ -1042,7 +1002,7 @@ function Balance() {
                               <span className="text-[13.5px] font-medium tabular-nums" style={{ color: r.delta < 0 ? '#0A1220' : '#127a45' }}>
                                 {r.delta > 0 ? '+' : ''}{r.delta} gal
                               </span>
-                              <span className="text-[11.5px] text-[#0A1220]/62 ml-2 tabular-nums">{r.balance} left</span>
+                              <span className="text-[11.5px] text-[#0A1220]/45 ml-2 tabular-nums">{r.balance} left</span>
                             </div>
                           </motion.div>
                         ))}
@@ -1067,14 +1027,14 @@ function Balance() {
                   {state === 'notfound' ? (
                     <>
                       <div className="text-[16px] font-medium text-[#0A1220]">No plan on that number</div>
-                      <p className="text-[13.5px] text-[#0A1220]/62 mt-2 max-w-xs mx-auto">
+                      <p className="text-[13.5px] text-[#0A1220]/55 mt-2 max-w-xs mx-auto">
                         We could not find a prepaid plan for that phone. Start one at any store, or double-check the number.
                       </p>
                     </>
                   ) : (
                     <>
                       <div className="text-[16px] font-medium text-[#0A1220]">Lookup failed</div>
-                      <p className="text-[13.5px] text-[#0A1220]/62 mt-2 max-w-xs mx-auto">{error}</p>
+                      <p className="text-[13.5px] text-[#0A1220]/55 mt-2 max-w-xs mx-auto">{error}</p>
                     </>
                   )}
                   <button onClick={reset} className="btn btn-ghost w-full mt-6">
@@ -1097,7 +1057,7 @@ function PlanStat({ kind, from, to, save, qty, tint = 'ink' }) {
     <div className={`relative rounded-2xl p-6 md:p-7 border ${isAccent ? 'bg-[#ECF4F9] border-[#1E588A]/15' : 'bg-[#0A1220] border-transparent text-white'}`}>
       <div className={`eyebrow ${isAccent ? 'text-[#1E588A]/70' : 'text-white/55'} mb-3`}>{kind}</div>
       <div className="flex items-baseline gap-3">
-        <span className={`text-[14px] line-through ${isAccent ? 'text-[#0A1220]/62' : 'text-white/40'}`}>{from}/gal</span>
+        <span className={`text-[14px] line-through ${isAccent ? 'text-[#0A1220]/40' : 'text-white/40'}`}>{from}/gal</span>
         <span className={`display text-[36px] md:text-[42px] leading-none ${isAccent ? 'text-[#1E588A]' : 'text-white'}`}>{to}<span className="text-[15px] opacity-60">/gal</span></span>
       </div>
       <div className={`mt-3 text-[13px] ${isAccent ? 'text-[#0A1220]/65' : 'text-white/65'}`}>{qty}</div>
@@ -1184,13 +1144,13 @@ function StoreCard({ s, i }) {
         <div className="flex items-start justify-between gap-3">
           <div>
             <h3 className="font-semibold text-[18px] tracking-tight text-[#0A1220]">{s.name}</h3>
-            <p className="text-[13px] text-[#0A1220]/62 mt-0.5">
+            <p className="text-[13px] text-[#0A1220]/55 mt-0.5">
               {s.area}{typeof s.miles === 'number' ? ` · ${s.miles.toFixed(1)} mi away` : ''}
             </p>
           </div>
           <span
             className={`shrink-0 inline-flex items-center gap-1.5 text-[11.5px] font-medium px-2.5 py-1 rounded-full ${
-              status.open ? 'bg-[#E4F5EC] text-[#127a45]' : 'bg-[#0A1220]/06 text-[#0A1220]/62'
+              status.open ? 'bg-[#E4F5EC] text-[#127a45]' : 'bg-[#0A1220]/06 text-[#0A1220]/55'
             }`}
           >
             <span className={`w-1.5 h-1.5 rounded-full ${status.open ? 'bg-[#1B9E57] live-dot' : 'bg-[#0A1220]/35'}`} />
@@ -1202,12 +1162,12 @@ function StoreCard({ s, i }) {
           <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-[#1E588A]" strokeWidth={2} />
           <span>{s.address}<br />{s.city}</span>
         </div>
-        <div className="mt-2 flex items-center gap-2 text-[13px] text-[#0A1220]/62">
+        <div className="mt-2 flex items-center gap-2 text-[13px] text-[#0A1220]/55">
           <Clock className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
           Open daily, 10a to {fmtHourShort(s.close)}
         </div>
         {s.vending && (
-          <div className="mt-2 flex items-center gap-2 text-[13px] text-[#0A1220]/62">
+          <div className="mt-2 flex items-center gap-2 text-[13px] text-[#0A1220]/55">
             <Moon className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
             Vending machine outside, open 24 hours
           </div>
@@ -1277,9 +1237,9 @@ function Stores() {
         <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
           <div>
             <h2 className="display h-title text-[#0A1220]">
-              Three stores.<br/><span className="text-[#0A1220]/62">One promise.</span>
+              Three stores.<br/><span className="text-[#0A1220]/40">One promise.</span>
             </h2>
-            <p className="mt-4 text-[15px] text-[#0A1220]/62 max-w-sm">
+            <p className="mt-4 text-[15px] text-[#0A1220]/60 max-w-sm">
               Same pure water at all three. Walk in with any container, we fill it on the spot.
             </p>
           </div>
@@ -1296,7 +1256,7 @@ function Stores() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid md:grid-cols-3 gap-5">
           {ordered.map((s, i) => (
             <StoreCard key={s.name} s={s} i={i} />
           ))}
@@ -1356,7 +1316,7 @@ function ProductCard({ p, i }) {
       </div>
       <div className="p-6 flex-1 flex flex-col">
         <h3 className="font-semibold text-[16.5px] tracking-tight text-[#0A1220]">{p.name}</h3>
-        <p className="text-[13px] text-[#0A1220]/62 mt-2 leading-relaxed">{p.desc}</p>
+        <p className="text-[13px] text-[#0A1220]/60 mt-2 leading-relaxed">{p.desc}</p>
       </div>
     </div>
   )
@@ -1384,10 +1344,10 @@ function BottlesSection() {
       {/* Product grid */}
       <section className="px-6 md:px-10 pb-24 md:pb-32 bg-[#F4F7FA]">
         <div className="mx-auto max-w-[1240px]">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {PRODUCTS.map((p, i) => <ProductCard key={p.name} p={p} i={i} />)}
           </div>
-          <p className="reveal mt-8 text-center text-[12.5px] text-[#0A1220]/62">
+          <p className="reveal mt-8 text-center text-[12.5px] text-[#0A1220]/50">
             Ask at the counter for current pricing, at any of our three stores.
           </p>
         </div>
@@ -1401,9 +1361,8 @@ function BottlesSection() {
 const FAQS = [
   { q: 'What is Le Water?', a: 'Le Water is a family-owned water store with three refill locations in Fremont and Newark. Bring any container and we refill it with purified or alkaline drinking water, dispensed fresh on the spot.' },
   { q: 'How much does a water refill cost?', a: 'Purified water is $0.50 a gallon, or $0.375 a gallon on a prepaid plan. Alkaline water is $1.30 a gallon, or $0.90 a gallon prepaid. Bring any container and we fill it at the counter.' },
-  { q: 'Do you offer alkaline water?', a: 'Yes. Every location carries both. Purified water is $0.50 a gallon ($0.375 prepaid) and mineral-rich alkaline water is $1.30 a gallon ($0.90 prepaid).' },
+  { q: 'Do you offer alkaline water?', a: 'Yes. Every location carries both. Purified is $0.50 a gallon ($0.375 prepaid) and alkaline is $1.30 a gallon ($0.90 prepaid).' },
   { q: 'Where are your water stores located?', a: 'Three Le Water Store locations: 35762 Fremont Blvd, Fremont; 39409 Fremont Blvd, Fremont; and 39131 Cedar Blvd, Newark. The Fremont stores are open 10am to 7pm daily and Newark is open 10am to 6:30pm daily.' },
-  { q: 'Can I refill water after hours?', a: 'Yes. Every location has a self-serve water vending machine outside, available 24 hours a day even when the store is closed. The machines take cash.' },
   { q: 'Do I need to bring my own bottle?', a: 'Bring any clean container and we refill it, or buy a new 1, 3, or 5 gallon bottle at the counter.' },
   { q: 'How do I check my prepaid gallon balance?', a: 'Enter your phone number in the balance checker on this page. Your prepaid balance follows your phone number to any of our three stores.' },
 ]
@@ -1413,7 +1372,7 @@ function FAQ() {
       <div className="mx-auto max-w-[820px]">
         <div className="reveal mb-12 md:mb-16">
           <h2 className="display h-title text-[#0A1220]">
-            Frequently asked<br /><span className="text-[#0A1220]/62">questions.</span>
+            Frequently asked<br /><span className="text-[#0A1220]/40">questions.</span>
           </h2>
         </div>
         <div className="reveal border-t border-[#0A1220]/10">
@@ -1433,55 +1392,53 @@ function FAQ() {
 }
 
 /* ────────────────────────────── FOOTER ────────────────────────────── */
-/* Kept deliberately compact — every section is built to fit a screen. The three
-   legal links are the only addition to the original: CalOPPA requires the privacy
-   policy to be conspicuously posted, and Meta requires it on every page that can
-   carry a pixel. Full store addresses live on the store cards and /contact. */
 function Footer() {
   return (
-    <footer className="relative bg-[#0A1220] text-white/75 pt-16 md:pt-20 pb-10 px-6 md:px-10 overflow-hidden">
+    <footer className="relative bg-[#0A1220] text-white/65 pt-16 md:pt-20 pb-10 px-6 md:px-10 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -top-40 left-1/4 w-[600px] h-[600px] rounded-full"
              style={{ background: 'radial-gradient(circle, rgba(50,140,200,0.18), transparent 60%)', filter: 'blur(40px)' }} />
       </div>
       <div className="relative mx-auto max-w-[1240px]">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12">
+        <div className="grid md:grid-cols-12 gap-10 pb-12">
           <div className="md:col-span-7">
             <div className="flex items-center gap-2 mb-6">
-              <img src="/logo-mark.png" alt="" width="32" height="32" className="w-8 h-8 object-contain" />
+              <img src="/logo-mark.png" alt="Le Water" className="w-8 h-8 object-contain" />
               <span className="font-semibold text-white">Le Water</span>
             </div>
             <h3 className="display h-title text-white max-w-xl">
               Pure water,<br/>
-              <span className="text-white/45">poured with care.</span>
+              <span className="text-white/40">poured with care.</span>
             </h3>
           </div>
           <div className="md:col-span-5 grid grid-cols-2 gap-8 md:justify-self-end text-[13.5px]">
             <div className="space-y-3">
-              <div className="eyebrow text-white/70 mb-2">Explore</div>
+              <div className="eyebrow text-white/55 mb-2">Explore</div>
               <a href="#plans" className="block link-u">Plans</a>
               <a href="#bottles" className="block link-u">Bottles</a>
               <a href="#balance" className="block link-u">Balance</a>
               <a href="#stores" className="block link-u">Stores</a>
-              <a href="/our-water" className="block link-u">Our Water</a>
+              <a href="#faq" className="block link-u">FAQ</a>
             </div>
             <div className="space-y-3">
-              <div className="eyebrow text-white/70 mb-2">Call a store</div>
-              <a href="tel:+15107425699" className="block link-u text-white/80">North Fremont &middot; (510) 742-5699</a>
-              <a href="tel:+15106561533" className="block link-u text-white/80">Central Fremont &middot; (510) 656-1533</a>
-              <a href="tel:+15107396225" className="block link-u text-white/80">Newark &middot; (510) 739-6225</a>
-              <div className="text-white/80 pt-1">Open daily &middot; 10a to 7p (Newark to 6:30p)</div>
+              <div className="eyebrow text-white/55 mb-2">Call a store</div>
+              <a href="tel:+15107425699" className="block link-u text-white/75">North Fremont · (510) 742-5699</a>
+              <a href="tel:+15106561533" className="block link-u text-white/75">Central Fremont · (510) 656-1533</a>
+              <a href="tel:+15107396225" className="block link-u text-white/75">Newark · (510) 739-6225</a>
+              <div className="text-white/75 pt-1">Open daily · 10a to 7p (Newark to 6:30p)</div>
             </div>
           </div>
         </div>
         <div className="hairline opacity-30 mb-6" />
-        <div className="flex flex-col md:flex-row justify-between text-[12px] text-white/70 gap-2">
+        <div className="flex flex-col md:flex-row justify-between text-[12px] text-white/55 gap-2">
           <span>© {new Date().getFullYear()} Le Water. Family-owned in Fremont &amp; Newark, California.</span>
-          <div className="flex flex-wrap gap-x-5 gap-y-1">
+          {/* CalOPPA requires the privacy policy to be conspicuously posted, and Meta
+              requires it on every page that can carry a pixel. */}
+          <span className="flex flex-wrap gap-x-4">
             <a href="/contact" className="link-u">Contact</a>
             <a href="/privacy" className="link-u">Privacy</a>
             <a href="/accessibility" className="link-u">Accessibility</a>
-          </div>
+          </span>
         </div>
       </div>
     </footer>
@@ -1490,9 +1447,7 @@ function Footer() {
 
 /* Show the intro splash only on a fresh, top-level visit: skip for reduced-motion, for deep
    links (e.g. #balance — repeat customers checking gallons), and once already seen this session. */
-/* Campaign and referral traffic skips the intro entirely — a visitor who clicked an ad
-   or a search result should see the page, not a 2.85s curtain. The splash is for people
-   who typed the domain in directly. */
+/* Ad and search clicks land on content, not on a 2.85s curtain. */
 const CAMPAIGN_PARAMS = /(^|&)(gclid|gbraid|wbraid|fbclid|msclkid|ttclid|utm_[a-z]+)=/i
 const introEligible = () => {
   if (typeof window === 'undefined' || prefersReducedMotion()) return false
@@ -1500,7 +1455,7 @@ const introEligible = () => {
   if (CAMPAIGN_PARAMS.test(window.location.search.slice(1))) return false
   try {
     if (document.referrer && new URL(document.referrer).origin !== window.location.origin) return false
-  } catch { /* opaque or malformed referrer — fall through */ }
+  } catch { /* opaque referrer */ }
   try { return !sessionStorage.getItem('lw_seen_intro') } catch { return true }
 }
 
@@ -1511,11 +1466,6 @@ export default function App() {
 
   const [booting, setBooting] = useState(introEligible)
   const [curtain, setCurtain] = useState(introEligible)
-
-  // The static hero in index.html has already painted by the time React mounts.
-  // Replaying the entrance over content the visitor can already see reads as a
-  // glitch, so skip it whenever the intro curtain is not covering the hero.
-  useEffect(() => { document.documentElement.classList.remove('lw-static-hero') }, [])
 
   useEffect(() => {
     if (!booting) return
@@ -1539,7 +1489,7 @@ export default function App() {
       {booting && <Loader />}
       <ScrollProgress />
       <Nav />
-      <Hero animate={false} />
+      <Hero />
       <TrustBar />
       <Reviews />
       <Balance />
