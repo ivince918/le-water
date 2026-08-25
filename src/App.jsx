@@ -382,7 +382,10 @@ function Nav({ dark = false }) {
 }
 
 /* ────────────────────────────────── HERO ────────────────────────────────── */
-function Hero() {
+function Hero({ animate = true }) {
+  const rise = (delay) => animate
+    ? { className: 'word-rise inline-block', style: { animationDelay: delay } }
+    : { className: 'inline-block' }
   const imgRef = useRef(null)
   const contentRef = useRef(null)
   const sectionRef = useRef(null)
@@ -473,21 +476,21 @@ function Hero() {
       <div className="absolute inset-0 z-10 flex">
         <div ref={contentRef} className="mx-auto max-w-[1240px] w-full px-6 md:px-10 flex flex-col justify-end pb-[14vh] md:pb-[16vh] will-change-transform">
           <h1 className="display h-hero text-white max-w-4xl drop-shadow-[0_4px_30px_rgba(0,0,0,0.35)]">
-            <span className="word-rise inline-block" style={{ animationDelay: '0.04s' }}>Water</span>{' '}
-            <span className="word-rise inline-block" style={{ animationDelay: '0.10s' }}>refill</span>{' '}
-            <span className="word-rise inline-block" style={{ animationDelay: '0.16s' }}>in</span>{' '}
-            <span className="word-rise inline-block" style={{ animationDelay: '0.22s' }}>Fremont</span>
+            <span {...rise('0.04s')}>Water</span>{' '}
+            <span {...rise('0.10s')}>refill</span>{' '}
+            <span {...rise('0.16s')}>in</span>{' '}
+            <span {...rise('0.22s')}>Fremont</span>
             <br/>
-            <span className="word-rise inline-block" style={{ animationDelay: '0.28s' }}>&amp;</span>{' '}
-            <span className="word-rise inline-block" style={{ animationDelay: '0.34s' }}>Newark.</span>
+            <span {...rise('0.28s')}>&amp;</span>{' '}
+            <span {...rise('0.34s')}>Newark.</span>
           </h1>
-          <p className="mt-5 max-w-[42ch] text-[16px] md:text-[18px] leading-relaxed text-white/85 fade-up drop-shadow-[0_2px_16px_rgba(0,0,0,0.35)]"
-             style={{ animationDelay: '0.46s' }}>
+          <p className={`mt-5 max-w-[42ch] text-[16px] md:text-[18px] leading-relaxed text-white/85 drop-shadow-[0_2px_16px_rgba(0,0,0,0.35)]${animate ? ' fade-up' : ''}`}
+             style={animate ? { animationDelay: '0.46s' } : undefined}>
             Purified and alkaline water, refilled into any container you bring.
             From <strong className="font-semibold text-white">$0.375 a gallon</strong> for members.
             Three family-owned stores, open daily since 1998.
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3 fade-up" style={{ animationDelay: '0.58s' }}>
+          <div className={`mt-8 flex flex-wrap items-center gap-x-4 gap-y-3${animate ? ' fade-up' : ''}`} style={animate ? { animationDelay: '0.58s' } : undefined}>
             <a href="#stores"
                onClick={() => trackEvent('hero_find_store')}
                className="group inline-flex items-center justify-center px-7 py-[15px] rounded-full bg-white text-[#0a1a26] font-medium text-[14.5px] transition-all duration-200 ease-out hover:bg-[#5BC8E6] hover:-translate-y-0.5 active:scale-[0.97]">
@@ -1545,6 +1548,11 @@ export default function App() {
   const [booting, setBooting] = useState(introEligible)
   const [curtain, setCurtain] = useState(introEligible)
 
+  // The static hero in index.html has already painted by the time React mounts.
+  // Replaying the entrance over content the visitor can already see reads as a
+  // glitch, so skip it whenever the intro curtain is not covering the hero.
+  useEffect(() => { document.documentElement.classList.remove('lw-static-hero') }, [])
+
   useEffect(() => {
     if (!booting) return
     try { sessionStorage.setItem('lw_seen_intro', '1') } catch { /* private mode — splash just shows again */ }
@@ -1567,7 +1575,7 @@ export default function App() {
       {booting && <Loader />}
       <ScrollProgress />
       <Nav />
-      <Hero />
+      <Hero animate={false} />
       <TrustBar />
       <Reviews />
       <Balance />
