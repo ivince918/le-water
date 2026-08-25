@@ -237,21 +237,6 @@ const formatPhone = (v) => {
 }
 
 /* Stock photography seeds tuned for water / refill / store aesthetic */
-/* Width variants live alongside each master in /public/photos. Deriving the srcset
-   from the filename keeps the markup identical — only the bytes fetched change. */
-const VARIANTS = {
-  '/photos/hero-storefront.webp':      [[480, 960, 1440], 2200],
-  '/photos/fremont-central-wide.webp': [[480, 960, 1440], 1600],
-  '/photos/walk-in.webp':              [[480, 960, 1440], 1600],
-  '/photos/bottles.webp':              [[480, 960], 1100],
-  '/photos/purification-window.webp':  [[480, 960], 1100],
-}
-const srcSet = (src) => {
-  const v = VARIANTS[src]
-  if (!v) return undefined
-  const [widths, full] = v
-  return [...widths.map(w => `${src.replace(/\.webp$/, `-${w}.webp`)} ${w}w`), `${src} ${full}w`].join(', ')
-}
 
 const IMG = {
   /* Real store photography — shot on location, served from /public/photos */
@@ -431,12 +416,9 @@ function Hero() {
         <img
           ref={imgRef}
           src={IMG.hero}
-          srcSet={srcSet(IMG.hero)}
-          sizes="100vw"
           alt="The Le Water Store storefront in North Fremont"
           className="ken-burns absolute inset-0 w-full h-full object-cover will-change-transform"
           loading="eager"
-          fetchPriority="high"
         />
       </div>
 
@@ -622,16 +604,16 @@ function Reviews() {
           {/* Store gallery — real photos, one or more from each of the three stores */}
           <div className="reveal mt-8 md:mt-10 grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2 md:gap-4 md:h-[460px]">
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto md:col-span-2 md:row-span-2 ring-1 ring-[#0A1220]/06">
-              <img src={IMG.gallery1} srcSet={srcSet(IMG.gallery1)} sizes="(min-width: 768px) 25vw, 100vw" alt="Inside our Central Fremont store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.gallery1} alt="Inside our Central Fremont store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto md:col-span-2 ring-1 ring-[#0A1220]/06">
-              <img src={IMG.gallery2} srcSet={srcSet(IMG.gallery2)} sizes="(min-width: 768px) 25vw, 100vw" alt="Walking in to our North Fremont store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.gallery2} alt="Walking in to our North Fremont store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto ring-1 ring-[#0A1220]/06">
-              <img src={IMG.gallery3} srcSet={srcSet(IMG.gallery3)} sizes="(min-width: 768px) 25vw, 100vw" alt="BPA-free bottles and jugs for sale at our Central Fremont store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.gallery3} alt="BPA-free bottles and jugs for sale at our Central Fremont store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto ring-1 ring-[#0A1220]/06">
-              <img src={IMG.gallery4} srcSet={srcSet(IMG.gallery4)} sizes="(min-width: 768px) 25vw, 100vw" alt="Looking through the window into our Newark purification room" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.gallery4} alt="Looking through the window into our Newark purification room" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
           </div>
         </div>
