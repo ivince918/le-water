@@ -123,8 +123,8 @@ Browser-surface theming (in `index.css`): `::selection` uses brand blue at 16%, 
 
 - **`index.html` `<head>`** carries: meta description, Open Graph + Twitter tags, canonical, and a **LocalBusiness JSON-LD `@graph`** with one `WaterStore` node per location (name, full `PostalAddress`, `telephone`, `GeoCoordinates`, `openingHoursSpecification` Mo-Su 10:00-19:00). **Keep the JSON-LD addresses in sync with the NAP list above and with Google Business Profile.**
 - **`public/robots.txt`** — allows all, points to the sitemap.
-- **`public/sitemap.xml`** — single URL (root), `lastmod` is hand-set (bump it on meaningful content changes). `public/` is copied to dist root by Vite, so both serve at `/robots.txt` and `/sitemap.xml`.
-- **Google Search Console:** verify `lewaterstore.com` as a **Domain** property via a TXT record added in the Squarespace DNS panel, then Request Indexing + submit `sitemap.xml`. (Not yet done as of 2026-08-12.)
+- **`public/sitemap.xml`** — 8 URLs (home, 3 stores, our-water, contact, privacy, accessibility), `lastmod` is hand-set (bump it on meaningful content changes). `public/` is copied to dist root by Vite, so both serve at `/robots.txt` and `/sitemap.xml`.
+- **Google Search Console:** domain **verified** — `dig TXT lewaterstore.com` returns the `google-site-verification` record (confirmed 2026-08-25). Still open: confirm the sitemap is submitted and all 8 URLs are indexed.
 - **Higher-leverage than the site for "water store near me":** claim/clean all 3 **Google Business Profiles**; NAP must match the schema exactly.
 
 ## Analytics
@@ -152,12 +152,67 @@ The site's names, hours and schema must stay in sync with these.
 - **Hours differ per store** — Newark 10:00-18:30, both Fremont stores 10:00-19:00. Do not copy one across three. (`STORES[].close` is 18.5 / 19 / 19.)
 - Full checklist, including the attributes and reviews work that is still open: `~/PycharmProjects/WaterStore/docs/marketing/gbp-optimization-checklist.md`. Shot list for future photo runs: `gbp-photo-shot-list.md` alongside it.
 
+## SEO / correctness pass (2026-08-25)
+
+Full audit run against the live site, then fixed. Commits `b24a9d9`, `9b19521`, `c07bf75`.
+
+**Claims that were false and are now fixed.** The FAQ said purified and alkaline cost
+"the same low per-gallon price for members" ($0.375 vs $0.90). Location pages headlined
+"Two waters, one price per gallon" over a `$0.375` block and never showed the alkaline
+price - they now carry a walk-in/member price table. `/our-water` claimed bottled brands
+"mix in preservatives to control algae", which is false under FDA's standard of identity.
+The hero stat bar said "no days off" while Newark closes 6:30p. Testimonials were badged
+"Verified customer review" with no verification process behind them.
+
+**Schema.** `"@type": "WaterStore"` is not a Schema.org type - `schema.org/WaterStore`
+404s and it is absent from the vocabulary - so every LocalBusiness node was ineligible
+for rich results. All six now use `Store`. The self-serving `aggregateRating` is gone
+from the Organization node (Google policy; it already shows the live GBP rating itself).
+The same three stores were declared under six `@id`s; location-page `@id`s are now
+canonical and the homepage references them. Added WebSite, Organization logo, areaServed,
+`sameAs`/`hasMap` (Maps URLs resolved from each store's place id and verified live),
+Offer nodes, and FAQPage on `/our-water`.
+
+**Two real bugs found.** Scroll-reveal could leave content at `opacity:0` permanently if
+you scrolled past it faster than the IntersectionObserver coalesced - the entire FAQ
+section and two bottle cards were affected. And the homepage overflowed horizontally at
+320px because Tailwind's bare `grid` auto-sized its implicit track.
+
+**Font preloads were wrong**, which was the real LCP bug: `.display` is Inter 600 on the
+homepage and location pages and Montserrat 600 on the text pages, but every page
+preloaded Inter 400 and Montserrat 700. The H1 painted in the fallback face and reflowed
+on swap, registering a second LCP candidate ~2.2s late. **If you change a heading font,
+change the matching preload.**
+
+**Live per-store Google ratings (2026-08-25):** North Fremont 4.4, Central Fremont 4.0,
+Newark 4.0. Maps profile URLs are in `GOOGLE_PROFILES` in `src/App.jsx`. Google does not
+expose review counts publicly - the 180+ figure comes from the GBP dashboards.
+
+**New pages:** `/privacy` (CalOPPA - required because the balance lookup collects phone
+numbers, and a precondition for GA4 / Google Ads remarketing / the Meta Pixel),
+`/contact`, `/accessibility`. Linked from every footer.
+
+**Static hero.** The homepage hero now ships as real HTML inside `#root` so the H1 paints
+before the React bundle. Its entrance animation is disabled because replaying it over
+already-visible content both flashed and re-registered LCP. **Keep the static hero in
+`index.html` in sync with the React hero in `src/App.jsx`** - they are two copies of the
+same markup on purpose.
+
+**Deliberately NOT done:** full SSG of the homepage. It would bake time-dependent
+"Open now" state into crawlable HTML. A `<noscript>` block carries the NAP, prices and
+links for non-JS crawlers instead, limited to facts that cannot go stale.
+
+**Warm-cache production Lighthouse (mobile, Slow-4G sim), after:** `/` perf 85-86 /
+LCP 3.5s (was 67 / 7.4s), `/fremont-north` 94-97 / LCP 2.4s (was 68 / 7.1s),
+`/contact` 100. Accessibility and SEO are 100 on all 8 pages, CLS 0 everywhere.
+Cold-edge MISS runs score much lower - re-measure warm.
+
 ## Open items / TODO
 
 1. **REAL PHOTOS — done for the hero, gallery and location pages (2026-08-25).** Still stock-free but thin in two places: the **Bottles product cards** (`PRODUCTS`) have no photos yet, and three shots are missing from every store — **water actually dispensing from a tap**, a **dusk exterior with the sign lit**, and (North Fremont only) any third distinct interior. North Fremont has just 6 usable photos, 3 of them exteriors, so its gallery pairs a wide counter with a taps close-up of the same counter.
 2. **New-customer offer CTA (still open).** The Lion acquisition promo ($50 / 150 gal + free jug) is NOT on the site. It's the main acquisition lever for a local store; recommend a hero banner or dedicated strip.
-3. **Google Search Console + GBP** — verify the domain in GSC, request indexing, submit sitemap; claim/clean the 3 Google Business Profiles (see Local SEO section). Not started.
-4. **No social OG image** — link shares have no preview image (og:image not set). Add once brand imagery exists.
+3. **GSC indexing + GBP** — domain is verified; still to do: request indexing, confirm sitemap submission, and finish the 3 Google Business Profiles. Newark's rename is in review (see the GBP table above).
+4. ~~**No social OG image**~~ — **resolved.** `og.png` is live at exactly 1200x630 (29KB) with `og:image:width`/`height`/`alt` and `twitter:card summary_large_image` on every page. Link previews work.
 5. **GitHub auto-deploy still not connected — and it fails silently.** Confirmed 2026-08-25: `git push origin main` succeeds and `origin/main` matches local HEAD, but Vercel creates **no deployment at all** (verified via the deployments API — zero entries after the push). A push therefore *looks* shipped and is not. Until the Vercel GitHub app is granted access to `ivince918/le-water`, every change needs a manual CLI deploy.
 6. Loader intro `translateY(-60px)` (`.loader-stage` in index.css) is an eyeball-centered value; nudge if needed.
 
