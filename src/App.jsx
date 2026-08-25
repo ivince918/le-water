@@ -162,7 +162,7 @@ function Loader() {
             <div className="loader-mark inline-flex">
               <img src="/logo-mark.png" alt="Le Water" className="w-14 h-14 object-contain" />
             </div>
-            <div className="text-white text-[28px] md:text-[34px] leading-none font-bold uppercase tracking-[0.04em] mt-3" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+            <div className="text-white text-[24px] md:text-[30px] leading-none font-bold uppercase tracking-[0.04em] mt-3 whitespace-nowrap" style={{ fontFamily: "'Montserrat', sans-serif" }}>
               {'LE WATER STORE'.split('').map((ch, i) =>
                 ch === ' '
                   ? <span key={i} className="inline-block w-2.5" />
