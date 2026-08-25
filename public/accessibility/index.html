@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <title>Accessibility | Le Water Store</title>
+  <meta name="description" content="How Le Water Store approaches website accessibility, what we have done, where we fall short, and how to tell us about a problem." />
+  <link rel="canonical" href="https://lewaterstore.com/accessibility" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Le Water Store" />
+  <meta property="og:title" content="Accessibility | Le Water Store" />
+  <meta property="og:description" content="How Le Water Store approaches website accessibility, what we have done, where we fall short, and how to tell us about a problem." />
+  <meta property="og:url" content="https://lewaterstore.com/accessibility" />
+  <meta property="og:image" content="https://lewaterstore.com/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <style>
+    /* Self-hosted Inter + Montserrat (latin subset).
+       Replaces the render-blocking fonts.googleapis.com <link>, which Lighthouse
+       measured at 834-843ms of blocking on mobile, on every page, for every
+       first-time visitor. font-display:swap keeps text visible while loading. */
+    
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/fonts/inter-400.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url('/fonts/inter-500.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url('/fonts/inter-600.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('/fonts/inter-700.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Montserrat';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url('/fonts/montserrat-500.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Montserrat';
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url('/fonts/montserrat-600.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Montserrat';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('/fonts/montserrat-700.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://lewaterstore.com/accessibility#page",
+    "name": "Accessibility",
+    "url": "https://lewaterstore.com/accessibility",
+    "isPartOf": { "@id": "https://lewaterstore.com/#website" },
+    "publisher": { "@id": "https://lewaterstore.com/#org" },
+    "inLanguage": "en-US",
+    "dateModified": "2026-08-25",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://lewaterstore.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Accessibility", "item": "https://lewaterstore.com/accessibility" }
+      ]
+    }
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --ink:#0A1220; --blue:#1E588A; --paper:#fff; --mist:#F4F7FA; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body { font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink);
+           background:var(--paper); -webkit-font-smoothing:antialiased; line-height:1.65;
+           font-feature-settings:'ss01','cv11'; }
+    a { color:inherit; }
+    :where(a,button,input,[tabindex]):focus-visible { outline:2px solid var(--blue); outline-offset:3px; border-radius:2px; }
+    .wrap { max-width:820px; margin:0 auto; padding:0 24px; }
+    .display { font-weight:600; letter-spacing:-0.045em; line-height:1.05; font-family:'Montserrat',sans-serif; }
+
+    header.nav { position:sticky; top:0; z-index:50; background:rgba(255,255,255,.86);
+                 backdrop-filter:blur(12px); border-bottom:1px solid rgba(10,18,32,.07); }
+    .nav-in { display:flex; align-items:center; justify-content:space-between; gap:16px;
+              padding:14px 24px; max-width:1120px; margin:0 auto; }
+    .brand { display:inline-flex; align-items:center; gap:10px; }
+    .brand img { width:36px; height:36px; object-fit:contain; }
+    .wm-name { display:block; font-family:'Montserrat',sans-serif; font-weight:700; text-transform:uppercase;
+               font-size:15px; letter-spacing:.04em; }
+    .wm-tag { display:block; font-family:'Montserrat',sans-serif; font-weight:600; text-transform:uppercase;
+              font-size:8px; letter-spacing:.22em; color:rgba(10,18,32,.68); margin-top:3px; }
+    .nav-links { display:flex; gap:24px; font-size:13.5px; color:rgba(10,18,32,.80); }
+    .nav-links a:hover { color:var(--blue); }
+    @media (max-width:640px){ .nav-links{ gap:16px; font-size:13px; } .nav-links .opt{ display:none; } }
+
+    .crumb { font-size:13px; color:rgba(10,18,32,0.62); padding-top:34px; }
+    .crumb a:hover { color:var(--blue); }
+    main { padding-bottom:80px; }
+    h1.display { font-size:clamp(34px,6vw,54px); margin:14px 0 10px; }
+    .lede { font-size:17.5px; color:rgba(10,18,32,.72); margin-bottom:10px; }
+    .updated { font-size:13px; color:rgba(10,18,32,0.62); margin-bottom:40px; }
+    h2 { font-family:'Montserrat',sans-serif; font-size:20px; font-weight:700; letter-spacing:-0.02em;
+         margin:38px 0 10px; }
+    h3 { font-size:16px; font-weight:600; margin:22px 0 6px; }
+    p, li { font-size:15.5px; color:rgba(10,18,32,.80); }
+    p { margin-bottom:14px; }
+    ul, ol { margin:0 0 16px 20px; }
+    li { margin-bottom:7px; }
+    strong { color:var(--ink); font-weight:600; }
+    a.inline { color:var(--blue); text-decoration:underline; text-underline-offset:2px; }
+    .card { background:var(--mist); border:1px solid rgba(10,18,32,.08); border-radius:16px;
+            padding:22px 24px; margin:22px 0; }
+    .card p:last-child { margin-bottom:0; }
+    .stores { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); margin:24px 0 8px; }
+    .sc { border:1px solid rgba(10,18,32,.10); border-radius:16px; padding:20px; background:#fff; }
+    .sc .nm { font-weight:600; font-size:16px; margin-bottom:6px; }
+    .sc address { font-style:normal; color:rgba(10,18,32,.72); font-size:14.5px; }
+    .sc .ln { margin-top:9px; font-size:14.5px; }
+    .sc .ln a { color:var(--blue); text-decoration:underline; text-underline-offset:2px; }
+    .sc .hr { margin-top:7px; font-size:14px; color:rgba(10,18,32,.62); }
+
+    footer { background:#0A1220; color:rgba(255,255,255,.75); padding:44px 24px 34px; margin-top:60px; }
+    .fin { max-width:1120px; margin:0 auto; display:flex; flex-wrap:wrap; gap:14px;
+           justify-content:space-between; font-size:12.5px; }
+    .fin a { text-decoration:underline; text-underline-offset:2px; text-decoration-color:rgba(255,255,255,.35); }
+    .fin a:hover { text-decoration-color:#fff; color:#fff; }
+    .flinks { display:flex; flex-wrap:wrap; gap:18px; }
+</style>
+</head>
+<body>
+  <a href="#main" style="position:absolute;left:-9999px;top:0;background:#fff;padding:12px 18px;z-index:100"
+     onfocus="this.style.left='12px'" onblur="this.style.left='-9999px'">Skip to content</a>
+
+  <header class="nav">
+    <div class="nav-in">
+      <a class="brand" href="/">
+        <img src="/logo-mark.png" alt="" width="36" height="36" />
+        <span><span class="wm-name">Le Water Store</span><span class="wm-tag">Premium Water Refill</span></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="/#stores">Stores</a>
+        <a href="/#plans">Plans</a>
+        <a class="opt" href="/our-water">Our Water</a>
+        <a href="/contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="wrap">
+      <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a>&nbsp;/&nbsp;<span>Accessibility</span></nav>
+      <h1 class="display">Accessibility</h1>
+      <p class="lede">How we approach accessibility, and how to tell us when we get it wrong.</p>
+      <p class="updated">Last updated 2026-08-25</p>
+      <p>We want this website to be usable by everyone, including people who browse with a
+      screen reader, navigate by keyboard, or need larger text and higher contrast.</p>
+
+      <h2>What we aim for</h2>
+      <p>We work toward the Web Content Accessibility Guidelines (WCAG) 2.1 Level AA. That
+      is the standard courts and regulators generally point to, and it is the one we hold
+      ourselves to.</p>
+
+      <h2>What we have done</h2>
+      <ul>
+        <li>Every image on the site carries descriptive alternative text.</li>
+        <li>The site can be navigated by keyboard, and focus is always visible.</li>
+        <li>Each page starts with a &ldquo;skip to content&rdquo; link.</li>
+        <li>Form fields have real labels, not just placeholder text.</li>
+        <li>Headings run in a logical order so screen readers can move through a page.</li>
+        <li>Animations and scroll effects are switched off automatically if your device is
+        set to reduce motion.</li>
+        <li>Text and background colors are chosen to meet contrast minimums.</li>
+      </ul>
+
+      <h2>Where we know we fall short</h2>
+      <p>The maps on our location pages are embedded from Google and we do not control how
+      they behave with assistive technology. Every one of those pages also lists the full
+      street address as plain text and links to turn-by-turn directions, so the same
+      information is available without using the map.</p>
+
+      <h2>Tell us if something does not work</h2>
+      <p>If any part of this site gets in your way, we want to hear about it and we will
+      fix it. Call <a class="inline" href="tel:+15107425699">(510) 742-5699</a> or reach
+      any location from our <a class="inline" href="/contact">contact page</a>. Tell us the
+      page and what happened, and we will follow up.</p>
+
+      <h2>In our stores</h2>
+      <p>If you need a hand carrying bottles or filling a container, just ask &mdash; our
+      staff are happy to help at any location.</p>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="fin">
+      <span>&copy; 2026 Le Water Store. Family-owned in Fremont &amp; Newark, California.</span>
+      <div class="flinks">
+        <a href="/">Home</a>
+        <a href="/contact">Contact</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/accessibility">Accessibility</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -26,3 +26,7 @@ build
 # Claude / launch configs
 .claude
 .env*
+
+# SEO audit artifacts (reports + screenshots, not site code)
+lewaterstore.com-audit/
+FULL-AUDIT-REPORT.md

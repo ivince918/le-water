@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <link rel="apple-touch-icon" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
   <title>Water Refill in Central Fremont &mdash; Le Water Store | Le Water</title>
   <meta name="description" content="Le Water Store at 39409 Fremont Blvd, Central Fremont. Refill purified reverse-osmosis and alkaline water from $0.375 a gallon. Open daily 10am to 7pm. (510) 656-1533." />
@@ -21,18 +21,85 @@
   <meta name="twitter:description" content="Purified and alkaline water refills from $0.375 a gallon. Open daily in Fremont." />
   <meta name="twitter:image" content="https://lewaterstore.com/og.png" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/montserrat-700.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-400.woff2" crossorigin>
+  <style>
+    /* Self-hosted Inter + Montserrat (latin subset).
+       Replaces the render-blocking fonts.googleapis.com <link>, which Lighthouse
+       measured at 834-843ms of blocking on mobile, on every page, for every
+       first-time visitor. font-display:swap keeps text visible while loading. */
+    
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/fonts/inter-400.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url('/fonts/inter-500.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url('/fonts/inter-600.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('/fonts/inter-700.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Montserrat';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url('/fonts/montserrat-500.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Montserrat';
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url('/fonts/montserrat-600.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Montserrat';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('/fonts/montserrat-700.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+  </style>
 
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "WaterStore",
+        "@type": "Store",
         "@id": "https://lewaterstore.com/fremont-central#store",
         "name": "Le Water Store",
+        "alternateName": "Le Water Store \u2014 Central Fremont",
+        "disambiguatingDescription": "Le Water Store water refill location in Central Fremont",
+        "sameAs": ["https://www.google.com/maps?cid=15023783007573621824"],
+        "hasMap": "https://www.google.com/maps?cid=15023783007573621824",
+        "currenciesAccepted": "USD",
         "image": "https://lewaterstore.com/logo-mark.png",
         "url": "https://lewaterstore.com/fremont-central",
         "telephone": "+1-510-656-1533",
@@ -107,8 +174,8 @@
     .brand .mark svg { width: 20px; height: 20px; }
     .brand .wm { line-height: 1; font-family: 'Montserrat', sans-serif; }
     .brand .wm-name { display: block; font-weight: 700; text-transform: uppercase; font-size: 15px; letter-spacing: 0.04em; color: var(--ink); }
-    .brand .wm-tag { display: block; font-weight: 600; text-transform: uppercase; font-size: 8px; letter-spacing: 0.22em; color: rgba(10,18,32,0.5); margin-top: 3px; }
-    .nav-links { display: flex; align-items: center; gap: 30px; font-size: 13.5px; color: rgba(10,18,32,0.7); }
+    .brand .wm-tag { display: block; font-weight: 600; text-transform: uppercase; font-size: 8px; letter-spacing: 0.22em; color: rgba(10,18,32,0.68); margin-top: 3px; }
+    .nav-links { display: flex; align-items: center; gap: 30px; font-size: 13.5px; color: rgba(10,18,32,0.80); }
     .nav-links a { position: relative; transition: color 200ms var(--ease-out); }
     .nav-links a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform 320ms var(--ease-out); }
     .nav-links a:hover { color: var(--ink); }
@@ -121,7 +188,7 @@
     .hero { position: relative; overflow: hidden; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(91,165,210,0.14), transparent 60%), linear-gradient(180deg, #F7FBFD 0%, #ECF4F9 100%); border-bottom: 1px solid rgba(10,18,32,0.06); }
     .grain { position: absolute; inset: 0; pointer-events: none; opacity: 0.4; mix-blend-mode: overlay; background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
     .hero-in { position: relative; padding: 80px 0 68px; }
-    .crumb { font-size: 12.5px; color: rgba(10,18,32,0.5); margin-bottom: 22px; }
+    .crumb { font-size: 12.5px; color: rgba(10,18,32,0.62); margin-bottom: 22px; }
     .crumb a:hover { color: var(--blue); }
     .status { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: #127a45; background: #E4F5EC; padding: 7px 14px; border-radius: 999px; margin-bottom: 18px; }
     .status .dot { width: 7px; height: 7px; border-radius: 999px; background: var(--green); }
@@ -133,21 +200,21 @@
     .btn:active { transform: scale(0.97); }
     .btn svg { width: 17px; height: 17px; }
     .btn-primary { background: var(--ink); color: #fff; box-shadow: 0 1px 2px rgba(10,18,32,0.2); }
-    .btn-primary:hover { background: #0F1A2E; box-shadow: 0 10px 26px -12px rgba(10,18,32,0.5); }
+    .btn-primary:hover { background: #0F1A2E; box-shadow: 0 10px 26px -12px rgba(10,18,32,0.62); }
     .btn-ghost { background: rgba(255,255,255,0.6); color: var(--ink); border: 1px solid rgba(10,18,32,0.14); }
     .btn-ghost:hover { background: #fff; border-color: rgba(10,18,32,0.24); }
 
     /* Map */
     .gal { margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-    .gal figure { border-radius: 18px; overflow: hidden; border: 1px solid rgba(10,18,32,0.08); box-shadow: 0 24px 50px -40px rgba(10,18,32,0.45); background: var(--mist); }
+    .gal figure { border-radius: 18px; overflow: hidden; border: 1px solid rgba(10,18,32,0.08); box-shadow: 0 24px 50px -40px rgba(10,18,32,0.62); background: var(--mist); }
     .gal img { width: 100%; height: 220px; object-fit: cover; display: block; }
     @media (max-width: 720px) { .gal { grid-template-columns: 1fr 1fr; gap: 10px; } .gal img { height: 150px; } .gal figure:last-child { grid-column: span 2; } }
     .shotcard { margin-top: 28px; }
-    .shotcard .frame { border-radius: 24px; overflow: hidden; border: 1px solid rgba(10,18,32,0.08); box-shadow: 0 40px 80px -50px rgba(10,18,32,0.4); background: var(--mist); }
+    .shotcard .frame { border-radius: 24px; overflow: hidden; border: 1px solid rgba(10,18,32,0.08); box-shadow: 0 40px 80px -50px rgba(10,18,32,0.62); background: var(--mist); }
     .shotcard img { width: 100%; height: 380px; object-fit: cover; object-position: center 15%; display: block; }
     @media (max-width: 720px) { .shotcard img { height: 260px; } }
     .mapcard { margin-top: -34px; position: relative; z-index: 2; }
-    .mapcard .frame { border-radius: 24px; overflow: hidden; border: 1px solid rgba(10,18,32,0.08); box-shadow: 0 40px 80px -50px rgba(10,18,32,0.4); height: 380px; background: var(--mist); }
+    .mapcard .frame { border-radius: 24px; overflow: hidden; border: 1px solid rgba(10,18,32,0.08); box-shadow: 0 40px 80px -50px rgba(10,18,32,0.62); height: 380px; background: var(--mist); }
     .mapcard iframe { width: 100%; height: 100%; border: 0; display: block; }
     @media (max-width: 720px) { .mapcard .frame { height: 300px; } }
 
@@ -177,7 +244,7 @@
     .row { display: grid; grid-template-columns: 40px 1fr; gap: 14px; }
     .row .ic { width: 40px; height: 40px; border-radius: 12px; background: rgba(30,88,138,0.08); display: flex; align-items: center; justify-content: center; }
     .row .ic svg { width: 19px; height: 19px; color: var(--blue); }
-    .row .lbl { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(10,18,32,0.5); font-weight: 600; }
+    .row .lbl { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(10,18,32,0.62); font-weight: 600; }
     .row .val { font-size: 1.05rem; margin-top: 3px; }
     .row .val a:hover { color: var(--blue); }
     .hours { background: #fff; border: 1px solid rgba(10,18,32,0.07); border-radius: 20px; padding: 26px; box-shadow: 0 30px 60px -40px rgba(10,18,32,0.18); }
@@ -201,13 +268,13 @@
     .oc { background: #fff; border: 1px solid rgba(10,18,32,0.07); border-radius: 20px; padding: 24px; transition: border-color 240ms var(--ease-out), box-shadow 240ms var(--ease-out), transform 240ms var(--ease-out); }
     .oc:hover { border-color: rgba(10,18,32,0.14); box-shadow: 0 30px 60px -40px rgba(10,18,32,0.22); transform: translateY(-2px); }
     .oc .nm { font-weight: 600; font-size: 1.08rem; }
-    .oc .ar { font-size: 12.5px; color: rgba(10,18,32,0.5); margin-top: 2px; }
+    .oc .ar { font-size: 12.5px; color: rgba(10,18,32,0.62); margin-top: 2px; }
     .oc .ad { font-size: 13.5px; color: rgba(10,18,32,0.65); margin-top: 12px; line-height: 1.5; }
     .oc .go { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-size: 13.5px; font-weight: 500; color: var(--blue); }
     @media (max-width: 720px) { .others { grid-template-columns: 1fr; } }
 
     /* Footer */
-    footer.ft { padding: 44px 0; border-top: 1px solid rgba(10,18,32,0.08); color: rgba(10,18,32,0.55); font-size: 13.5px; }
+    footer.ft { padding: 44px 0; border-top: 1px solid rgba(10,18,32,0.08); color: rgba(10,18,32,0.62); font-size: 13.5px; }
     .ft-in { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; }
     .ft-links { display: flex; gap: 22px; }
     .ft-links a:hover { color: var(--ink); }
@@ -219,6 +286,30 @@
     }
     .sprog { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 60; pointer-events: none; }
     .sprog i { display: block; height: 100%; width: 100%; transform-origin: left; transform: scaleX(0); background: linear-gradient(90deg, #5BC8E6 0%, #1E588A 100%); will-change: transform; }
+
+    /* Per-gallon price table: both waters, walk-in vs member. Added so the page
+       never implies one price covers both — alkaline is 2.4x purified for members. */
+    .ptable{margin-top:22px;border:1px solid rgba(10,18,32,.10);border-radius:14px;overflow:hidden;background:#fff}
+    .ptable table{width:100%;border-collapse:collapse}
+    .ptable caption{text-align:left;padding:14px 16px 0;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:#1E588A;font-weight:700}
+    .ptable th,.ptable td{padding:12px 16px;text-align:left;font-size:14.5px;border-top:1px solid rgba(10,18,32,.08)}
+    .ptable thead th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:rgba(10,18,32,0.62);font-weight:700;border-top:0}
+    .ptable tbody th{font-weight:600;color:#0A1220}
+    .ptable td{color:rgba(10,18,32,.75);font-variant-numeric:tabular-nums}
+    .ptable td b{color:#0A1220}
+    .ptable .note{padding:11px 16px 14px;font-size:13px;color:rgba(10,18,32,0.62);border-top:1px solid rgba(10,18,32,.08)}
+    @media (max-width:430px){.ptable th,.ptable td{padding:10px 11px;font-size:13.5px}}
+
+    /* Per-location detail: cross streets, parking, landmarks. Added so each store page
+       carries genuinely distinct content rather than shared boilerplate. */
+    .here{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin:24px 0 6px}
+    .hcard{border:1px solid rgba(10,18,32,.10);border-radius:14px;padding:16px 18px;background:#fff}
+    .hcard dt{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:#1E588A;font-weight:700;margin-bottom:5px}
+    .hcard dd{font-size:14.5px;color:rgba(10,18,32,.78);line-height:1.55}
+    .whyhere{margin-top:22px;padding:20px 22px;border-radius:16px;background:#F4F7FA;border:1px solid rgba(10,18,32,.07)}
+    .whyhere h3{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:700;margin-bottom:7px}
+    .whyhere p{font-size:15px;color:rgba(10,18,32,.78);margin:0}
+    .served{margin-top:16px;font-size:14px;color:rgba(10,18,32,.62)}
   </style>
 </head>
 <body>
@@ -226,7 +317,7 @@
 
   <header class="nav">
     <div class="nav-in">
-      <a class="brand" href="/" aria-label="Le Water home">
+      <a class="brand" href="/">
         <span class="mark"><img src="/logo-mark.png" alt="Le Water"></span>
         <span class="wm"><span class="wm-name">Le Water Store</span><span class="wm-tag">Premium Water Refill</span></span>
       </a>
@@ -246,10 +337,10 @@
   <section class="hero">
     <div class="grain"></div>
     <div class="wrap hero-in">
-      <div class="crumb rise"><a href="/">Home</a> &nbsp;/&nbsp; Central Fremont</div>
-      <div class="status rise"><span class="dot"></span> Open daily &middot; 10am to 7pm</div>
-      <h1 class="display hero-h rise">Le Water Store<span class="area">Water refill in Central Fremont</span></h1>
-      <p class="hero-addr rise">39409 Fremont Blvd, Fremont, CA 94538</p>
+      <div class="crumb"><a href="/">Home</a> &nbsp;/&nbsp; Central Fremont</div>
+      <div class="status"><span class="dot"></span> Open daily &middot; 10am to 7pm</div>
+      <h1 class="display hero-h">Le Water Store<span class="area">Water refill in Central Fremont</span></h1>
+      <p class="hero-addr">39409 Fremont Blvd, Fremont, CA 94538</p>
       <div class="hero-btns rise">
         <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&destination=Le%20Water%20Store%2C%2039409%20Fremont%20Blvd%2C%20Fremont%2C%20CA%2094538" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 20 3 17V4l6 3 6-3 6 3v13l-6-3-6 3Z"/><path d="M9 7v13M15 4v13"/></svg>
@@ -275,28 +366,28 @@
     <div class="shotcard">
       <div class="frame">
         <picture>
-          <source srcset="/photos/storefront-fremont-central.webp" type="image/webp">
-          <img src="/photos/storefront-fremont-central.jpg" alt="The Le Water Store storefront in Central Fremont, on Fremont Blvd" loading="lazy" width="1600" height="1000">
+          <source srcset="/photos/storefront-fremont-central-480.webp 480w, /photos/storefront-fremont-central-960.webp 960w, /photos/storefront-fremont-central-1440.webp 1440w, /photos/storefront-fremont-central.webp 1600w" sizes="(min-width: 900px) 900px, 100vw" type="image/webp">
+          <img src="/photos/storefront-fremont-central.jpg" sizes="(min-width: 900px) 900px, 100vw" alt="The Le Water Store storefront in Central Fremont, on Fremont Blvd" loading="lazy" width="1600" height="1000">
         </picture>
       </div>
     </div>
       <div class="gal">
         <figure>
           <picture>
-            <source srcset="/photos/fremont-central-interior.webp" type="image/webp">
-            <img src="/photos/fremont-central-interior.jpg" alt="Inside our Central Fremont store" loading="lazy" width="1000" height="700">
+            <source srcset="/photos/fremont-central-interior-480.webp 480w, /photos/fremont-central-interior-960.webp 960w, /photos/fremont-central-interior.webp 1000w" sizes="(min-width: 900px) 420px, 92vw" type="image/webp">
+            <img src="/photos/fremont-central-interior.jpg" sizes="(min-width: 900px) 420px, 92vw" alt="Inside our Central Fremont store" loading="lazy" width="1000" height="700">
           </picture>
         </figure>
         <figure>
           <picture>
-            <source srcset="/photos/fremont-central-rinse.webp" type="image/webp">
-            <img src="/photos/fremont-central-rinse.jpg" alt="The bottle rinse station at our Central Fremont store" loading="lazy" width="1000" height="700">
+            <source srcset="/photos/fremont-central-rinse-480.webp 480w, /photos/fremont-central-rinse-960.webp 960w, /photos/fremont-central-rinse.webp 1000w" sizes="(min-width: 900px) 420px, 92vw" type="image/webp">
+            <img src="/photos/fremont-central-rinse.jpg" sizes="(min-width: 900px) 420px, 92vw" alt="The bottle rinse station at our Central Fremont store" loading="lazy" width="1000" height="700">
           </picture>
         </figure>
         <figure>
           <picture>
-            <source srcset="/photos/fremont-central-machines.webp" type="image/webp">
-            <img src="/photos/fremont-central-machines.jpg" alt="The 24 hour self-serve vending machines outside our Central Fremont store" loading="lazy" width="1000" height="700">
+            <source srcset="/photos/fremont-central-machines-480.webp 480w, /photos/fremont-central-machines-960.webp 960w, /photos/fremont-central-machines.webp 1000w" sizes="(min-width: 900px) 420px, 92vw" type="image/webp">
+            <img src="/photos/fremont-central-machines.jpg" sizes="(min-width: 900px) 420px, 92vw" alt="The 24 hour self-serve vending machines outside our Central Fremont store" loading="lazy" width="1000" height="700">
           </picture>
         </figure>
       </div>
@@ -328,10 +419,22 @@
         </div>
       </div>
 
+      <dl class="here rise">
+        <div class="hcard"><dt>Cross street</dt><dd>On Fremont Blvd in the FoodMaxx centre, a short way from the Crossroads.</dd></div>
+        <div class="hcard"><dt>Look for</dt><dd>The unit facing Fremont Blvd. Our signage sits on the fascia band above the windows.</dd></div>
+        <div class="hcard"><dt>Parking</dt><dd>Large shared surface lot with spaces close to our door.</dd></div>
+        <div class="hcard"><dt>Nearby</dt><dd>FoodMaxx anchors the centre, with Taj e Chaat and bus stops on Fremont Blvd right outside.</dd></div>
+      </dl>
+      <div class="whyhere rise">
+        <h3>What this store is good for</h3>
+        <p>This store has the most room at the counter, so it handles large multi-jug fills without a queue building. If you are refilling five or six containers at once, this is usually the fastest stop.</p>
+      </div>
+      <p class="served rise">Regulars come here from Central Fremont, Centerville, Irvington and the Mowry Ave corridor.</p>
+
       <div class="member rise">
         <div>
-          <div class="price"><span class="big">$0.375</span><span class="per">per gallon, members</span></div>
-          <p class="mtext">Prepay for gallons and save. Members get our lowest per-gallon price on both purified and alkaline water.</p>
+          <div class="price"><span class="big">$0.375</span><span class="per">per gallon, members &middot; purified</span></div>
+          <p class="mtext">Purified water, on a prepaid plan. Alkaline is $0.90 a gallon for members. Full pricing below.</p>
         </div>
         <a class="mbtn" href="/#plans">See plans &amp; pricing</a>
       </div>
@@ -341,8 +444,8 @@
   <section class="band mist">
     <div class="wrap">
       <p class="kick rise">On tap here</p>
-      <h2 class="rise">Two waters, one price per gallon</h2>
-      <p class="lead measure rise">Our Central Fremont store dispenses both of our waters. Bring any clean jug and fill up, or grab a bottle in store.</p>
+      <h2 class="rise">Two waters, on tap every day</h2>
+      <p class="lead measure rise">Our Central Fremont store sits further down Fremont Blvd, in the FoodMaxx shopping centre near the Crossroads. It is the easiest of the three to reach from central Fremont and from the Mowry Ave side, and it shares a lot with a full grocery run, so it suits people topping up water alongside the weekly shop.</p>
       <div class="taps">
         <div class="tap rise">
           <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z"/></svg> Purified (reverse osmosis)</h3>
@@ -354,6 +457,19 @@
           <p>The same purified water, remineralized to a higher pH of around 8 to 9.5 for a smoother, mineral taste.</p>
           <a class="more" href="/our-water">What alkaline water is <span aria-hidden="true">&rarr;</span></a>
         </div>
+      </div>
+      <div class="ptable rise">
+        <table>
+          <caption>Price per gallon</caption>
+          <thead>
+            <tr><th scope="col">Water</th><th scope="col">Walk-in</th><th scope="col">Member</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Purified (reverse osmosis)</th><td>$0.50</td><td><b>$0.375</b></td></tr>
+            <tr><th scope="row">Alkaline</th><td>$1.30</td><td><b>$0.90</b></td></tr>
+          </tbody>
+        </table>
+        <p class="note">Member pricing comes from a prepaid plan: 120 gallons of purified for $45, or 100 gallons of alkaline for $90. Your balance follows your phone number to any of our three stores.</p>
       </div>
     </div>
   </section>
@@ -381,12 +497,14 @@
 
   <footer class="ft">
     <div class="wrap ft-in">
-      <div>&copy; Le Water &middot; Family-owned in Fremont &amp; Newark</div>
+      <div>&copy; 2026 Le Water Store &middot; Family-owned in Fremont &amp; Newark, California</div>
       <div class="ft-links">
         <a href="/">Home</a>
         <a href="/our-water">Our Water</a>
         <a href="/#stores">Stores</a>
-        <a href="/#balance">Check balance</a>
+        <a href="/contact">Contact</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/accessibility">Accessibility</a>
       </div>
     </div>
   </footer>
@@ -401,6 +519,21 @@
         entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
       }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
       els.forEach(function (e) { io.observe(e); });
+      /* Safety net: scrolling past an element faster than the observer coalesces can
+         otherwise leave it at opacity:0 permanently. Reveal anything at or above the
+         fold line, including content already scrolled past. */
+      var ticking = false;
+      function sweep() {
+        ticking = false;
+        var vh = window.innerHeight;
+        document.querySelectorAll('.rise:not(.in)').forEach(function (e) {
+          if (e.getBoundingClientRect().top < vh * 0.92) { e.classList.add('in'); io.unobserve(e); }
+        });
+      }
+      function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(sweep); } }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      requestAnimationFrame(sweep);
     })();
   </script>
   <script>
