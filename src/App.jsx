@@ -162,15 +162,15 @@ function Loader() {
             <div className="loader-mark inline-flex">
               <img src="/logo-mark.png" alt="Le Water" className="w-14 h-14 object-contain" />
             </div>
-            <div className="display text-white text-[38px] leading-none tracking-[-0.03em] mt-3">
-              {'LE WATER'.split('').map((ch, i) =>
+            <div className="text-white text-[28px] md:text-[34px] leading-none font-bold uppercase tracking-[0.04em] mt-3" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+              {'LE WATER STORE'.split('').map((ch, i) =>
                 ch === ' '
-                  ? <span key={i} className="inline-block w-3" />
-                  : <span key={i} className="loader-letter" style={{ animationDelay: `${0.72 + i * 0.045}s` }}>{ch}</span>
+                  ? <span key={i} className="inline-block w-2.5" />
+                  : <span key={i} className="loader-letter" style={{ animationDelay: `${0.72 + i * 0.03}s` }}>{ch}</span>
               )}
             </div>
-            <div className="loader-brand mt-3 text-[10px] tracking-[0.3em] uppercase text-white/45">
-              Pure alkaline water
+            <div className="loader-brand mt-3 text-[10px] tracking-[0.3em] uppercase text-white/45" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+              Premium Water Refill
             </div>
           </div>
         </div>
@@ -289,7 +289,7 @@ function Nav({ dark = false }) {
 
   return (
     <nav className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${bar}`}>
-      <div className="mx-auto max-w-[1240px] px-6 md:px-10 py-5 flex items-center justify-between">
+      <div className="relative mx-auto max-w-[1240px] px-6 md:px-10 py-5 flex items-center justify-between">
         <a href="#" className="flex items-center gap-2.5 group">
           <img src="/logo-mark.png" alt="Le Water" draggable="false" className="w-9 h-9 object-contain" />
           <span className="leading-none" style={{ fontFamily: "'Montserrat', sans-serif" }}>
@@ -297,7 +297,7 @@ function Nav({ dark = false }) {
             <span className={`block uppercase text-[8px] font-semibold tracking-[0.22em] mt-[3px] ${sub}`}>Premium Water Refill</span>
           </span>
         </a>
-        <div className={`hidden md:flex items-center gap-9 text-[13.5px] ${sub}`}>
+        <div className={`hidden md:flex items-center gap-9 text-[13.5px] absolute left-1/2 -translate-x-1/2 ${sub}`}>
           <a href="#balance" className="link-u">Balance</a>
           <a href="#stores" className="link-u">Stores</a>
           <a href="#plans" className="link-u">Plans</a>
