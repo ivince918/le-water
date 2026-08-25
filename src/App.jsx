@@ -238,12 +238,12 @@ const formatPhone = (v) => {
 
 /* Stock photography seeds tuned for water / refill / store aesthetic */
 const IMG = {
-  heroSubject:'https://images.pexels.com/photos/40784/drops-of-water-water-nature-liquid-40784.jpeg?auto=compress&cs=tinysrgb&w=2400',  // droplet hitting water with concentric ripples — high res
   /* Real store photography — shot on location, served from /public/photos */
-  gallery1:   '/photos/fill-station.webp',                 // Newark fill counter
-  gallery2:   '/photos/storefront-fremont-central.webp',   // Central Fremont storefront
-  gallery3:   '/photos/bottles.webp',                      // BPA-free bottles for sale
-  gallery4:   '/photos/purification-room.webp',            // Newark purification room
+  hero:       '/photos/hero-storefront.webp',      // North Fremont storefront
+  gallery1:   '/photos/fill-station.webp',         // Newark refill counter
+  gallery2:   '/photos/walk-in.webp',              // North Fremont, walking in
+  gallery3:   '/photos/bottles.webp',              // Central Fremont, bottles for sale
+  gallery4:   '/photos/purification-room.webp',    // Newark purification room
 }
 
 /* ────────────────────────────────── NAV ────────────────────────────────── */
@@ -399,16 +399,22 @@ function Hero() {
       <div className="absolute inset-0 overflow-hidden">
         <img
           ref={imgRef}
-          src={IMG.heroSubject}
-          alt="A single droplet hitting still water, creating concentric ripples"
+          src={IMG.hero}
+          alt="The Le Water Store storefront in North Fremont"
           className="ken-burns absolute inset-0 w-full h-full object-cover will-change-transform"
           loading="eager"
         />
       </div>
 
-      {/* Legibility gradient */}
+      {/* Opaque cover — flat dark field first, then soft radial accents and a
+          bottom weight so the headline always clears the photograph. */}
+      <div className="absolute inset-0" style={{ background: 'rgba(10,26,38,0.78)' }} />
       <div className="absolute inset-0"
-           style={{ background: 'linear-gradient(180deg, rgba(10,26,38,0.30) 0%, rgba(10,26,38,0.10) 35%, rgba(10,26,38,0.70) 100%)' }} />
+           style={{ background: [
+             'radial-gradient(900px 420px at 88% -15%, rgba(96,165,205,0.16), transparent 62%)',
+             'radial-gradient(760px 360px at -8% 115%, rgba(255,255,255,0.05), transparent 60%)',
+             'linear-gradient(180deg, rgba(10,26,38,0.34) 0%, rgba(10,26,38,0) 38%, rgba(10,26,38,0.62) 100%)',
+           ].join(', ') }} />
 
       {/* CONTENT (scroll-fades) */}
       <div className="absolute inset-0 z-10 flex">
@@ -578,16 +584,16 @@ function Reviews() {
             className="display h-lead text-[#0A1220]"
             text="Delivering the best value water in Fremont since 1998."
           />
-          {/* Store gallery — real photos, shot on location at the Newark and Central Fremont stores */}
+          {/* Store gallery — real photos, one or more from each of the three stores */}
           <div className="reveal mt-8 md:mt-10 grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2 md:gap-4 md:h-[460px]">
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto md:col-span-2 md:row-span-2 ring-1 ring-[#0A1220]/06">
               <img src={IMG.gallery1} alt="The stainless refill counter at our Newark store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto md:col-span-2 ring-1 ring-[#0A1220]/06">
-              <img src={IMG.gallery2} alt="Our Central Fremont storefront on Fremont Blvd" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.gallery2} alt="Walking in to our North Fremont store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto ring-1 ring-[#0A1220]/06">
-              <img src={IMG.gallery3} alt="BPA-free bottles and jugs for sale in store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.gallery3} alt="BPA-free bottles and jugs for sale at our Central Fremont store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto ring-1 ring-[#0A1220]/06">
               <img src={IMG.gallery4} alt="The water purification room, visible through the viewing window" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
