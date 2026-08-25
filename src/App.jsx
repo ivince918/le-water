@@ -476,21 +476,14 @@ function Hero({ animate = true }) {
       <div className="absolute inset-0 z-10 flex">
         <div ref={contentRef} className="mx-auto max-w-[1240px] w-full px-6 md:px-10 flex flex-col justify-end pb-[14vh] md:pb-[16vh] will-change-transform">
           <h1 className="display h-hero text-white max-w-4xl drop-shadow-[0_4px_30px_rgba(0,0,0,0.35)]">
-            <span {...rise('0.04s')}>Water</span>{' '}
-            <span {...rise('0.10s')}>refill</span>{' '}
-            <span {...rise('0.16s')}>in</span>{' '}
-            <span {...rise('0.22s')}>Fremont</span>
+            <span {...rise('0.15s')}>Where</span>{' '}
+            <span {...rise('0.30s')}>pure</span>{' '}
+            <span {...rise('0.45s')}>water</span>
             <br/>
-            <span {...rise('0.28s')}>&amp;</span>{' '}
-            <span {...rise('0.34s')}>Newark.</span>
+            <span {...rise('0.65s')}>flows</span>{' '}
+            <span {...rise('0.80s')}>daily.</span>
           </h1>
-          <p className={`mt-5 max-w-[42ch] text-[16px] md:text-[18px] leading-relaxed text-white/85 drop-shadow-[0_2px_16px_rgba(0,0,0,0.35)]${animate ? ' fade-up' : ''}`}
-             style={animate ? { animationDelay: '0.46s' } : undefined}>
-            Purified and alkaline water, refilled into any container you bring.
-            From <strong className="font-semibold text-white">$0.375 a gallon</strong> for members.
-            Three family-owned stores, open daily since 1998.
-          </p>
-          <div className={`mt-8 flex flex-wrap items-center gap-x-4 gap-y-3${animate ? ' fade-up' : ''}`} style={animate ? { animationDelay: '0.58s' } : undefined}>
+          <div className={`mt-9 flex flex-wrap items-center gap-x-4 gap-y-3${animate ? ' fade-up' : ''}`} style={animate ? { animationDelay: '1.05s' } : undefined}>
             <a href="#stores"
                onClick={() => trackEvent('hero_find_store')}
                className="group inline-flex items-center justify-center px-7 py-[15px] rounded-full bg-white text-[#0a1a26] font-medium text-[14.5px] transition-all duration-200 ease-out hover:bg-[#5BC8E6] hover:-translate-y-0.5 active:scale-[0.97]">
@@ -525,7 +518,7 @@ function Hero({ animate = true }) {
 function TrustBar() {
   const stats = [
     { icon: MapPin,  big: '3',        small: 'Locations across Fremont & Newark' },
-    { icon: Clock,   big: 'Every day', small: 'Open 10a to 7p daily (Newark to 6:30p)' },
+    { icon: Clock,   big: 'Every day', small: '10a to 7p, Newark to 6:30p' },
     { icon: Star,    big: '4.1★',     small: '180+ Google reviews across 3 stores' },
     { icon: Droplet, big: '$0.375',   small: 'Per gallon for members' },
   ]
@@ -628,7 +621,7 @@ function VerifiedTag() {
   return (
     <span className="inline-flex items-center gap-1.5 text-[12px] text-[#0A1220]/62">
       <span className="w-1 h-1 rounded-full bg-[#0A1220]/30" />
-      From our Google reviews
+      From our Yelp reviews
     </span>
   )
 }
@@ -690,6 +683,8 @@ function Reviews() {
                 <a href={GOOGLE_PROFILES[0].url} target="_blank" rel="noopener noreferrer"
                    onClick={() => trackEvent('view_google_profile', { store: GOOGLE_PROFILES[0].name })}
                    className="font-semibold text-[#0A1220] underline underline-offset-2 decoration-[#0A1220]/25 hover:decoration-[#1E588A]">three Google profiles</a>
+                {/* Aggregate = Google (4.1 matches the verified per-store 4.4/4.0/4.0).
+                    The quote cards below are Yelp — different source, labelled separately. */}
               </div>
             </div>
           </div>
@@ -1438,9 +1433,10 @@ function FAQ() {
 }
 
 /* ────────────────────────────── FOOTER ────────────────────────────── */
-/* Carries the full NAP for all three stores, the privacy policy (CalOPPA requires it to
-   be conspicuously posted, and the ad platforms require it on every page that can carry
-   a pixel), and a public review path — the site previously had none. */
+/* Kept deliberately compact — every section is built to fit a screen. The three
+   legal links are the only addition to the original: CalOPPA requires the privacy
+   policy to be conspicuously posted, and Meta requires it on every page that can
+   carry a pixel. Full store addresses live on the store cards and /contact. */
 function Footer() {
   return (
     <footer className="relative bg-[#0A1220] text-white/75 pt-16 md:pt-20 pb-10 px-6 md:px-10 overflow-hidden">
@@ -1450,72 +1446,40 @@ function Footer() {
       </div>
       <div className="relative mx-auto max-w-[1240px]">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12">
-          <div className="md:col-span-5">
+          <div className="md:col-span-7">
             <div className="flex items-center gap-2 mb-6">
-              <img src="/logo-mark.png" alt="Le Water Store" width="32" height="32" className="w-8 h-8 object-contain" />
-              <span className="font-semibold text-white">Le Water Store</span>
+              <img src="/logo-mark.png" alt="" width="32" height="32" className="w-8 h-8 object-contain" />
+              <span className="font-semibold text-white">Le Water</span>
             </div>
             <h3 className="display h-title text-white max-w-xl">
               Pure water,<br/>
               <span className="text-white/45">poured with care.</span>
             </h3>
-            <p className="mt-5 text-[13.5px] text-white/70 max-w-[38ch]">
-              Family-owned since 1998. Purified and alkaline water refills at three
-              stores across Fremont and Newark, with self-serve vending outside every
-              location 24 hours a day.
-            </p>
           </div>
-
-          <div className="md:col-span-7 grid sm:grid-cols-3 gap-8 text-[13.5px]">
+          <div className="md:col-span-5 grid grid-cols-2 gap-8 md:justify-self-end text-[13.5px]">
             <div className="space-y-3">
-              <h2 className="eyebrow text-white/70 mb-2">Explore</h2>
+              <div className="eyebrow text-white/70 mb-2">Explore</div>
               <a href="#plans" className="block link-u">Plans</a>
               <a href="#bottles" className="block link-u">Bottles</a>
               <a href="#balance" className="block link-u">Balance</a>
               <a href="#stores" className="block link-u">Stores</a>
-              <a href="#faq" className="block link-u">FAQ</a>
               <a href="/our-water" className="block link-u">Our Water</a>
             </div>
-
-            <div className="sm:col-span-2 space-y-5">
-              <h2 className="eyebrow text-white/70">Visit a store</h2>
-              {STORES.map((st) => (
-                <div key={st.slug} className="leading-relaxed">
-                  <a href={`/${st.slug}`} className="block font-medium text-white link-u">{st.area}</a>
-                  <address className="not-italic text-white/70">
-                    {st.address}, {st.city}
-                  </address>
-                  <div className="text-white/70">
-                    <a href={`tel:${st.phone}`} className="link-u">{st.phoneDisplay}</a>
-                    <span className="px-1.5 text-white/40">·</span>
-                    Open daily 10a to {fmtHourShort(st.close)}
-                  </div>
-                </div>
-              ))}
+            <div className="space-y-3">
+              <div className="eyebrow text-white/70 mb-2">Call a store</div>
+              <a href="tel:+15107425699" className="block link-u text-white/80">North Fremont &middot; (510) 742-5699</a>
+              <a href="tel:+15106561533" className="block link-u text-white/80">Central Fremont &middot; (510) 656-1533</a>
+              <a href="tel:+15107396225" className="block link-u text-white/80">Newark &middot; (510) 739-6225</a>
+              <div className="text-white/80 pt-1">Open daily &middot; 10a to 7p (Newark to 6:30p)</div>
             </div>
           </div>
         </div>
-
         <div className="hairline opacity-30 mb-6" />
-
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 text-[13px]">
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span className="text-white/70">Reviewed us before?</span>
-            {GOOGLE_PROFILES.map((g) => (
-              <a key={g.name} href={g.url} target="_blank" rel="noopener noreferrer"
-                 onClick={() => trackEvent('view_google_profile', { store: g.name })}
-                 className="link-u text-white/80">{g.name} on Google</a>
-            ))}
-          </div>
-        </div>
-
-        <div className="hairline opacity-20 mb-6" />
-
-        <div className="flex flex-col md:flex-row justify-between text-[12.5px] text-white/70 gap-3">
-          <span>© {new Date().getFullYear()} Le Water Store. Family-owned in Fremont &amp; Newark, California.</span>
-          <div className="flex flex-wrap gap-x-5 gap-y-2">
+        <div className="flex flex-col md:flex-row justify-between text-[12px] text-white/70 gap-2">
+          <span>© {new Date().getFullYear()} Le Water. Family-owned in Fremont &amp; Newark, California.</span>
+          <div className="flex flex-wrap gap-x-5 gap-y-1">
             <a href="/contact" className="link-u">Contact</a>
-            <a href="/privacy" className="link-u">Privacy Policy</a>
+            <a href="/privacy" className="link-u">Privacy</a>
             <a href="/accessibility" className="link-u">Accessibility</a>
           </div>
         </div>
