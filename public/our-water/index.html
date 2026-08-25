@@ -195,9 +195,13 @@
       .js .rise { opacity: 0; transform: translateY(16px); transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out); }
       .js .rise.in { opacity: 1; transform: none; }
     }
+    .sprog { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 60; pointer-events: none; }
+    .sprog i { display: block; height: 100%; width: 100%; transform-origin: left; transform: scaleX(0); background: linear-gradient(90deg, #5BC8E6 0%, #1E588A 100%); will-change: transform; }
   </style>
 </head>
 <body>
+  <div class="sprog" aria-hidden="true"><i></i></div>
+
   <header class="nav">
     <div class="nav-in">
       <a class="brand" href="/" aria-label="Le Water home">
@@ -424,6 +428,21 @@
         entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
       }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
       els.forEach(function (e) { io.observe(e); });
+    })();
+  </script>
+  <script>
+    /* Scroll progress — mirrors the homepage ScrollProgress component. */
+    (function () {
+      var fill = document.querySelector('.sprog i');
+      if (!fill) return;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      function tick() {
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        var pct = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+        fill.style.transform = 'scaleX(' + pct + ')';
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
     })();
   </script>
 </body>

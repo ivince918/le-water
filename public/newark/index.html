@@ -138,6 +138,10 @@
     .btn-ghost:hover { background: #fff; border-color: rgba(10,18,32,0.24); }
 
     /* Map */
+    .gal { margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .gal figure { border-radius: 18px; overflow: hidden; border: 1px solid rgba(10,18,32,0.08); box-shadow: 0 24px 50px -40px rgba(10,18,32,0.45); background: var(--mist); }
+    .gal img { width: 100%; height: 220px; object-fit: cover; display: block; }
+    @media (max-width: 720px) { .gal { grid-template-columns: 1fr 1fr; gap: 10px; } .gal img { height: 150px; } .gal figure:last-child { grid-column: span 2; } }
     .shotcard { margin-top: 28px; }
     .shotcard .frame { border-radius: 24px; overflow: hidden; border: 1px solid rgba(10,18,32,0.08); box-shadow: 0 40px 80px -50px rgba(10,18,32,0.4); background: var(--mist); }
     .shotcard img { width: 100%; height: 380px; object-fit: cover; display: block; }
@@ -213,9 +217,13 @@
       .js .rise { opacity: 0; transform: translateY(16px); transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out); }
       .js .rise.in { opacity: 1; transform: none; }
     }
+    .sprog { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 60; pointer-events: none; }
+    .sprog i { display: block; height: 100%; width: 100%; transform-origin: left; transform: scaleX(0); background: linear-gradient(90deg, #5BC8E6 0%, #1E588A 100%); will-change: transform; }
   </style>
 </head>
 <body>
+  <div class="sprog" aria-hidden="true"><i></i></div>
+
   <header class="nav">
     <div class="nav-in">
       <a class="brand" href="/" aria-label="Le Water home">
@@ -272,6 +280,26 @@
         </picture>
       </div>
     </div>
+      <div class="gal">
+        <figure>
+          <picture>
+            <source srcset="/photos/newark-counter.webp" type="image/webp">
+            <img src="/photos/newark-counter.jpg" alt="The stainless refill counter at our Newark store" loading="lazy" width="1000" height="700">
+          </picture>
+        </figure>
+        <figure>
+          <picture>
+            <source srcset="/photos/newark-bottles.webp" type="image/webp">
+            <img src="/photos/newark-bottles.jpg" alt="BPA-free bottles and jugs for sale in Newark" loading="lazy" width="1000" height="700">
+          </picture>
+        </figure>
+        <figure>
+          <picture>
+            <source srcset="/photos/newark-pricing.webp" type="image/webp">
+            <img src="/photos/newark-pricing.jpg" alt="Prepaid plan pricing at the Newark counter" loading="lazy" width="1000" height="700">
+          </picture>
+        </figure>
+      </div>
   </div>
 
   <section class="band">
@@ -373,6 +401,21 @@
         entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
       }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
       els.forEach(function (e) { io.observe(e); });
+    })();
+  </script>
+  <script>
+    /* Scroll progress — mirrors the homepage ScrollProgress component. */
+    (function () {
+      var fill = document.querySelector('.sprog i');
+      if (!fill) return;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      function tick() {
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        var pct = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+        fill.style.transform = 'scaleX(' + pct + ')';
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
     })();
   </script>
 </body>

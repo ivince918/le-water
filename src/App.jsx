@@ -243,19 +243,34 @@ const IMG = {
   gallery1:   '/photos/fill-station.webp',         // Newark refill counter
   gallery2:   '/photos/walk-in.webp',              // North Fremont, walking in
   gallery3:   '/photos/bottles.webp',              // Central Fremont, bottles for sale
-  gallery4:   '/photos/purification-room.webp',    // Newark purification room
+  gallery4:   '/photos/purification-window.webp',  // Newark, through the purification window
 }
 
 /* ────────────────────────────────── NAV ────────────────────────────────── */
 function Nav({ dark = false }) {
   const [scrolled, setScrolled] = useState(false)
+  // The homepage nav sits over a dark photographic hero, so it starts light.
+  // Once the hero has scrolled away the page behind it is white, and the nav
+  // has to switch to the same dark-on-white treatment the other pages use.
+  const [pastHero, setPastHero] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 32)
+    const fn = () => {
+      const y = window.scrollY
+      setScrolled(y > 32)
+      setPastHero(y > window.innerHeight - 72)
+    }
     fn()
     window.addEventListener('scroll', fn, { passive: true })
-    return () => window.removeEventListener('scroll', fn)
+    window.addEventListener('resize', fn)
+    return () => {
+      window.removeEventListener('scroll', fn)
+      window.removeEventListener('resize', fn)
+    }
   }, [])
+
+  // Pages that are light throughout pass dark; the homepage earns it by scroll.
+  const onLight = dark || pastHero
 
   const MOBILE_LINKS = [
     ['#balance', 'Check balance'],
@@ -266,16 +281,16 @@ function Nav({ dark = false }) {
     ['/our-water', 'Our Water'],
   ]
 
-  const txt = dark ? 'text-[#0A1220]' : 'text-white'
-  const sub = dark ? 'text-[#0A1220]/70' : 'text-white/85'
-  const chip = dark
+  const txt = onLight ? 'text-[#0A1220]' : 'text-white'
+  const sub = onLight ? 'text-[#0A1220]/70' : 'text-white/85'
+  const chip = onLight
     ? 'bg-[#0A1220] text-white'
     : 'bg-white/15 backdrop-blur-md border border-white/25 text-white'
-  const cta = dark
+  const cta = onLight
     ? 'text-[#0A1220] border-[#0A1220]/15 bg-white/60 hover:bg-white'
     : 'text-white border-white/30 bg-white/10 hover:bg-white/20'
   const bar = scrolled
-    ? (dark
+    ? (onLight
         ? 'bg-white/85 backdrop-blur-md shadow-[0_1px_0_rgba(10,18,32,0.06)]'
         : 'bg-[#0a1a26]/65 backdrop-blur-md')
     : 'bg-transparent'
@@ -596,7 +611,7 @@ function Reviews() {
               <img src={IMG.gallery3} alt="BPA-free bottles and jugs for sale at our Central Fremont store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto ring-1 ring-[#0A1220]/06">
-              <img src={IMG.gallery4} alt="The water purification room, visible through the viewing window" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.gallery4} alt="Looking through the window into our Newark purification room" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
           </div>
         </div>
@@ -663,9 +678,9 @@ function Plans() {
   return (
     <section id="plans" className="relative py-24 md:py-32 px-6 md:px-10 bg-white">
       <div className="mx-auto max-w-[1240px]">
-        <div className="reveal max-w-2xl mb-12 md:mb-16">
+        <div className="reveal max-w-3xl mb-12 md:mb-16">
           <h2 className="display h-title text-[#0A1220]">
-            Ultra fresh great tasting water.
+            <span className="block md:whitespace-nowrap">Ultra fresh great tasting water.</span>
             <span className="block text-[#1E588A] md:whitespace-nowrap">Members save <span className="font-bold">over 25%</span>.</span>
           </h2>
           <p className="mt-5 text-[15px] leading-relaxed text-[#0A1220]/60 max-w-md">
@@ -814,8 +829,8 @@ function Balance() {
         </div>
 
       <div className="grid md:grid-cols-12 gap-6 md:gap-8">
-        {/* LEFT — plan comparison */}
-        <div className="reveal md:col-span-5 grid gap-4" style={{ transitionDelay: '120ms' }}>
+        {/* RIGHT on desktop — plan comparison */}
+        <div className="reveal md:col-span-5 md:order-2 grid gap-4" style={{ transitionDelay: '120ms' }}>
           <PlanStat
             kind="Regular plan"
             from="$0.50"
@@ -834,7 +849,8 @@ function Balance() {
           />
         </div>
 
-        <div className="reveal md:col-span-7" style={{ transitionDelay: '200ms' }}>
+        {/* LEFT on desktop — balance lookup */}
+        <div className="reveal md:col-span-7 md:order-1" style={{ transitionDelay: '200ms' }}>
           <div className="card !rounded-[28px] p-7 md:p-9 shadow-[0_40px_80px_-40px_rgba(10,18,32,0.18)]">
             <div className="flex items-center gap-2.5 mb-7">
               <span className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-[#0A1220] text-white">
