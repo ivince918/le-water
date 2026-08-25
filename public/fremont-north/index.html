@@ -85,12 +85,6 @@
       src: url('/fonts/montserrat-700.woff2') format('woff2');
       unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
     }
-
-    /* Per-gallon price on each water card. Inline rather than a separate table so
-       the section still fits a screen — the alkaline price has to appear somewhere,
-       the page used to imply $0.375 covered both. */
-    .tap .pr{margin-top:10px;padding-top:10px;border-top:1px solid rgba(10,18,32,.10);font-size:14px;color:rgba(10,18,32,.72)}
-    .tap .pr b{color:#0A1220;font-variant-numeric:tabular-nums}
   </style>
 
   <script type="application/ld+json">
@@ -293,7 +287,29 @@
     .sprog { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 60; pointer-events: none; }
     .sprog i { display: block; height: 100%; width: 100%; transform-origin: left; transform: scaleX(0); background: linear-gradient(90deg, #5BC8E6 0%, #1E588A 100%); will-change: transform; }
 
+    /* Per-gallon price table: both waters, walk-in vs member. Added so the page
+       never implies one price covers both — alkaline is 2.4x purified for members. */
+    .ptable{margin-top:22px;border:1px solid rgba(10,18,32,.10);border-radius:14px;overflow:hidden;background:#fff}
+    .ptable table{width:100%;border-collapse:collapse}
+    .ptable caption{text-align:left;padding:14px 16px 0;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:#1E588A;font-weight:700}
+    .ptable th,.ptable td{padding:12px 16px;text-align:left;font-size:14.5px;border-top:1px solid rgba(10,18,32,.08)}
+    .ptable thead th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:rgba(10,18,32,0.62);font-weight:700;border-top:0}
+    .ptable tbody th{font-weight:600;color:#0A1220}
+    .ptable td{color:rgba(10,18,32,.75);font-variant-numeric:tabular-nums}
+    .ptable td b{color:#0A1220}
+    .ptable .note{padding:11px 16px 14px;font-size:13px;color:rgba(10,18,32,0.62);border-top:1px solid rgba(10,18,32,.08)}
+    @media (max-width:430px){.ptable th,.ptable td{padding:10px 11px;font-size:13.5px}}
 
+    /* Per-location detail: cross streets, parking, landmarks. Added so each store page
+       carries genuinely distinct content rather than shared boilerplate. */
+    .here{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin:24px 0 6px}
+    .hcard{border:1px solid rgba(10,18,32,.10);border-radius:14px;padding:16px 18px;background:#fff}
+    .hcard dt{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:#1E588A;font-weight:700;margin-bottom:5px}
+    .hcard dd{font-size:14.5px;color:rgba(10,18,32,.78);line-height:1.55}
+    .whyhere{margin-top:22px;padding:20px 22px;border-radius:16px;background:#F4F7FA;border:1px solid rgba(10,18,32,.07)}
+    .whyhere h3{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:700;margin-bottom:7px}
+    .whyhere p{font-size:15px;color:rgba(10,18,32,.78);margin:0}
+    .served{margin-top:16px;font-size:14px;color:rgba(10,18,32,.62)}
   </style>
 </head>
 <body>
@@ -381,7 +397,7 @@
     <div class="wrap">
       <p class="kick rise">Visit us</p>
       <h2 class="rise">Find the North Fremont store</h2>
-      <p class="lead measure rise">Our North Fremont store sits right on Fremont Blvd, an easy stop whether you are running errands nearby or filling up on the way home. Parking is right out front.</p>
+      <p class="lead measure rise">Our North Fremont store is the original one, open on Fremont Blvd since 1998. It sits in the Brookvale Shopping Center, in the same lot as CVS and Planet Fitness, so most people fold a refill into a trip they were already making. Parking is right out front and the door is a few steps from the stalls, which matters when you are carrying two five-gallon jugs.</p>
       <div class="details">
         <div class="info">
           <div class="row rise">
@@ -403,10 +419,22 @@
         </div>
       </div>
 
+      <dl class="here rise">
+        <div class="hcard"><dt>Cross street</dt><dd>On Fremont Blvd at Nicolet Ave, in the Brookvale Shopping Center.</dd></div>
+        <div class="hcard"><dt>Look for</dt><dd>The strip beside CVS and Planet Fitness. Our signage sits on the fascia band above the windows.</dd></div>
+        <div class="hcard"><dt>Parking</dt><dd>Free surface lot directly in front of the door. No structure, no meter.</dd></div>
+        <div class="hcard"><dt>Nearby</dt><dd>Brookvale Trail Park is across the road, and Lucky is in the same complex.</dd></div>
+      </dl>
+      <div class="whyhere rise">
+        <h3>What this store is good for</h3>
+        <p>This is where the family started, and it is the store most regulars mean when they say Le Water. It carries the widest bottle selection of the three and it is the busiest at weekends, so mid-morning on a weekday is the quietest time to fill a large order.</p>
+      </div>
+      <p class="served rise">Regulars come here from North Fremont, Brookvale, Glenmoor and the neighbourhoods around Fremont Blvd north of Mowry.</p>
+
       <div class="member rise">
         <div>
-          <div class="price"><span class="big">$0.375</span><span class="per">per gallon, purified members</span></div>
-          <p class="mtext">Prepay for gallons and save. Alkaline is $0.90 a gallon for members.</p>
+          <div class="price"><span class="big">$0.375</span><span class="per">per gallon, members &middot; purified</span></div>
+          <p class="mtext">Purified water, on a prepaid plan. Alkaline is $0.90 a gallon for members. Full pricing below.</p>
         </div>
         <a class="mbtn" href="/#plans">See plans &amp; pricing</a>
       </div>
@@ -422,15 +450,26 @@
         <div class="tap rise">
           <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z"/></svg> Purified (reverse osmosis)</h3>
           <p>Purified by reverse osmosis and a coconut carbon filter, made fresh daily with no preservatives. Clean, great-tasting water.</p>
-          <p class="pr"><b>$0.50</b> a gallon &middot; <b>$0.375</b> for members</p>
           <a class="more" href="/our-water">See how we purify it <span aria-hidden="true">&rarr;</span></a>
         </div>
         <div class="tap alk rise">
           <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z"/><path d="M9 13h6"/></svg> Alkaline</h3>
           <p>The same purified water, remineralized to a higher pH of around 8 to 9.5 for a smoother, mineral taste.</p>
-          <p class="pr"><b>$1.30</b> a gallon &middot; <b>$0.90</b> for members</p>
           <a class="more" href="/our-water">What alkaline water is <span aria-hidden="true">&rarr;</span></a>
         </div>
+      </div>
+      <div class="ptable rise">
+        <table>
+          <caption>Price per gallon</caption>
+          <thead>
+            <tr><th scope="col">Water</th><th scope="col">Walk-in</th><th scope="col">Member</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Purified (reverse osmosis)</th><td>$0.50</td><td><b>$0.375</b></td></tr>
+            <tr><th scope="row">Alkaline</th><td>$1.30</td><td><b>$0.90</b></td></tr>
+          </tbody>
+        </table>
+        <p class="note">Member pricing comes from a prepaid plan: 120 gallons of purified for $45, or 100 gallons of alkaline for $90. Your balance follows your phone number to any of our three stores.</p>
       </div>
     </div>
   </section>
