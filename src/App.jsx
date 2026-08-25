@@ -523,7 +523,7 @@ function TrustBar() {
   const stats = [
     { icon: MapPin,  big: '3',        small: 'Locations across Fremont & Newark' },
     { icon: Clock,   big: 'Every day', small: 'Open 10a to 7p daily (Newark to 6:30p)' },
-    { icon: Star,    big: '4.1★',     small: 'Average across our 3 Google profiles' },
+    { icon: Star,    big: '4.1★',     small: '180+ Google reviews across 3 stores' },
     { icon: Droplet, big: '$0.375',   small: 'Per gallon for members' },
   ]
   return (
@@ -550,8 +550,10 @@ function TrustBar() {
 }
 
 /* Google Business Profile links, resolved from each store's Maps place id (cid) and
-   verified live 2026-08-25. Ratings re-checked the same day: 4.4 / 4.0 / 4.0.
-   Re-verify these figures whenever they change — see the TrustBar note. */
+   verified live 2026-08-25. Per-store ratings the same day: 4.4 / 4.0 / 4.0, combining
+   to the 4.1 average shown on the page across 180+ reviews (count confirmed by Brian
+   from the GBP dashboards — it is not exposed publicly, so re-pull it from there).
+   Every figure on the page is attributed to these profiles and links out to them. */
 const GOOGLE_PROFILES = [
   { name: 'North Fremont',   rating: 4.4, url: 'https://www.google.com/maps?cid=15481437492169011829' },
   { name: 'Central Fremont', rating: 4.0, url: 'https://www.google.com/maps?cid=15023783007573621824' },
@@ -681,7 +683,7 @@ function Reviews() {
             <div>
               <RatingStars rating={4.1} />
               <div className="text-[13px] text-[#0A1220]/62 mt-1.5">
-                Average across our{' '}
+                <span className="font-semibold text-[#0A1220]">180+</span> reviews across our{' '}
                 <a href={GOOGLE_PROFILES[0].url} target="_blank" rel="noopener noreferrer"
                    onClick={() => trackEvent('view_google_profile', { store: GOOGLE_PROFILES[0].name })}
                    className="font-semibold text-[#0A1220] underline underline-offset-2 decoration-[#0A1220]/25 hover:decoration-[#1E588A]">three Google profiles</a>
