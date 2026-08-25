@@ -240,7 +240,7 @@ const formatPhone = (v) => {
 const IMG = {
   /* Real store photography — shot on location, served from /public/photos */
   hero:       '/photos/hero-storefront.webp',      // North Fremont storefront
-  gallery1:   '/photos/fill-station.webp',         // Newark refill counter
+  gallery1:   '/photos/fremont-central-wide.webp', // Central Fremont interior
   gallery2:   '/photos/walk-in.webp',              // North Fremont, walking in
   gallery3:   '/photos/bottles.webp',              // Central Fremont, bottles for sale
   gallery4:   '/photos/purification-window.webp',  // Newark, through the purification window
@@ -602,7 +602,7 @@ function Reviews() {
           {/* Store gallery — real photos, one or more from each of the three stores */}
           <div className="reveal mt-8 md:mt-10 grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2 md:gap-4 md:h-[460px]">
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto md:col-span-2 md:row-span-2 ring-1 ring-[#0A1220]/06">
-              <img src={IMG.gallery1} alt="The stainless refill counter at our Newark store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.gallery1} alt="Inside our Central Fremont store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto md:col-span-2 ring-1 ring-[#0A1220]/06">
               <img src={IMG.gallery2} alt="Walking in to our North Fremont store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
