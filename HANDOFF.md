@@ -1,10 +1,22 @@
 # Le Water — Project Handoff
 
-_Last updated: 2026-08-24_
+_Last updated: 2026-08-25_
 
 Public marketing site for Le Water, a family-owned water store with 3 Fremont/Newark
 locations. Doubles as a member self-service surface (phone → gallon balance lookup)
 against the live POS database.
+
+## Recent updates (Aug 24-25, 2026)
+
+- **All three stores renamed to "Le Water Store"** across every surface: `<title>`, og/twitter tags, page `h1`s, cross-link cards, LocalBusiness schema `name`, the Get-directions links, the Google Maps embed `!2s` labels and the iframe `title` attributes. Zero occurrences of "Le Pure Water" / "Lion Pure Water" remain in source. The embed URLs were re-fetched after relabelling and all return 200 - they resolve by place ID (`!1s0x...`), not by the label, so relabelling is safe.
+- **All stock photography is gone.** Real store photos live in `public/photos/` as WebP + JPEG pairs (1000-2200px, generated with Pillow from the GBP-ready sets in `~/Downloads/{lion,foodmaxx,lucky}-photos/gbp-ready/`). This also removed a **hotlink to flowhydration.com's Shopify CDN** (a competitor's product photo served live on our homepage) and 11 unused Unsplash/Pexels URLs. `grep` the live bundle for `images.unsplash|images.pexels|flowhydration` returns nothing.
+- **Hero** is the North Fremont storefront under an opaque cover, matching the Hoang Le tax site's page-hero treatment: a near-solid `rgba(10,26,38,0.78)` field, then two soft radial accents, then a bottom weight. The photograph reads as texture, not as the subject. Dial the 0.78 if it needs to be lighter.
+- **Homepage gallery** (the 4-up in the Reviews section, previously `TODO`) is Central Fremont x2, North Fremont x1, Newark x1. Newark's single slot is the tight crop through the purification-room window - no other store has one.
+- **Location pages** each gained a storefront card plus a 3-photo gallery from that store, all interiors rather than repeated bottle shelves. `object-position` is set **per page**: the two strip-mall units carry their signage on a fascia band above the windows and need `center 15%`, while the Newark kiosk stays `center 50%` because its roof fills the top of the frame.
+- **24-hour self-serve vending** documented everywhere: an "After hours" row on each location info card, a line on the homepage store cards (`STORES[].vending`), `amenityFeature` on each `WaterStore` schema node, and a new FAQ schema entry. Verified on-site from the signage at all three stores - the machines take cash only ($1/$5 bills, quarter, dime, nickel, no pennies).
+- **Homepage nav** now switches to the light (dark-text-on-white) treatment once the hero scrolls away, matching the static pages. New `pastHero` state in `Nav`, threshold `window.innerHeight - 72`, with a resize listener; `onLight = dark || pastHero` drives every colour token.
+- **Scroll progress bar** ported from the homepage `ScrollProgress` component to all four static pages as inline CSS + a small rAF script. Respects `prefers-reduced-motion` like the React version.
+- **Plans section:** heading no longer wraps mid-phrase (`max-w-3xl` + `md:whitespace-nowrap`); in the Balance section the lookup moved left and the plan comparison right using `order` utilities, so the form stays first in the DOM for screen readers.
 
 ## Recent updates (Aug 18–24, 2026)
 
@@ -22,7 +34,7 @@ against the live POS database.
 - **Intro loader** updated to the new brand: the water-splash sequence now reveals the drop logo + "LE WATER STORE" (forced `whitespace-nowrap` — the `.loader-stage` is only 300px wide) + "Premium Water Refill". Loader is desktop-only (`@media` hides it on mobile).
 - **Nav links centered.** The primary nav links are now absolutely centered in the bar (`absolute left-1/2 -translate-x-1/2` on the links div; parent made `relative`), brand left / CTA right unchanged.
 - **`/our-water` cleanup:** removed a leftover false "Tested and UV-treated" hero pill → "Made fresh daily".
-- **GBP profiles to be unified to "Le Water Store"** (JarvisEA `decisions/log.md`). Per-store GBP descriptions finalized: flagship (N. Fremont, 35762 Fremont Blvd) = "serving Fremont and Newark since 1998"; **Lion** (Newark, 39131 Cedar Blvd, in Lion Supermarket Plaza) + **FoodMaxx** (Central Fremont, 39409 Fremont Blvd) opened later, so they read "part of the family-run Le Water stores serving Fremont and Newark since 1998". All three use a "Pay with cash or card, or prepay with a membership and save" line. NOTE: site still labels the two later stores "Le Pure Water" / "Lion Pure Water" — renaming to "Le Water Store" across site + schema is still open.
+- **GBP profiles to be unified to "Le Water Store"** (JarvisEA `decisions/log.md`). Per-store GBP descriptions finalized: flagship (N. Fremont, 35762 Fremont Blvd) = "serving Fremont and Newark since 1998"; **Lion** (Newark, 39131 Cedar Blvd, in Lion Supermarket Plaza) + **FoodMaxx** (Central Fremont, 39409 Fremont Blvd) opened later, so they read "part of the family-run Le Water stores serving Fremont and Newark since 1998". All three use a "Pay with cash or card, or prepay with a membership and save" line. ~~NOTE: site still labels the two later stores "Le Pure Water" / "Lion Pure Water"~~ — **resolved 2026-08-25**, see the Aug 24-25 entry.
 - **Deploy:** still CLI-direct `npx vercel@latest deploy --prod --yes`. The first attempt often returns `Not authorized` — a straight RETRY succeeds (transient).
 
 ## Live
@@ -125,13 +137,28 @@ Browser-surface theming (in `index.css`): `::selection` uses brand blue at 16%, 
 - `get_directions` `{ store }`, `call_store` `{ store }` — per store card
 - `use_my_location` — the nearest-store geolocation button
 
+## Google Business Profile state (2026-08-25)
+
+The site's names, hours and schema must stay in sync with these.
+
+| Store | GBP | Storefront signage still says |
+|---|---|---|
+| North Fremont (35762 Fremont Blvd) | live as Le Water Store | WATER |
+| Central Fremont (39409 Fremont Blvd) | live as Le Water Store | PureWater |
+| Newark (39131 Cedar Blvd) | **pending review** | CALIFORNIA PURE WATER |
+
+- **The Newark listing was submitted as "Le Water Store (formerly Lion Pure Water)".** Google's naming policy allows the real-world name only; parentheticals, descriptors and taglines are named suspension triggers, and there is no supported "formerly" convention. Set it to exactly **Le Water Store** — a rename preserves reviews and listing history, so nothing is protected by hedging. Put "formerly Lion Pure Water" in a Google Post or the description instead.
+- **Signage is now the last inconsistency.** All three storefronts show a different name from the listings, and those signs appear in the cover photo of each listing. Google's rule is that the listing name reflects real-world signage, so the mismatch now runs the opposite direction from where it started.
+- **Hours differ per store** — Newark 10:00-18:30, both Fremont stores 10:00-19:00. Do not copy one across three. (`STORES[].close` is 18.5 / 19 / 19.)
+- Full checklist, including the attributes and reviews work that is still open: `~/PycharmProjects/WaterStore/docs/marketing/gbp-optimization-checklist.md`. Shot list for future photo runs: `gbp-photo-shot-list.md` alongside it.
+
 ## Open items / TODO
 
-1. **REAL PHOTOS (highest-value, still open).** The store gallery (4 images in the Reviews section, marked `TODO` in code), the Bottles product cards, and the hero are all **stock placeholders**. Per the CRO research done for this site, real photos are THE lever for the "feels stale/stock" problem (real photos beat stock 35–161% in cited studies). Swap: gallery `<img src={IMG.*}>` in the Reviews section, add product photos to `PRODUCTS`, swap the hero `IMG.heroSubject`.
+1. **REAL PHOTOS — done for the hero, gallery and location pages (2026-08-25).** Still stock-free but thin in two places: the **Bottles product cards** (`PRODUCTS`) have no photos yet, and three shots are missing from every store — **water actually dispensing from a tap**, a **dusk exterior with the sign lit**, and (North Fremont only) any third distinct interior. North Fremont has just 6 usable photos, 3 of them exteriors, so its gallery pairs a wide counter with a taps close-up of the same counter.
 2. **New-customer offer CTA (still open).** The Lion acquisition promo ($50 / 150 gal + free jug) is NOT on the site. It's the main acquisition lever for a local store; recommend a hero banner or dedicated strip.
 3. **Google Search Console + GBP** — verify the domain in GSC, request indexing, submit sitemap; claim/clean the 3 Google Business Profiles (see Local SEO section). Not started.
 4. **No social OG image** — link shares have no preview image (og:image not set). Add once brand imagery exists.
-5. **GitHub auto-deploy** not connected (see Deploy).
+5. **GitHub auto-deploy still not connected — and it fails silently.** Confirmed 2026-08-25: `git push origin main` succeeds and `origin/main` matches local HEAD, but Vercel creates **no deployment at all** (verified via the deployments API — zero entries after the push). A push therefore *looks* shipped and is not. Until the Vercel GitHub app is granted access to `ivince918/le-water`, every change needs a manual CLI deploy.
 6. Loader intro `translateY(-60px)` (`.loader-stage` in index.css) is an eyeball-centered value; nudge if needed.
 
 ### Done 2026-08-12 (pm session)
@@ -149,7 +176,9 @@ Browser-surface theming (in `index.css`): `::selection` uses brand blue at 16%, 
 - **Verify against the live domain**, not the alias: `curl --resolve lewaterstore.com:443:216.198.79.1 https://lewaterstore.com/...`. The `le-water.vercel.app` alias caches briefly after deploy.
 - **Minification false-negatives:** grepping the prod JS bundle for JSX text/attrs (e.g. `id="bottles"`, `68 Google reviews`) often returns 0 because minification splits/transforms them. Trust `npm run build` succeeding over a bundle grep.
 - **npm build does NOT catch every runtime issue** — for anything touching the serverless function, smoke-test `/api/balance` on the deployed URL after deploy.
-- Unused `IMG` keys (`refillJug`, `heroPour`, `storeShelf`) linger after the "How it works" section was removed — harmless.
+- **The unused `IMG` keys are gone** (removed 2026-08-25). `IMG` is now 5 keys, all local `/photos/` paths.
+- **Photo near-duplicates are the recurring trap on this site.** `05-purification-room` in the Lion set *is* `04-fill-station` with the viewing window in frame — same counter, same blue wall. It shipped as a duplicate pair twice (homepage, then the Newark page) because the filenames read as different subjects. **Verify a gallery by rendering its images side by side, never by filename.** The fix both times was the tight `purification-window` crop.
+- `object-position` on `.shotcard img` is **per location page**, not a shared rule — see the Recent updates entry. If you swap a storefront photo, re-check the crop.
 
 ## Related
 
