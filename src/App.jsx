@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { track } from '@vercel/analytics'
-import { Droplet, MapPin, Phone, ArrowRight, Check, Star, Navigation, Clock, Menu, X } from 'lucide-react'
+import { Droplet, MapPin, Phone, ArrowRight, Check, Star, Navigation, Clock, Moon, Menu, X } from 'lucide-react'
 
 /* Conversion events — never let analytics throw into the UI */
 const trackEvent = (name, props) => {
@@ -239,18 +239,11 @@ const formatPhone = (v) => {
 /* Stock photography seeds tuned for water / refill / store aesthetic */
 const IMG = {
   heroSubject:'https://images.pexels.com/photos/40784/drops-of-water-water-nature-liquid-40784.jpeg?auto=compress&cs=tinysrgb&w=2400',  // droplet hitting water with concentric ripples — high res
-  introBottle:'https://flowhydration.com/cdn/shop/files/74f0c586-6d0b-43de-8a86-5cf6f5b8383e.jpg?height=921&v=1747146885',      // Flow hydration bottle
-  heroBg:     'https://images.unsplash.com/photo-1437482078695-73f5ca6c96e2?auto=format&fit=crop&w=2200&q=80',
-  heroPour:   'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=1400&q=80',
-  bottleClose:'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=80',
-  refillJug:  'https://images.unsplash.com/photo-1616118132534-381148898bb4?auto=format&fit=crop&w=900&q=80',
-  storeShelf: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=900&q=80',
-  splash:     'https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&w=900&q=80',
-  glass:      'https://images.unsplash.com/photo-1564419320461-6870880221ad?auto=format&fit=crop&w=400&q=80',
-  jug:        'https://images.unsplash.com/photo-1616118132534-381148898bb4?auto=format&fit=crop&w=400&q=80',
-  customer:   'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80',
-  customer2:  'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&w=120&q=80',
-  customer3:  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80',
+  /* Real store photography — shot on location, served from /public/photos */
+  gallery1:   '/photos/fill-station.webp',                 // Newark fill counter
+  gallery2:   '/photos/storefront-fremont-central.webp',   // Central Fremont storefront
+  gallery3:   '/photos/bottles.webp',                      // BPA-free bottles for sale
+  gallery4:   '/photos/purification-room.webp',            // Newark purification room
 }
 
 /* ────────────────────────────────── NAV ────────────────────────────────── */
@@ -585,19 +578,19 @@ function Reviews() {
             className="display h-lead text-[#0A1220]"
             text="Delivering the best value water in Fremont since 1998."
           />
-          {/* Store gallery — TODO: swap these placeholder images for real store photos */}
+          {/* Store gallery — real photos, shot on location at the Newark and Central Fremont stores */}
           <div className="reveal mt-8 md:mt-10 grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2 md:gap-4 md:h-[460px]">
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto md:col-span-2 md:row-span-2 ring-1 ring-[#0A1220]/06">
-              <img src={IMG.introBottle} alt="Le Water bottle" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.gallery1} alt="The stainless refill counter at our Newark store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto md:col-span-2 ring-1 ring-[#0A1220]/06">
-              <img src={IMG.splash} alt="Purified water" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.gallery2} alt="Our Central Fremont storefront on Fremont Blvd" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto ring-1 ring-[#0A1220]/06">
-              <img src={IMG.glass} alt="A glass of Le Water" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.gallery3} alt="BPA-free bottles and jugs for sale in store" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square md:aspect-auto ring-1 ring-[#0A1220]/06">
-              <img src={IMG.heroSubject} alt="A single water droplet" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+              <img src={IMG.gallery4} alt="The water purification room, visible through the viewing window" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             </div>
           </div>
         </div>
@@ -1041,11 +1034,12 @@ const STORES = [
     phone: '+15107425699',
     phoneDisplay: '(510) 742-5699',
     close: 19,
+    vending: true,
     lat: 37.567202, lng: -122.024635,
     src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2355.5412405638453!2d-122.02463516558994!3d37.567202004484315!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fbfb8ef254513%3A0xd6d91d5ffd25f275!2sLe%20Water%20Store!5e0!3m2!1sen!2sus!4v1775966296778!5m2!1sen!2sus',
   },
   {
-    name: 'Le Pure Water',
+    name: 'Le Water Store',
     area: 'Central Fremont',
     slug: 'fremont-central',
     address: '39409 Fremont Blvd',
@@ -1053,11 +1047,12 @@ const STORES = [
     phone: '+15106561533',
     phoneDisplay: '(510) 656-1533',
     close: 19,
+    vending: true,
     lat: 37.544543, lng: -121.981806,
-    src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d443.3435900306666!2d-121.9818062651175!3d37.54454328153434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fc099ea00a6df%3A0xd07f330bc4f9bc40!2sLe%20Pure%20Water!5e0!3m2!1sen!2sus!4v1775966346126!5m2!1sen!2sus',
+    src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d443.3435900306666!2d-121.9818062651175!3d37.54454328153434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fc099ea00a6df%3A0xd07f330bc4f9bc40!2sLe%20Water%20Store!5e0!3m2!1sen!2sus!4v1775966346126!5m2!1sen!2sus',
   },
   {
-    name: 'Lion Pure Water',
+    name: 'Le Water Store',
     area: 'Newark',
     slug: 'newark',
     address: '39131 Cedar Blvd',
@@ -1065,8 +1060,9 @@ const STORES = [
     phone: '+15107396225',
     phoneDisplay: '(510) 739-6225',
     close: 18.5,
+    vending: true,
     lat: 37.523282, lng: -122.025403,
-    src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12657.393896206348!2d-122.0254025128418!3d37.52328200000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fbf4f97bf0b91%3A0xfa73f395892b1f80!2sLion%20Pure%20Water!5e0!3m2!1sen!2sus!4v1775966372825!5m2!1sen!2sus',
+    src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12657.393896206348!2d-122.0254025128418!3d37.52328200000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fbf4f97bf0b91%3A0xfa73f395892b1f80!2sLe%20Water%20Store!5e0!3m2!1sen!2sus!4v1775966372825!5m2!1sen!2sus',
   },
 ]
 
@@ -1125,6 +1121,12 @@ function StoreCard({ s, i }) {
           <Clock className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
           Open daily, 10a to {fmtHourShort(s.close)}
         </div>
+        {s.vending && (
+          <div className="mt-2 flex items-center gap-2 text-[13px] text-[#0A1220]/55">
+            <Moon className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
+            Vending machine outside, open 24 hours
+          </div>
+        )}
         <a href={`tel:${s.phone}`} className="mt-2 flex items-center gap-2 text-[13px] text-[#0A1220]/70 hover:text-[#1E588A] transition-colors w-fit">
           <Phone className="w-3.5 h-3.5 shrink-0 text-[#1E588A]" strokeWidth={2} />
           {s.phoneDisplay}
@@ -1315,7 +1317,7 @@ const FAQS = [
   { q: 'What is Le Water?', a: 'Le Water is a family-owned water store with three refill locations in Fremont and Newark. Bring any container and we refill it with purified or alkaline drinking water, dispensed fresh on the spot.' },
   { q: 'How much does a water refill cost?', a: 'Purified water is $0.50 a gallon, or $0.375 a gallon on a prepaid plan. Alkaline water is $1.30 a gallon, or $0.90 a gallon prepaid. Bring any container and we fill it at the counter.' },
   { q: 'Do you offer alkaline water?', a: 'Yes. Every location offers both purified and mineral-rich alkaline drinking water at the same low per-gallon price for members.' },
-  { q: 'Where are your water stores located?', a: 'Three locations: Le Water Store at 35762 Fremont Blvd, Fremont; Le Pure Water at 39409 Fremont Blvd, Fremont; and Lion Pure Water at 39131 Cedar Blvd, Newark. The Fremont stores are open 10am to 7pm daily and Newark is open 10am to 6:30pm daily.' },
+  { q: 'Where are your water stores located?', a: 'Three Le Water Store locations: 35762 Fremont Blvd, Fremont; 39409 Fremont Blvd, Fremont; and 39131 Cedar Blvd, Newark. The Fremont stores are open 10am to 7pm daily and Newark is open 10am to 6:30pm daily.' },
   { q: 'Do I need to bring my own bottle?', a: 'Bring any clean container and we refill it, or buy a new 1, 3, or 5 gallon bottle at the counter.' },
   { q: 'How do I check my prepaid gallon balance?', a: 'Enter your phone number in the balance checker on this page. Your prepaid balance follows your phone number to any of our three stores.' },
 ]

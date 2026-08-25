@@ -47,6 +47,11 @@
           "addressCountry": "US"
         },
         "geo": { "@type": "GeoCoordinates", "latitude": 37.567202, "longitude": -122.024635 },
+        "amenityFeature": {
+          "@type": "LocationFeatureSpecification",
+          "name": "24-hour self-serve water vending machine",
+          "value": true
+        },
         "openingHoursSpecification": {
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
@@ -133,6 +138,10 @@
     .btn-ghost:hover { background: #fff; border-color: rgba(10,18,32,0.24); }
 
     /* Map */
+    .shotcard { margin-top: 28px; }
+    .shotcard .frame { border-radius: 24px; overflow: hidden; border: 1px solid rgba(10,18,32,0.08); box-shadow: 0 40px 80px -50px rgba(10,18,32,0.4); background: var(--mist); }
+    .shotcard img { width: 100%; height: 380px; object-fit: cover; display: block; }
+    @media (max-width: 720px) { .shotcard img { height: 260px; } }
     .mapcard { margin-top: -34px; position: relative; z-index: 2; }
     .mapcard .frame { border-radius: 24px; overflow: hidden; border: 1px solid rgba(10,18,32,0.08); box-shadow: 0 40px 80px -50px rgba(10,18,32,0.4); height: 380px; background: var(--mist); }
     .mapcard iframe { width: 100%; height: 100%; border: 0; display: block; }
@@ -254,6 +263,17 @@
     </div>
   </div>
 
+  <div class="wrap">
+    <div class="shotcard">
+      <div class="frame">
+        <picture>
+          <source srcset="/photos/store-fremont-north.webp" type="image/webp">
+          <img src="/photos/store-fremont-north.jpg" alt="The Le Water Store storefront in North Fremont, at Brookvale Shopping Center" loading="lazy" width="1600" height="1000">
+        </picture>
+      </div>
+    </div>
+  </div>
+
   <section class="band">
     <div class="wrap">
       <p class="kick rise">Visit us</p>
@@ -272,6 +292,10 @@
           <div class="row rise">
             <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
             <div><div class="lbl">Hours</div><div class="val">Open every day, 10:00am to 7:00pm</div></div>
+          </div>
+          <div class="row rise">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/><path d="M12 3v1M21 12h-1M12 21v-1M3 12h1"/></svg></div>
+            <div><div class="lbl">After hours</div><div class="val">Self-serve vending machine outside, open 24 hours. Cash only.</div></div>
           </div>
         </div>
       </div>
@@ -312,13 +336,13 @@
       <h2 class="rise">Our other locations</h2>
       <div class="others">
         <a class="oc rise" href="/fremont-central">
-          <div class="nm">Le Pure Water</div>
+          <div class="nm">Le Water Store</div>
           <div class="ar">Central Fremont</div>
           <div class="ad">39409 Fremont Blvd, Fremont, CA 94538</div>
           <span class="go">View store &amp; hours <span aria-hidden="true">&rarr;</span></span>
         </a>
         <a class="oc rise" href="/newark">
-          <div class="nm">Lion Pure Water</div>
+          <div class="nm">Le Water Store</div>
           <div class="ar">Newark</div>
           <div class="ad">39131 Cedar Blvd, Newark, CA 94560</div>
           <span class="go">View store &amp; hours <span aria-hidden="true">&rarr;</span></span>
