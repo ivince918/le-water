@@ -113,12 +113,31 @@
           "inLanguage": "en-US"
         },
         {
+          "@type": "ImageObject",
+          "@id": "https://lewaterstore.com/#hero-image",
+          "url": "https://lewaterstore.com/photos/hero-storefront.webp",
+          "contentUrl": "https://lewaterstore.com/photos/hero-storefront.webp",
+          "width": 2200,
+          "height": 1633,
+          "caption": "The Le Water Store storefront in North Fremont, Fremont CA"
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://lewaterstore.com/#webpage",
+          "url": "https://lewaterstore.com/",
+          "name": "Le Water Store \u2014 Water Refill in Fremont & Newark",
+          "isPartOf": { "@id": "https://lewaterstore.com/#website" },
+          "about": { "@id": "https://lewaterstore.com/#org" },
+          "primaryImageOfPage": { "@id": "https://lewaterstore.com/#hero-image" },
+          "inLanguage": "en-US"
+        },
+        {
           "@type": "Organization",
           "@id": "https://lewaterstore.com/#org",
           "name": "Le Water Store",
           "alternateName": ["Le Water", "The Water Spot", "Le Pure Water", "Lion Pure Water"],
           "url": "https://lewaterstore.com/",
-          "image": "https://lewaterstore.com/logo-mark.png",
+          "image": { "@id": "https://lewaterstore.com/#hero-image" },
           "logo": {
             "@type": "ImageObject",
             "url": "https://lewaterstore.com/logo-mark.png",
