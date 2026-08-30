@@ -478,7 +478,7 @@ function TrustBar() {
   const stats = [
     { icon: MapPin,  big: '3',        small: 'Locations across Fremont & Newark' },
     { icon: Clock,   big: 'Every day', small: '10a to 7p, Newark to 6:30p' },
-    { icon: Star,    big: '4.1★',     small: '180+ Google reviews, 3 stores' },
+    { icon: Star,    big: '4.1', suffix: '★', small: '180+ Google reviews, 3 stores' },
     { icon: Droplet, big: '$0.375',   small: 'Per gallon for members' },
   ]
   return (
@@ -493,7 +493,12 @@ function TrustBar() {
             return (
               <div key={i} className="flex flex-col md:px-8 first:md:pl-0">
                 <Icon className="w-4 h-4 text-[#1E588A]" strokeWidth={2.2} />
-                <span className="display text-[40px] md:text-[52px] leading-none text-[#0A1220] mt-3">{s.big}</span>
+                <span className="display text-[40px] md:text-[52px] leading-none text-[#0A1220] mt-3">
+                  {s.big}
+                  {s.suffix && (
+                    <span className="ml-1 align-[0.18em] text-[0.42em] leading-none text-[#0A1220]/45">{s.suffix}</span>
+                  )}
+                </span>
                 <span className="text-[13.5px] text-[#0A1220]/55 mt-2 leading-snug">{s.small}</span>
               </div>
             )
@@ -593,9 +598,10 @@ function ReviewCard({ r, featured = false }) {
 
 function Reviews() {
   return (
-    <section id="reviews" className="relative py-24 md:py-32 px-6 md:px-10 bg-[#F4F7FA]">
+    <>
+    <section id="gallery" className="relative py-16 md:py-20 px-6 md:px-10 bg-[#F4F7FA]">
       <div className="mx-auto max-w-[1240px]">
-        <div className="mb-16 md:mb-24">
+        <div>
           <WordReveal
             as="h2"
             className="display h-lead text-[#0A1220]"
@@ -617,8 +623,12 @@ function Reviews() {
             </div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
+    <section id="reviews" className="relative py-16 md:py-20 px-6 md:px-10 bg-[#F4F7FA]">
+      <div className="mx-auto max-w-[1240px]">
+        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8 md:mb-10">
           <h2 className="display h-title text-[#0A1220]">
             What our<br/><span className="text-[#0A1220]/40">customers say.</span>
           </h2>
@@ -633,15 +643,14 @@ function Reviews() {
           </div>
         </div>
 
-        <ReviewCard r={REVIEWS[0]} featured />
-
-        <div className="grid md:grid-cols-3 gap-5 mt-5">
-          {REVIEWS.slice(1).map((r) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
+          {REVIEWS.map((r) => (
             <ReviewCard key={r.name} r={r} />
           ))}
         </div>
       </div>
     </section>
+    </>
   )
 }
 
@@ -1107,7 +1116,7 @@ function StoreCard({ s, i }) {
       style={{ transitionDelay: `${i * 90}ms` }}
     >
       {/* Map */}
-      <div className="relative h-[200px] overflow-hidden border-b border-[#0A1220]/06">
+      <div className="relative h-[150px] overflow-hidden border-b border-[#0A1220]/06">
         <iframe
           src={s.src}
           className="absolute inset-0 w-full h-full"
@@ -1122,7 +1131,7 @@ function StoreCard({ s, i }) {
         )}
       </div>
 
-      <div className="p-6 flex-1 flex flex-col">
+      <div className="p-5 flex-1 flex flex-col">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h3 className="font-semibold text-[18px] tracking-tight text-[#0A1220]">{s.name}</h3>
@@ -1140,7 +1149,7 @@ function StoreCard({ s, i }) {
           </span>
         </div>
 
-        <div className="mt-4 flex items-start gap-2 text-[13.5px] leading-snug text-[#0A1220]/70">
+        <div className="mt-3 flex items-start gap-2 text-[13.5px] leading-snug text-[#0A1220]/70">
           <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-[#1E588A]" strokeWidth={2} />
           <span>{s.address}<br />{s.city}</span>
         </div>
@@ -1214,9 +1223,9 @@ function Stores() {
     : STORES
 
   return (
-    <section id="stores" className="relative py-24 md:py-32 px-6 md:px-10 bg-[#F4F7FA]">
+    <section id="stores" className="relative py-16 md:py-20 px-6 md:px-10 bg-[#F4F7FA]">
       <div className="mx-auto max-w-[1240px]">
-        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
+        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8 md:mb-10">
           <div>
             <h2 className="display h-title text-[#0A1220]">
               Three stores.<br/><span className="text-[#0A1220]/40">One promise.</span>
