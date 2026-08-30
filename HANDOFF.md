@@ -38,57 +38,28 @@ the deploy errored — while the CLI still printed "Production ready". **Always 
 deploy from the build log, not the CLI line:**
 `npx vercel inspect <url> --logs | grep -iE "prerender:|Build Completed|error"`.
 
-### Section height budget — the slab system (2026-08-30)
+### Section height budget
 
 Brian's viewport is **1497x745**. The sticky nav is **82px** and paints over whatever
 section you scroll to, so the genuinely visible budget is **663px**, not 745.
 
-**Fitting one screen is no longer the goal.** It was only reachable by squeezing —
-gallery ran 80px padding and reviews 56px while every other section ran 128px, and the
-sections that refused to squeeze (stores 1041, plans 991) read as broken next to them.
-The range was 708-1041. Uniform height replaced it.
-
-**Every section below the hero is now exactly 950px**, verified in both the dev server
-and the production build, hydrated and JS-disabled (spread: 0px, page 7558 -> 8119).
-
-```
-.slab  (src/index.css, >=768px only)     --slab-h: 950px
-  min-height: var(--slab-h)
-  display: flex; flex-direction: column; justify-content: center
-```
-
-| section | content | height |
+| section | height @1497 | fits 745 |
 |---|---|---|
-| gallery | 548 | 950 |
-| reviews | 614 | 950 |
-| balance | 592 | 950 |
-| faq | 592 | 950 |
-| bottles | 671 | 950 |
-| plans | 735 | 950 |
-| stores | 785 | 950 |
+| gallery | 708 | yes |
+| reviews | 726 | yes |
+| balance | 848 | no |
+| faq | 848 | no |
+| plans | 991 | no |
+| stores | 1041 | no, **deliberately** |
 
-- **`--slab-h` is set by `#stores`** — 785px of content plus the 80px padding floor is
-  945, so 950 is the floor with 5px to spare. If a section ever outgrows 950, **raise
-  `--slab-h`; do not squeeze that section.** That is the mistake this system exists to
-  prevent.
-- Every section carries one in-flow child (the `mx-auto max-w-*` container) — that is
-  what makes column-flex centering safe. Decorative children are `position: absolute`
-  and out of flow. **If you add a second in-flow child to a slab section it will stack
-  and re-centre; wrap it in the existing container instead.**
-- `#bottles` **was two sibling `<section>` elements** (header 393 + grid 534) that read
-  as one block and so could not be slabbed as one. Merged into a single section; the
-  48/64px gap between header and grid is preserved as `mt-12 md:mt-16`.
-- Mobile is untouched by the slab (media query starts at 768px). Padding standardised to
-  `py-20` there too, which moved the mobile page 11476 -> 11412 (measured, no horizontal overflow at 390px).
-- **`#stores` was trimmed to exactly 745px once and reverted on purpose.** Getting there
-  needed 100px maps (from 200px) and they were too short to read. Do not try again — the
-  slab makes stores the reference height rather than the outlier.
-- `#reviews` keeps the **featured card above a row of three**. A four-across row was tried
-  and rejected. Its quote sizes are still the compressed ones from the fit-745 era
-  (26->21px, 15.5->14.5px) — there is room to restore them inside the slab now.
-- The photo gallery is its own `#gallery` section. It used to live inside `#reviews`,
+- The photo gallery is now its own `#gallery` section. It used to live inside `#reviews`,
   eating 548px + a 96px margin, which is why that section was 1723px.
-- The hero (745, `100dvh`) and the trust strip below it (329) are **not** slabs, by design.
+- `#reviews` keeps the **featured card above a row of three**. A four-across row was tried
+  and rejected. It fits at 726px by tightening the box, not the layout: padding, card
+  padding, quote sizes 26→21px and 15.5→14.5px, internal margins.
+- **`#stores` was trimmed to exactly 745px and then reverted on purpose.** Getting there
+  needed 100px maps (from 200px) and they were too short to read. 1041px and one small
+  scroll is the accepted trade. Do not "fix" this again without asking.
 
 ### Entity reclaim (the legacy names)
 
@@ -484,10 +455,8 @@ Full detail: `lewaterstore.com-audit/findings/competitor-water-emporium.md` (git
    or it becomes a parity violation.
 8. **Yelp `sameAs`** — add the three profile URLs to the Store nodes once the listings are
    claimed. Yelp 403s this machine so the slugs could not be verified from here.
-9. ~~**Sections that still exceed a screen**~~ — **resolved 2026-08-30.** Replaced by the
-   slab system: all seven sections below the hero are exactly 950px. See "Section height
-   budget" above. Optional follow-on: restore the `#reviews` quote sizes that were
-   compressed to hit 745 (26->21px, 15.5->14.5px) now that the section has the room.
+9. **Sections that still exceed a screen** at 1497x745: balance 848, faq 848, plans 991,
+   stores 1041. Stores is deliberate (see the height budget). The others are untouched.
 
 ### Done 2026-08-12 (pm session)
 - Local SEO: meta description + OG/Twitter + canonical + LocalBusiness JSON-LD (3 stores) + robots.txt + sitemap.xml.
