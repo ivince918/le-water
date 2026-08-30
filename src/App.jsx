@@ -581,14 +581,14 @@ function VerifiedTag() {
 
 function ReviewCard({ r, featured = false }) {
   return (
-    <div className={`reveal card bg-white relative overflow-hidden flex flex-col ${featured ? 'p-8 md:p-12' : 'p-7 md:p-8'}`}>
-      <span aria-hidden="true" className={`absolute -top-1 right-5 leading-none font-bold text-[#1E588A]/[0.07] select-none pointer-events-none ${featured ? 'text-[150px]' : 'text-[96px]'}`}>&rdquo;</span>
+    <div className={`reveal card bg-white relative overflow-hidden flex flex-col ${featured ? 'p-7 md:p-8' : 'p-6 md:p-6'}`}>
+      <span aria-hidden="true" className={`absolute -top-1 right-5 leading-none font-bold text-[#1E588A]/[0.07] select-none pointer-events-none ${featured ? 'text-[110px]' : 'text-[84px]'}`}>&rdquo;</span>
       <QuoteText
         quote={r.quote}
         highlights={r.highlights}
-        className={`relative mt-5 flex-1 text-[#0A1220]/65 ${featured ? 'text-[20px] md:text-[26px] leading-[1.45] max-w-3xl' : 'text-[15.5px] leading-relaxed'}`}
+        className={`relative mt-4 flex-1 text-[#0A1220]/65 ${featured ? 'text-[18px] md:text-[21px] leading-[1.45] max-w-4xl' : 'text-[14.5px] leading-relaxed'}`}
       />
-      <div className="relative mt-6 flex items-center gap-2.5">
+      <div className="relative mt-4 flex items-center gap-2.5">
         <span className={`font-semibold text-[#0A1220] ${featured ? 'text-[16px]' : 'text-[14px]'}`}>{r.name}</span>
         <VerifiedTag />
       </div>
@@ -626,9 +626,9 @@ function Reviews() {
       </div>
     </section>
 
-    <section id="reviews" className="relative py-16 md:py-20 px-6 md:px-10 bg-[#F4F7FA]">
+    <section id="reviews" className="relative py-12 md:py-14 px-6 md:px-10 bg-[#F4F7FA]">
       <div className="mx-auto max-w-[1240px]">
-        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8 md:mb-10">
+        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-6 md:mb-8">
           <h2 className="display h-title text-[#0A1220]">
             What our<br/><span className="text-[#0A1220]/40">customers say.</span>
           </h2>
@@ -643,8 +643,10 @@ function Reviews() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
-          {REVIEWS.map((r) => (
+        <ReviewCard r={REVIEWS[0]} featured />
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+          {REVIEWS.slice(1).map((r) => (
             <ReviewCard key={r.name} r={r} />
           ))}
         </div>
@@ -1116,7 +1118,7 @@ function StoreCard({ s, i }) {
       style={{ transitionDelay: `${i * 90}ms` }}
     >
       {/* Map */}
-      <div className="relative h-[100px] overflow-hidden border-b border-[#0A1220]/06">
+      <div className="relative h-[200px] overflow-hidden border-b border-[#0A1220]/06">
         <iframe
           src={s.src}
           className="absolute inset-0 w-full h-full"
@@ -1131,7 +1133,7 @@ function StoreCard({ s, i }) {
         )}
       </div>
 
-      <div className="p-4 flex-1 flex flex-col">
+      <div className="p-6 flex-1 flex flex-col">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h3 className="font-semibold text-[18px] tracking-tight text-[#0A1220]">{s.name}</h3>
@@ -1149,7 +1151,7 @@ function StoreCard({ s, i }) {
           </span>
         </div>
 
-        <div className="mt-3 flex items-start gap-2 text-[13.5px] leading-snug text-[#0A1220]/70">
+        <div className="mt-4 flex items-start gap-2 text-[13.5px] leading-snug text-[#0A1220]/70">
           <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-[#1E588A]" strokeWidth={2} />
           <span>{s.address}<br />{s.city}</span>
         </div>
@@ -1223,9 +1225,9 @@ function Stores() {
     : STORES
 
   return (
-    <section id="stores" className="relative py-12 md:py-14 px-6 md:px-10 bg-[#F4F7FA]">
+    <section id="stores" className="relative py-24 md:py-32 px-6 md:px-10 bg-[#F4F7FA]">
       <div className="mx-auto max-w-[1240px]">
-        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-6 md:mb-8">
+        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
           <div>
             <h2 className="display h-title text-[#0A1220]">
               Three stores.<br/><span className="text-[#0A1220]/40">One promise.</span>
