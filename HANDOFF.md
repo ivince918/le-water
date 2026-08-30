@@ -6,6 +6,81 @@ Public marketing site for Le Water, a family-owned water store with 3 Fremont/Ne
 locations. Doubles as a member self-service surface (phone → gallon balance lookup)
 against the live POS database.
 
+## Recent updates (Aug 30, 2026) — prerender, entity reclaim, section fit
+
+### The build has three steps now. Read this before touching src/.
+
+`npm run build` = `vite build` → `vite build --ssr src/entry-server.jsx --outDir dist-ssr`
+→ `node scripts/prerender.mjs`.
+
+`/` was the only page serving `<div id="root"></div>` and nothing else: 0 crawlable
+words, 0 images, no NAP, on the priority-1.0 URL. It now ships **890 words, 7 images
+and the full NAP** as real HTML.
+
+**Constraints this puts on `src/App.jsx`:**
+- **No unguarded `window` / `document` in a render path.** They run in Node during the
+  prerender. `useHashRoute` already bit us — its lazy `useState(() => window.location.hash)`
+  crashed the build until guarded. `useEffect` bodies are safe; they never run in SSR.
+- `src/entry-server.jsx` renders `<App />` without `<Analytics />` (browser-only beacon).
+- The prerender **hard-fails the build** if `#root` is not empty or if any of the three
+  addresses or phone numbers is missing from the output. That is deliberate — a silent
+  regression here is invisible.
+- Clock-derived store status ("Open now", "Opens 10 AM", "Closed · opens 10 AM") is
+  rewritten to **"Open daily"** in the snapshot. Never bake the clock into crawlable HTML.
+  Visitors still get live status — `main.jsx` uses `createRoot`, which clears the
+  container on mount, and React takes over by ~400ms on a 4x-throttled CPU.
+- Verified visually inert: full-page pixel diff against the pre-prerender build is
+  **mean delta 0.0000/255, bbox None**.
+
+**An earlier version used headless Chrome and silently broke production.** It launched
+from a hardcoded macOS path, so `npm run build` exited 1 on Vercel's Linux builders and
+the deploy errored — while the CLI still printed "Production ready". **Always confirm a
+deploy from the build log, not the CLI line:**
+`npx vercel inspect <url> --logs | grep -iE "prerender:|Build Completed|error"`.
+
+### Section height budget
+
+Brian's viewport is **1497x745**. The sticky nav is **82px** and paints over whatever
+section you scroll to, so the genuinely visible budget is **663px**, not 745.
+
+| section | height @1497 | fits 745 |
+|---|---|---|
+| gallery | 708 | yes |
+| reviews | 726 | yes |
+| balance | 848 | no |
+| faq | 848 | no |
+| plans | 991 | no |
+| stores | 1041 | no, **deliberately** |
+
+- The photo gallery is now its own `#gallery` section. It used to live inside `#reviews`,
+  eating 548px + a 96px margin, which is why that section was 1723px.
+- `#reviews` keeps the **featured card above a row of three**. A four-across row was tried
+  and rejected. It fits at 726px by tightening the box, not the layout: padding, card
+  padding, quote sizes 26→21px and 15.5→14.5px, internal margins.
+- **`#stores` was trimmed to exactly 745px and then reverted on purpose.** Getting there
+  needed 100px maps (from 200px) and they were too short to read. 1041px and one small
+  scroll is the accepted trade. Do not "fix" this again without asking.
+
+### Entity reclaim (the legacy names)
+
+GSC showed **"le pure water" pulling 40 impressions/week** with the phrase nowhere on the
+site — the rename had scrubbed every mention. All three stores still circulate under old
+names across Yelp, Nextdoor, YellowPages, Superpages, Yahoo, MapQuest and Birdeye, and
+**exactly one of ~18 directory listings links back to lewaterstore.com**.
+
+Shipped: `alternateName` arrays on every Store node and on Organization carrying
+**The Water Spot** (North Fremont, the Lucky's centre), **Le Pure Water** (Central
+Fremont, FoodMaxx), **Lion Pure Water** (Newark, Lion Plaza); one "Formerly X." sentence
+appended to each location page's existing lead (+27px, no new block); a
+"Have we changed names?" section on `/contact` mapping every old name to its store.
+
+Also `max-image-preview:large` + `max-snippet:-1` on all 8 pages, an `ImageObject` for the
+existing hero photo (the North Fremont storefront already on the page — nothing swapped)
+and a `WebPage` node wiring it as `primaryImageOfPage`.
+
+**Not done:** Yelp `sameAs`. Yelp 403s every request from this machine, so the slugs could
+not be verified and a wrong canonical link is worse than none. Add after claiming.
+
 ## Recent updates (Aug 25-30, 2026)
 
 **SEO / correctness pass, then a partial revert.** Full detail in the
@@ -84,7 +159,7 @@ touching this site.
 
 `src/App.jsx` renders, in order:
 1. **Hero** — full-bleed Ken-Burns stock image + "Where pure water flows daily" + three actions: `Find your nearest store` (primary, → `#stores`), `Check your balance` (secondary glass button, → `#balance`), `See plans` (text link, → `#plans`).
-2. **Reviews** (`#reviews`) — merged section: the "Delivering the best water in Fremont for over 20 years." lead + a 4-image **store gallery** (real on-location photos since 2026-08-25, served full-resolution — see the photography gotcha) + "What our customers say" with a **4.1 / 180+ Google reviews** aggregate header + 1 featured Yelp quote + 3 supporting cards. Quotes are Yelp, the aggregate is Google — see Reviews / ratings.
+2. **Gallery** (`#gallery`) + **Reviews** (`#reviews`) — split into two sections on 2026-08-30 so each fits a screen. Formerly one merged section: the "Delivering the best water in Fremont for over 20 years." lead + a 4-image **store gallery** (real on-location photos since 2026-08-25, served full-resolution — see the photography gotcha) + "What our customers say" with a **4.1 / 180+ Google reviews** aggregate header + 1 featured Yelp quote + 3 supporting cards. Quotes are Yelp, the aggregate is Google — see Reviews / ratings.
 3. **Balance** (`#balance`) — "Check your balance." Plan comparison boxes (Regular/Alkaline) on the left, the phone → gallon lookup card ("Look up your account") on the right.
 4. **Stores** (`#stores`) — 3 cards, each with an embedded Google map, **full street address**, live **Open now / Closed** pill (computed client-side from the 10a-7p hours), and two one-tap actions: **Directions** (Google Maps `dir/?api=1`) + **Call** (`tel:`). Section header has a **"Find my nearest store"** geolocation button that haversine-sorts the cards nearest-first, appends "· X.X mi away", and badges the closest "Nearest you". Graceful no-op if location is denied. Store data + `openStatus()` + `milesBetween()` helpers live at the top of the Stores block / module scope in `App.jsx`.
 5. **Plans** (`#plans`) — "Ultra pure water. Members save **over 25%**." 3 pricing cards (No plan / Regular / Alkaline). No CTA buttons (removed by request).
@@ -110,7 +185,11 @@ Browser POSTs `/api/balance` → Vercel function holds the Supabase **service ro
 
 ## Deploy
 
-GitHub auto-deploy is **NOT** connected (the Vercel GitHub app lacks access to the `ivince918` repo). Deploys are **CLI-direct** from the repo root. The `vercel` CLI is **not installed globally** on this machine — invoke via `npx`:
+GitHub auto-deploy is **NOT** connected (the Vercel GitHub app lacks access to the `ivince918` repo). Deploys are **CLI-direct** from the repo root. **Vercel runs the build itself**, so the
+prerender step runs on their machine — confirm it did:
+`npx vercel inspect <deployment-url> --logs | grep -iE "prerender:|Build Completed|error"`.
+A build that fails there still prints "Production ready" at the CLI while leaving the
+previous deployment live. Also compare `dist/assets/*.js` to the hash on the live page. The `vercel` CLI is **not installed globally** on this machine — invoke via `npx`:
 
 ```bash
 npx --yes vercel@latest deploy --prod --yes    # from le-water/ ; auto-links project le-water, aliases lewaterstore.com
@@ -278,16 +357,106 @@ gated behind a `mounted` flag.
 `lewaterstore.com-audit/` (gitignored): `FULL-AUDIT-REPORT.md`, `ACTION-PLAN.md`,
 `audit-data.json`, 9 per-specialist findings files, ~40 screenshots, and a generated PDF.
 
+## Search performance & competitors (baseline, Aug 27 2026)
+
+First real GSC data, 7 days. **Keep this as the before-picture** — the prerender, legacy
+names and brand-first titles all shipped after it.
+
+- **16 clicks, 671 impressions, 2.4% CTR, average position 3.2.**
+- Position 3.2 on a three-week-old site is a good result, not a bad one. The problem is
+  CTR: position 3 normally earns 10-15%.
+- **14 of the top 20 queries got zero clicks** — 368 wasted impressions.
+- **"water" alone: 144 impressions, 0 clicks.** Junk volume; nobody typing "water" wants a
+  Fremont refill store. Mentally subtract it before judging CTR.
+- Nine query themes had **no on-site coverage at all**: `le pure water` (40/wk),
+  `water dispenser` (38), `fremont water` (27), `water refill station near me` (11),
+  `water store fremont` (10), `water station near me` (9), `water filling near me` (8),
+  `water gallon` (8), `water jar` (7). The `/contact` rewrite covers most of these now.
+
+### Do not chase Water Emporium on reviews — that fight is already won
+
+| | rating | reviews |
+|---|---|---|
+| Le Central Fremont | 4.0 | **102** |
+| Le North Fremont | 4.5 | **75** |
+| Le Newark (still "Lion Pure Water") | 4.0 | **21** |
+| **Le total** | | **198** |
+| Water Emporium, Fremont | 4.6 | 43 |
+| Vel Pure Water | 4.7 | 11 |
+
+**Newark (21) is the only genuine review gap**, against neighbours at 61 and 69.
+
+### Why competitors outrank us — two unrelated causes
+
+- **Map pack is mostly proximity.** From Fremont Civic Center: Le #1, Le #2, Water
+  Emporium #3. From Warm Springs: **Vel Pure Water ranks #1 with 11 reviews**, ahead of
+  Le's 102. An 11-review store beating a 102-review store is distance, nothing else.
+  Water Emporium owns east Fremont because we have no store there. Not an SEO problem.
+- **But Water Emporium holds #2 across Fremont for a second reason: "Fremont" is inside
+  its GBP name** ("Water Emporium, Fremont"). Exact keyword match in the business name is
+  a strong local-pack signal and it works from any origin. The query splits — we match
+  "water store" (our name), they match "Fremont" — and their **4.6 vs our 4.0** on
+  Central Fremont breaks the tie.
+  **Do not copy this.** Adding a city to a GBP name is the same naming-policy violation
+  holding up the Newark rename. If it is keyword stuffing, report it via Suggest an edit.
+- **Categories are not a differentiator.** All five businesses are "Bottled water
+  supplier". (An earlier check that reported "Water Store" for Le was a false positive —
+  the regex matched the business *name*, which contains "Water Store".)
+- **Organic** was the homepage prerender bug, now fixed. Vel Pure Water is a worse site —
+  no H1, no schema, lorem-ipsum pages — but shipped 485 crawlable words while `/` shipped
+  0, which is why Google composed their snippet with the street address.
+
+### NAP fragmentation — the highest-leverage work left, and it is not on the site
+
+Confirmed live, not hypothesised:
+
+| platform | North Fremont | Central Fremont | Newark |
+|---|---|---|---|
+| Google | Le Water Store | Le Water Store | **Lion Pure Water** (rename pending) |
+| Yelp | **The Water Spot** — unclaimed, 4.6/19 | Le Water Store — claimed, 3.3/8 | **Pure Water** — unclaimed, 4.6/12 |
+| Nextdoor | Water Spot | Le Pure Water | **3-way duplicate**: Lion Pure Water / Pure Water / California Pure Water |
+| YellowPages | Le Water Store | Le Pure Water | Lion Pure Water |
+| MapQuest / Yahoo | The Water Spot | — | — |
+
+- **Yelp's "BEST 10 WATER STORES IN FREMONT" ranks "The Water Spot" #1** — above Water
+  Emporium, above our own "Le Water Store" at #3. **We outrank ourselves under a dead
+  brand.** Both unclaimed Yelp listings hold better profiles (4.6/19, 4.6/12) than the
+  claimed one (3.3/8), and claiming + renaming them is free.
+- Phone numbers are correct on every listing found — the strongest reconciliation key.
+- **Google itself is clean**: no duplicates at any of the three addresses. Only defect is
+  the Newark name.
+- Not checked: Apple Maps, Foursquare, Manta, BBB, Cylex, Chamberofcommerce. Four of six
+  platforms that were checked carry a legacy name, so assume these do too. A paid citation
+  scan (BrightLocal / Whitespark / Yext) would close this faster than scraping — Yelp hard-
+  blocks WebFetch and headless Chromium alike.
+
+Full detail: `lewaterstore.com-audit/findings/competitor-water-emporium.md` (gitignored).
+
 ## Open items / TODO
 
 1. **REAL PHOTOS — done for the hero, gallery and location pages (2026-08-25).** Still stock-free but thin in two places: the **Bottles product cards** (`PRODUCTS`) have no photos yet, and three shots are missing from every store — **water actually dispensing from a tap**, a **dusk exterior with the sign lit**, and (North Fremont only) any third distinct interior. North Fremont has just 6 usable photos, 3 of them exteriors, so its gallery pairs a wide counter with a taps close-up of the same counter.
 2. **New-customer offer CTA (still open).** The Lion acquisition promo ($50 / 150 gal + free jug) is NOT on the site. It's the main acquisition lever for a local store; recommend a hero banner or dedicated strip.
-3. **GSC indexing + GBP** — domain is verified; still to do: request indexing, confirm sitemap submission, and finish the 3 Google Business Profiles. Newark's rename is in review (see the GBP table above).
+3. **GBP / Yelp / citations — the highest-leverage work left, and none of it is on the site.**
+   In priority order: (a) claim + rename the two **unclaimed Yelp listings** (The Water Spot,
+   Pure Water) — free, and they hold better ratings than the claimed one; (b) finish the
+   **Newark GBP rename** off "Lion Pure Water"; (c) merge the **three duplicate Nextdoor
+   Newark listings**; (d) lift **Central Fremont from 4.0** — it is the store competing
+   head-on with Water Emporium's 4.6; (e) **Newark review velocity** (21 vs 61 and 69).
+   See "Search performance & competitors" above. Sitemap is submitted; after the Aug 30
+   changes, re-request indexing for `/` and `/contact` first (they changed most).
 4. ~~**No social OG image**~~ — **resolved.** `og.png` is live at exactly 1200x630 (29KB) with `og:image:width`/`height`/`alt` and `twitter:card summary_large_image` on every page. Link previews work.
 5. **GitHub auto-deploy still not connected — and it fails silently.** Confirmed 2026-08-25: `git push origin main` succeeds and `origin/main` matches local HEAD, but Vercel creates **no deployment at all** (verified via the deployments API — zero entries after the push). A push therefore *looks* shipped and is not. Until the Vercel GitHub app is granted access to `ivince918/le-water`, every change needs a manual CLI deploy.
    **The first `npx vercel@latest deploy --prod --yes` of a session usually returns an error object; a straight retry succeeds.** Seen on every deploy Aug 25-30. Always confirm afterwards by comparing the live asset hash to `dist/assets/*.js`.
    To connect it: Vercel → project → Settings → Git → Connect Git Repository, then github.com/settings/installations → Vercel → Configure → grant access to the repo (an org owner must approve if `ivince918` is an org). Verify with a trivial push — the current failure is silent.
 6. Loader intro `translateY(-60px)` (`.loader-stage` in index.css) is an eyeball-centered value; nudge if needed.
+7. **Bottle prices are still "Ask at the counter".** `water dispenser` (38/wk), `water gallon`
+   and `water jar` all draw impressions with nothing to land on. Publishing prices would also
+   unlock `Product`/`Offer` schema — do not add that schema before the prices are on the page,
+   or it becomes a parity violation.
+8. **Yelp `sameAs`** — add the three profile URLs to the Store nodes once the listings are
+   claimed. Yelp 403s this machine so the slugs could not be verified from here.
+9. **Sections that still exceed a screen** at 1497x745: balance 848, faq 848, plans 991,
+   stores 1041. Stores is deliberate (see the height budget). The others are untouched.
 
 ### Done 2026-08-12 (pm session)
 - Local SEO: meta description + OG/Twitter + canonical + LocalBusiness JSON-LD (3 stores) + robots.txt + sitemap.xml.
@@ -301,6 +470,14 @@ gated behind a `mounted` flag.
 
 ## Gotchas
 
+- **The build prerenders `/`, so `src/App.jsx` runs in Node.** No unguarded `window` or
+  `document` in a render path — `useHashRoute`'s lazy `useState(() => window.location.hash)`
+  crashed the build until it was guarded. `useEffect` bodies are safe. If `npm run build`
+  dies in `dist-ssr/entry-server.js`, this is why.
+- **Confirm deploys from the Vercel build log, not the CLI.** A failed build still prints
+  "Production ready" while leaving the old deployment live — that happened once already,
+  when the prerender launched Chrome from a macOS path on their Linux builders.
+  `npx vercel inspect <url> --logs | grep -iE "prerender:|Build Completed|error"`.
 - **Design constraint: every section is built to fit one screen.** The hero is minimal
   for that reason — no subheadline, specific padding. Brian notices vertical additions
   immediately. **Separate correctness work from design work: ship the invisible fixes,
