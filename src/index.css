@@ -5,6 +5,7 @@
 :root {
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --slab-h: 950px;
 }
 
 html { scroll-behavior: smooth; }
@@ -16,6 +17,22 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   font-feature-settings: 'ss01', 'cv11';
+}
+
+/* ─────── Section slab — one uniform section height on desktop ───────
+   Every homepage section below the hero is the same height, with its single
+   in-flow child centred in the leftover space. 950px is dictated by the
+   tallest content block (#stores, 785px) plus the 80px padding floor — raise
+   --slab-h if a section ever outgrows it rather than squeezing that section.
+   Absolutely-positioned decorative children are out of flow and unaffected.
+   Mobile keeps natural flow; this is a desktop scroll-rhythm device. */
+@media (min-width: 768px) {
+  .slab {
+    min-height: var(--slab-h);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 }
 
 /* Typography */

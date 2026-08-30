@@ -599,7 +599,7 @@ function ReviewCard({ r, featured = false }) {
 function Reviews() {
   return (
     <>
-    <section id="gallery" className="relative py-16 md:py-20 px-6 md:px-10 bg-[#F4F7FA]">
+    <section id="gallery" className="slab relative py-20 px-6 md:px-10 bg-[#F4F7FA]">
       <div className="mx-auto max-w-[1240px]">
         <div>
           <WordReveal
@@ -626,7 +626,7 @@ function Reviews() {
       </div>
     </section>
 
-    <section id="reviews" className="relative py-12 md:py-14 px-6 md:px-10 bg-[#F4F7FA]">
+    <section id="reviews" className="slab relative py-20 px-6 md:px-10 bg-[#F4F7FA]">
       <div className="mx-auto max-w-[1240px]">
         <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-6 md:mb-8">
           <h2 className="display h-title text-[#0A1220]">
@@ -689,7 +689,7 @@ function Plans() {
   ]
 
   return (
-    <section id="plans" className="relative py-24 md:py-32 px-6 md:px-10 bg-white">
+    <section id="plans" className="slab relative py-20 px-6 md:px-10 bg-white">
       <div className="mx-auto max-w-[1240px]">
         <div className="reveal max-w-3xl mb-12 md:mb-16">
           <h2 className="display h-title text-[#0A1220]">
@@ -830,7 +830,7 @@ function Balance() {
     : { backgroundColor: '#E0F2FE', color: '#0891B2' }
 
   return (
-    <section id="balance" className="relative py-24 md:py-32 px-6 md:px-10 bg-white overflow-hidden">
+    <section id="balance" className="slab relative py-20 px-6 md:px-10 bg-white overflow-hidden">
       <div className="mx-auto max-w-[1240px]">
         <div className="reveal max-w-2xl mb-12 md:mb-16">
           <h2 className="display h-title text-[#0A1220]">
@@ -1225,7 +1225,7 @@ function Stores() {
     : STORES
 
   return (
-    <section id="stores" className="relative py-24 md:py-32 px-6 md:px-10 bg-[#F4F7FA]">
+    <section id="stores" className="slab relative py-20 px-6 md:px-10 bg-[#F4F7FA]">
       <div className="mx-auto max-w-[1240px]">
         <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
           <div>
@@ -1316,36 +1316,31 @@ function ProductCard({ p, i }) {
 }
 
 function BottlesSection() {
+  /* One section, not two: the header and the grid used to be split across a
+     pair of <section> elements, which cannot be slabbed as the single block a
+     reader sees. Merged; the 48/64px gap between them is preserved as mt-12. */
   return (
-    <>
-      {/* Header */}
-      <section id="bottles" className="relative pt-24 md:pt-32 pb-12 md:pb-16 px-6 md:px-10 bg-[#F4F7FA]">
-        <div className="mx-auto max-w-[1240px]">
-          <div className="max-w-2xl">
-            <WordReveal
-              as="h2"
-              className="display h-title text-[#0A1220]"
-              text="Bottles, sized for every home."
-            />
-            <p className="reveal mt-6 max-w-md text-[16px] leading-[1.55] text-[#0A1220]/65" style={{ transitionDelay: '250ms' }}>
-              Every bottle is BPA-free, dispenser-ready, and made to be refilled for years, not tossed in a week.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Product grid */}
-      <section className="px-6 md:px-10 pb-24 md:pb-32 bg-[#F4F7FA]">
-        <div className="mx-auto max-w-[1240px]">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {PRODUCTS.map((p, i) => <ProductCard key={p.name} p={p} i={i} />)}
-          </div>
-          <p className="reveal mt-8 text-center text-[12.5px] text-[#0A1220]/50">
-            Ask at the counter for current pricing, at any of our three stores.
+    <section id="bottles" className="slab relative py-20 px-6 md:px-10 bg-[#F4F7FA]">
+      <div className="mx-auto max-w-[1240px]">
+        <div className="max-w-2xl">
+          <WordReveal
+            as="h2"
+            className="display h-title text-[#0A1220]"
+            text="Bottles, sized for every home."
+          />
+          <p className="reveal mt-6 max-w-md text-[16px] leading-[1.55] text-[#0A1220]/65" style={{ transitionDelay: '250ms' }}>
+            Every bottle is BPA-free, dispenser-ready, and made to be refilled for years, not tossed in a week.
           </p>
         </div>
-      </section>
-    </>
+
+        <div className="mt-12 md:mt-16 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {PRODUCTS.map((p, i) => <ProductCard key={p.name} p={p} i={i} />)}
+        </div>
+        <p className="reveal mt-8 text-center text-[12.5px] text-[#0A1220]/50">
+          Ask at the counter for current pricing, at any of our three stores.
+        </p>
+      </div>
+    </section>
   )
 }
 
@@ -1361,7 +1356,7 @@ const FAQS = [
 ]
 function FAQ() {
   return (
-    <section id="faq" className="relative py-24 md:py-32 px-6 md:px-10 bg-white">
+    <section id="faq" className="slab relative py-20 px-6 md:px-10 bg-white">
       <div className="mx-auto max-w-[820px]">
         <div className="reveal mb-12 md:mb-16">
           <h2 className="display h-title text-[#0A1220]">
