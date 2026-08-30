@@ -6,6 +6,35 @@ Public marketing site for Le Water, a family-owned water store with 3 Fremont/Ne
 locations. Doubles as a member self-service surface (phone → gallon balance lookup)
 against the live POS database.
 
+## Recent updates (Aug 25-30, 2026)
+
+**SEO / correctness pass, then a partial revert.** Full detail in the
+"SEO / correctness pass" section below — read that plus the first three Gotchas before
+touching this site.
+
+- **Schema fixed.** `WaterStore` is not a real Schema.org type; all six store nodes now
+  use `Store`. Self-serving `aggregateRating` removed. Three stores were declared under
+  six `@id`s — now unified. Added `sameAs`/`hasMap`, `Offer`, `WebSite`, and `FAQPage`
+  on `/our-water`.
+- **Three false claims removed** from the live site: the "same low per-gallon price for
+  members" FAQ answer, the "no days off" hours line, and the bottled-water preservatives
+  claim on `/our-water`.
+- **Review attribution corrected.** The quote cards are **Yelp**; the 4.1 aggregate is
+  **Google**. They had been conflated.
+- **Titles now lead with "Le Water Store"** on all 8 pages. The location pages had been
+  naming the brand twice.
+- **New pages:** `/privacy`, `/contact`, `/accessibility`, linked from every footer.
+  Sitemap is 8 URLs.
+- **Perf:** self-hosted fonts (killed 834-843ms of render-blocking), correct font
+  preloads (the real LCP bug), 367KB of oversized logo/favicon removed, immutable
+  caching + security headers in `vercel.json`.
+- **Two bugs fixed:** scroll-reveal could strand the FAQ section at `opacity:0` forever,
+  and the 2.85s intro curtain ran on every ad click.
+- **Reverted:** hero subheadline, spacing tweaks, footer rebuild, homepage `srcset`, the
+  static hero, and a 7th FAQ item. The homepage now pixel-diffs at **0.030/255** against
+  `07eabf2` — the only differences are the deliberate text corrections and the footer
+  legal links.
+
 ## Recent updates (Aug 24-25, 2026)
 
 - **All three stores renamed to "Le Water Store"** across every surface: `<title>`, og/twitter tags, page `h1`s, cross-link cards, LocalBusiness schema `name`, the Get-directions links, the Google Maps embed `!2s` labels and the iframe `title` attributes. Zero occurrences of "Le Pure Water" / "Lion Pure Water" remain in source. The embed URLs were re-fetched after relabelling and all return 200 - they resolve by place ID (`!1s0x...`), not by the label, so relabelling is safe.
@@ -13,17 +42,17 @@ against the live POS database.
 - **Hero** is the North Fremont storefront under an opaque cover, matching the Hoang Le tax site's page-hero treatment: a near-solid `rgba(10,26,38,0.78)` field, then two soft radial accents, then a bottom weight. The photograph reads as texture, not as the subject. Dial the 0.78 if it needs to be lighter.
 - **Homepage gallery** (the 4-up in the Reviews section, previously `TODO`) is Central Fremont x2, North Fremont x1, Newark x1. Newark's single slot is the tight crop through the purification-room window - no other store has one.
 - **Location pages** each gained a storefront card plus a 3-photo gallery from that store, all interiors rather than repeated bottle shelves. `object-position` is set **per page**: the two strip-mall units carry their signage on a fascia band above the windows and need `center 15%`, while the Newark kiosk stays `center 50%` because its roof fills the top of the frame.
-- **24-hour self-serve vending** documented everywhere: an "After hours" row on each location info card, a line on the homepage store cards (`STORES[].vending`), `amenityFeature` on each `WaterStore` schema node, and a new FAQ schema entry. Verified on-site from the signage at all three stores - the machines take cash only ($1/$5 bills, quarter, dime, nickel, no pennies).
+- **24-hour self-serve vending** documented everywhere: an "After hours" row on each location info card, a line on the homepage store cards (`STORES[].vending`), `amenityFeature` on each store schema node, and a new FAQ schema entry. Verified on-site from the signage at all three stores - the machines take cash only ($1/$5 bills, quarter, dime, nickel, no pennies).
 - **Homepage nav** now switches to the light (dark-text-on-white) treatment once the hero scrolls away, matching the static pages. New `pastHero` state in `Nav`, threshold `window.innerHeight - 72`, with a resize listener; `onLight = dark || pastHero` drives every colour token.
 - **Scroll progress bar** ported from the homepage `ScrollProgress` component to all four static pages as inline CSS + a small rAF script. Respects `prefers-reduced-motion` like the React version.
 - **Plans section:** heading no longer wraps mid-phrase (`max-w-3xl` + `md:whitespace-nowrap`); in the Balance section the lookup moved left and the plan comparison right using `order` utilities, so the form stays first in the DOM for screen readers.
 
 ## Recent updates (Aug 18–24, 2026)
 
-- **SEO overhaul.** `index.html` `<title>` shortened to "Le Water Store | Alkaline & Purified Water Refill". Added JSON-LD `Organization` node (`#org`) with `aggregateRating` 4.1/180 + `foundingDate` 1998, and `parentOrganization` links on the 3 `WaterStore` nodes.
+- **SEO overhaul.** `index.html` `<title>` shortened to "Le Water Store | Alkaline & Purified Water Refill". Added JSON-LD `Organization` node (`#org`) with `aggregateRating` 4.1/180 + `foundingDate` 1998, and `parentOrganization` links on the 3 store nodes. **(Superseded 2026-08-25: the `aggregateRating` was removed as self-serving markup, `WaterStore` was an invalid type and is now `Store`, and the title is now brand-first. See the SEO / correctness pass section.)**
 - **New static content pages** (real HTML in `public/<slug>/index.html`, self-contained inline CSS, own title/meta/canonical/JSON-LD — served directly, NOT SPA-rendered):
   - `/our-water` — RO + coconut carbon process, alkaline explainer, FAQ (`Article` + `Breadcrumb`).
-  - `/fremont-north`, `/fremont-central`, `/newark` — per-store location pages (`WaterStore` + `Breadcrumb`), map embed, hours, cross-links.
+  - `/fremont-north`, `/fremont-central`, `/newark` — per-store location pages (`Store` + `Breadcrumb`), map embed, hours, cross-links.
 - **`vercel.json` added** (`cleanUrls:true, trailingSlash:false`) — REQUIRED so `/our-water` serves the static file instead of the SPA. `public/sitemap.xml` now lists all 5 URLs.
 - **Homepage nav** cleaned: dropped "Reviews", added "Our Water" (at the end), both desktop + `MOBILE_LINKS`. **Store cards are click-through** to their location page (`STORES[].slug`, `onClick` guarded against inner links).
 - **"Our Story" section** now lives at the TOP of `/our-water` (was briefly on the homepage). Trimmed to just the tagline heading ("Ultra fresh great tasting water. Since 1998.") + one heritage line + "Buy local, support your neighbors" — the process/price/CTA paragraphs were removed because they duplicated the rest of the page. Homepage `<Story/>` component was removed.
@@ -55,7 +84,7 @@ against the live POS database.
 
 `src/App.jsx` renders, in order:
 1. **Hero** — full-bleed Ken-Burns stock image + "Where pure water flows daily" + three actions: `Find your nearest store` (primary, → `#stores`), `Check your balance` (secondary glass button, → `#balance`), `See plans` (text link, → `#plans`).
-2. **Reviews** (`#reviews`) — merged section: the "Delivering the best water in Fremont for over 20 years." lead + a 4-image **store gallery** (STOCK PLACEHOLDERS) + "What our customers say" with a **4.4 / 68 Google reviews** aggregate header + 1 featured Yelp quote + 3 supporting cards.
+2. **Reviews** (`#reviews`) — merged section: the "Delivering the best water in Fremont for over 20 years." lead + a 4-image **store gallery** (real on-location photos since 2026-08-25, served full-resolution — see the photography gotcha) + "What our customers say" with a **4.1 / 180+ Google reviews** aggregate header + 1 featured Yelp quote + 3 supporting cards. Quotes are Yelp, the aggregate is Google — see Reviews / ratings.
 3. **Balance** (`#balance`) — "Check your balance." Plan comparison boxes (Regular/Alkaline) on the left, the phone → gallon lookup card ("Look up your account") on the right.
 4. **Stores** (`#stores`) — 3 cards, each with an embedded Google map, **full street address**, live **Open now / Closed** pill (computed client-side from the 10a-7p hours), and two one-tap actions: **Directions** (Google Maps `dir/?api=1`) + **Call** (`tel:`). Section header has a **"Find my nearest store"** geolocation button that haversine-sorts the cards nearest-first, appends "· X.X mi away", and badges the closest "Nearest you". Graceful no-op if location is denied. Store data + `openStatus()` + `milesBetween()` helpers live at the top of the Stores block / module scope in `App.jsx`.
 5. **Plans** (`#plans`) — "Ultra pure water. Members save **over 25%**." 3 pricing cards (No plan / Regular / Alkaline). No CTA buttons (removed by request).
@@ -116,12 +145,27 @@ Browser-surface theming (in `index.css`): `::selection` uses brand blue at 16%, 
 
 ## Reviews / ratings (real data — do not fabricate)
 
-- 4 real Yelp reviews are hard-coded in the `REVIEWS` array (Mango T. featured, Norma D., Rochell S., T J.), each with a `highlights: []` array of phrases that render bold.
-- Aggregate header shows **4.4 ★ · 68 Google reviews** (the real Google Business number; Yelp counts are low/mixed across the 3 locations so Google is the stronger trust signal).
+**Two different sources. Label them separately — this has been got wrong once already.**
+
+- The four hard-coded quotes in `REVIEWS` (Mango T. featured, Norma D., Rochell S.,
+  T J.) are **Yelp** reviews. They render with a "From our Yelp reviews" tag. They were
+  briefly mislabelled "From our Google reviews", and before that carried a
+  "Verified customer review" badge asserting a verification process that does not
+  exist — an FTC 16 CFR 465 exposure. Do not reintroduce either.
+- The **4.1 aggregate is Google**, and matches: per-store ratings pulled live from the
+  Maps profiles on 2026-08-25 are **North Fremont 4.4, Central Fremont 4.0, Newark 4.0**
+  (mean 4.13). The **180+ count** is real (confirmed by Brian) but Google does not
+  expose per-store counts publicly — it comes from the GBP dashboards, so re-pull it
+  from there rather than trying to scrape it.
+- `GOOGLE_PROFILES` in `src/App.jsx` holds the three Maps profile URLs, resolved from
+  each store's place id (`cid=`) and verified to load. **Yelp profile URLs are still
+  unknown** — that is why the Yelp tag carries no link.
+- Any figure on the page must trace to one of these. Never average, estimate, or carry
+  a number forward from an older commit.
 
 ## Local SEO & structured data
 
-- **`index.html` `<head>`** carries: meta description, Open Graph + Twitter tags, canonical, and a **LocalBusiness JSON-LD `@graph`** with one `WaterStore` node per location (name, full `PostalAddress`, `telephone`, `GeoCoordinates`, `openingHoursSpecification` Mo-Su 10:00-19:00). **Keep the JSON-LD addresses in sync with the NAP list above and with Google Business Profile.**
+- **`index.html` `<head>`** carries: meta description, Open Graph + Twitter tags, canonical, and a **LocalBusiness JSON-LD `@graph`** with one `Store` node per location (name, full `PostalAddress`, `telephone`, `GeoCoordinates`, `openingHoursSpecification` Mo-Su 10:00-19:00). **Keep the JSON-LD addresses in sync with the NAP list above and with Google Business Profile.**
 - **`public/robots.txt`** — allows all, points to the sitemap.
 - **`public/sitemap.xml`** — 8 URLs (home, 3 stores, our-water, contact, privacy, accessibility), `lastmod` is hand-set (bump it on meaningful content changes). `public/` is copied to dist root by Vite, so both serve at `/robots.txt` and `/sitemap.xml`.
 - **Google Search Console:** domain **verified** — `dig TXT lewaterstore.com` returns the `google-site-verification` record (confirmed 2026-08-25). Still open: confirm the sitemap is submitted and all 8 URLs are indexed.
@@ -152,60 +196,87 @@ The site's names, hours and schema must stay in sync with these.
 - **Hours differ per store** — Newark 10:00-18:30, both Fremont stores 10:00-19:00. Do not copy one across three. (`STORES[].close` is 18.5 / 19 / 19.)
 - Full checklist, including the attributes and reviews work that is still open: `~/PycharmProjects/WaterStore/docs/marketing/gbp-optimization-checklist.md`. Shot list for future photo runs: `gbp-photo-shot-list.md` alongside it.
 
-## SEO / correctness pass (2026-08-25)
+## SEO / correctness pass (Aug 25-30, 2026)
 
-Full audit run against the live site, then fixed. Commits `b24a9d9`, `9b19521`, `c07bf75`.
+A full audit ran against the live site and most of it was fixed. Then a large part of
+it was **reverted**, because the pass had changed the design without asking. Read the
+"Design constraint" gotcha below before touching anything visual.
 
-**Claims that were false and are now fixed.** The FAQ said purified and alkaline cost
-"the same low per-gallon price for members" ($0.375 vs $0.90). Location pages headlined
-"Two waters, one price per gallon" over a `$0.375` block and never showed the alkaline
-price - they now carry a walk-in/member price table. `/our-water` claimed bottled brands
-"mix in preservatives to control algae", which is false under FDA's standard of identity.
-The hero stat bar said "no days off" while Newark closes 6:30p. Testimonials were badged
-"Verified customer review" with no verification process behind them.
+Commits: `b24a9d9` (pass) → `f212cc7`, `4d5002f`, `60ddd81`, `e072b41` (reverts) →
+`cdbe420` (restore), `e8c0642` (titles).
 
-**Schema.** `"@type": "WaterStore"` is not a Schema.org type - `schema.org/WaterStore`
-404s and it is absent from the vocabulary - so every LocalBusiness node was ineligible
-for rich results. All six now use `Store`. The self-serving `aggregateRating` is gone
-from the Organization node (Google policy; it already shows the live GBP rating itself).
-The same three stores were declared under six `@id`s; location-page `@id`s are now
-canonical and the homepage references them. Added WebSite, Organization logo, areaServed,
-`sameAs`/`hasMap` (Maps URLs resolved from each store's place id and verified live),
-Offer nodes, and FAQPage on `/our-water`.
+### What shipped and stayed
 
-**Two real bugs found.** Scroll-reveal could leave content at `opacity:0` permanently if
-you scrolled past it faster than the IntersectionObserver coalesced - the entire FAQ
-section and two bottle cards were affected. And the homepage overflowed horizontally at
-320px because Tailwind's bare `grid` auto-sized its implicit track.
+- **Schema.** `"@type": "WaterStore"` is **not a Schema.org type** — `schema.org/WaterStore`
+  404s and it is absent from the vocabulary, so every LocalBusiness node was ineligible
+  for rich results. All six now use `Store`. The self-serving `aggregateRating` is gone
+  from the Organization node (Google policy: the reviewed entity must not control the
+  reviews; Google already surfaces the live GBP rating). The same three stores had been
+  declared under six different `@id`s — location-page `@id`s are now canonical and the
+  homepage `@graph` references them. Added `WebSite`, Organization `logo`, `areaServed`,
+  `sameAs` + `hasMap` (Maps URLs from each place id, verified), `Offer` nodes, and
+  `FAQPage` on `/our-water`.
+- **Correctness.** The FAQ claimed purified and alkaline cost "the same low per-gallon
+  price for members" ($0.375 vs $0.90). The TrustBar claimed "no days off" when Newark
+  closes 6:30p. `/our-water` claimed bottled brands "mix in preservatives to control
+  algae", which is false under FDA's standard of identity and becomes Lanham Act
+  exposure in paid ads. All gone.
+- **Titles** (`e8c0642`) — every page now leads with **Le Water Store**. The location
+  pages had previously named the brand twice ("… — Le Water Store | Le Water"), which is
+  why Google truncated them in the SERP, and three pages used "Le Water" while the GBP
+  name is "Le Water Store". All 8 are 30-49 chars; `title` == `og:title` ==
+  `twitter:title` on every page.
+- **New pages:** `/privacy` (CalOPPA — required because the balance lookup collects
+  phone numbers, and a precondition for GA4 / Google Ads remarketing / the Meta Pixel),
+  `/contact`, `/accessibility`. Linked from every footer.
+- **Perf.** Self-hosted Inter + Montserrat (latin subset, `public/fonts/`), replacing the
+  render-blocking `fonts.googleapis.com` link that Lighthouse measured at 834-843ms on
+  mobile on every page. `logo-mark.png` and `favicon.png` were 512x512 / ~202KB each
+  displayed at 32px — resized, plus a real `apple-touch-icon`, for **367KB off every
+  page**. `vercel.json` now sets immutable caching on `/assets`, `/fonts`, `/photos` and
+  adds CSP-adjacent security headers.
+- **Two real bugs fixed.** Scroll-reveal could leave content at `opacity:0` *permanently*
+  if you scrolled past it faster than the IntersectionObserver coalesced — the entire FAQ
+  section and two bottle cards were affected. The sweep now reveals anything at or above
+  the fold line. And campaign traffic (`gclid`/`fbclid`/`utm_*`) or any external referral
+  now skips the 2,850ms intro curtain instead of waiting through it.
+- **Accessibility.** Balance input properly labelled, dead logo anchor fixed.
+- **`<noscript>` fallback** on the homepage carrying NAP, prices and links, limited to
+  facts that cannot go stale — so non-JS AI crawlers (GPTBot, ClaudeBot, PerplexityBot,
+  CCBot) get something. They otherwise see `<div id="root"></div>`.
 
-**Font preloads were wrong**, which was the real LCP bug: `.display` is Inter 600 on the
-homepage and location pages and Montserrat 600 on the text pages, but every page
-preloaded Inter 400 and Montserrat 700. The H1 painted in the fallback face and reflowed
-on swap, registering a second LCP candidate ~2.2s late. **If you change a heading font,
-change the matching preload.**
+### What was reverted, and why it must not come back casually
 
-**Live per-store Google ratings (2026-08-25):** North Fremont 4.4, Central Fremont 4.0,
-Newark 4.0. Maps profile URLs are in `GOOGLE_PROFILES` in `src/App.jsx`. Google does not
-expose review counts publicly - the 180+ figure comes from the GBP dashboards.
+- **The hero subheadline and spacing tweaks.** Every section is built to fit one screen.
+- **A footer rebuild** carrying the full 3-store NAP: +489px on mobile. Only the
+  Contact / Privacy / Accessibility links were kept.
+- **`srcset` on the homepage** — see the photography gotcha below.
+- **The static hero** (real hero markup inside `#root` so it paints before React). It
+  required disabling the hero entrance animation to avoid a flash on handoff, and
+  measurement showed it did **not** move LCP anyway — the real fix was the font preload.
+- **A 7th FAQ item.** Instead of adding 65px to the page, the FAQPage markup dropped that
+  question, so page and schema still match at 6. Parity restored the other direction.
 
-**New pages:** `/privacy` (CalOPPA - required because the balance lookup collects phone
-numbers, and a precondition for GA4 / Google Ads remarketing / the Meta Pixel),
-`/contact`, `/accessibility`. Linked from every footer.
+### The font-preload trap (this was the actual LCP bug)
 
-**Static hero.** The homepage hero now ships as real HTML inside `#root` so the H1 paints
-before the React bundle. Its entrance animation is disabled because replaying it over
-already-visible content both flashed and re-registered LCP. **Keep the static hero in
-`index.html` in sync with the React hero in `src/App.jsx`** - they are two copies of the
-same markup on purpose.
+`.display` is **Inter 600** on the homepage and location pages and **Montserrat 600** on
+the three text pages, but every page was preloading Inter 400 and Montserrat 700. The H1
+painted in the fallback face and reflowed when the real font arrived, registering a
+*second* LCP candidate ~2.2s late. Fixing the preload collapsed two LCP candidates into
+one at first paint. **If you change a heading font or weight, change the matching
+`<link rel="preload">`.**
 
-**Deliberately NOT done:** full SSG of the homepage. It would bake time-dependent
-"Open now" state into crawlable HTML. A `<noscript>` block carries the NAP, prices and
-links for non-JS crawlers instead, limited to facts that cannot go stale.
+### Still not done, deliberately
 
-**Warm-cache production Lighthouse (mobile, Slow-4G sim), after:** `/` perf 85-86 /
-LCP 3.5s (was 67 / 7.4s), `/fremont-north` 94-97 / LCP 2.4s (was 68 / 7.1s),
-`/contact` 100. Accessibility and SEO are 100 on all 8 pages, CLS 0 everywhere.
-Cold-edge MISS runs score much lower - re-measure warm.
+Full SSG / pre-rendering of the homepage. It would bake time-dependent "Open now" state
+into crawlable HTML — a new accuracy bug of exactly the kind this pass removed. The
+`<noscript>` block is the safe partial. Revisit only with the live-status components
+gated behind a `mounted` flag.
+
+### Audit artifacts
+
+`lewaterstore.com-audit/` (gitignored): `FULL-AUDIT-REPORT.md`, `ACTION-PLAN.md`,
+`audit-data.json`, 9 per-specialist findings files, ~40 screenshots, and a generated PDF.
 
 ## Open items / TODO
 
@@ -214,6 +285,8 @@ Cold-edge MISS runs score much lower - re-measure warm.
 3. **GSC indexing + GBP** — domain is verified; still to do: request indexing, confirm sitemap submission, and finish the 3 Google Business Profiles. Newark's rename is in review (see the GBP table above).
 4. ~~**No social OG image**~~ — **resolved.** `og.png` is live at exactly 1200x630 (29KB) with `og:image:width`/`height`/`alt` and `twitter:card summary_large_image` on every page. Link previews work.
 5. **GitHub auto-deploy still not connected — and it fails silently.** Confirmed 2026-08-25: `git push origin main` succeeds and `origin/main` matches local HEAD, but Vercel creates **no deployment at all** (verified via the deployments API — zero entries after the push). A push therefore *looks* shipped and is not. Until the Vercel GitHub app is granted access to `ivince918/le-water`, every change needs a manual CLI deploy.
+   **The first `npx vercel@latest deploy --prod --yes` of a session usually returns an error object; a straight retry succeeds.** Seen on every deploy Aug 25-30. Always confirm afterwards by comparing the live asset hash to `dist/assets/*.js`.
+   To connect it: Vercel → project → Settings → Git → Connect Git Repository, then github.com/settings/installations → Vercel → Configure → grant access to the repo (an org owner must approve if `ivince918` is an org). Verify with a trivial push — the current failure is silent.
 6. Loader intro `translateY(-60px)` (`.loader-stage` in index.css) is an eyeball-centered value; nudge if needed.
 
 ### Done 2026-08-12 (pm session)
@@ -228,8 +301,27 @@ Cold-edge MISS runs score much lower - re-measure warm.
 
 ## Gotchas
 
+- **Design constraint: every section is built to fit one screen.** The hero is minimal
+  for that reason — no subheadline, specific padding. Brian notices vertical additions
+  immediately. **Separate correctness work from design work: ship the invisible fixes,
+  and propose anything that touches copy, spacing or layout before doing it.** An SEO
+  pass that quietly added a hero subheadline, changed `mt-9` to `mt-8` and rebuilt the
+  footer cost several rounds of reverts. When a fix has a design cost, name the cost and
+  offer the option.
+- **Verify visual changes by pixel diff, not by section height.** Build the previous
+  commit in a `git worktree`, serve both, screenshot full-page at the same viewport with
+  `reduced_motion="reduce"` (kills ken-burns and entrance animations), and diff. Equal
+  section heights proved nothing when the gallery photos had silently gone soft.
+- **Photography stays full-resolution — do not add `srcset` to the homepage.** It was
+  tried with `sizes="(min-width: 768px) 25vw, 100vw"`, which resolves to 374px at a
+  1497px viewport. The gallery slots actually render at **612px and 298px**, so the
+  browser correctly picked the 480w variant and upscaled it — visibly soft photos in the
+  customers section. If responsive images are ever revisited, **measure every slot with
+  `getBoundingClientRect().width` first** and assert `naturalWidth >= rendered` on the
+  live page afterwards. Never derive `sizes` by reading the CSS. Width variants still
+  exist in `public/photos/` and are used on the location pages, where `sizes` is correct.
 - **Verify against the live domain**, not the alias: `curl --resolve lewaterstore.com:443:216.198.79.1 https://lewaterstore.com/...`. The `le-water.vercel.app` alias caches briefly after deploy.
-- **Minification false-negatives:** grepping the prod JS bundle for JSX text/attrs (e.g. `id="bottles"`, `68 Google reviews`) often returns 0 because minification splits/transforms them. Trust `npm run build` succeeding over a bundle grep.
+- **Minification false-negatives:** grepping the prod JS bundle for JSX text/attrs (e.g. `id="bottles"`) often returns 0 because minification splits/transforms them. Worse, anything built at runtime never appears literally — a `srcset` assembled from a template string will not grep as `-480.webp`. **Check rendered DOM in a browser, not the bundle.**
 - **npm build does NOT catch every runtime issue** — for anything touching the serverless function, smoke-test `/api/balance` on the deployed URL after deploy.
 - **The unused `IMG` keys are gone** (removed 2026-08-25). `IMG` is now 5 keys, all local `/photos/` paths.
 - **Photo near-duplicates are the recurring trap on this site.** `05-purification-room` in the Lion set *is* `04-fill-station` with the viewing window in frame — same counter, same blue wall. It shipped as a duplicate pair twice (homepage, then the Newark page) because the filenames read as different subjects. **Verify a gallery by rendering its images side by side, never by filename.** The fix both times was the tight `purification-window` crop.
