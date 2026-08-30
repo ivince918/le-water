@@ -1116,7 +1116,7 @@ function StoreCard({ s, i }) {
       style={{ transitionDelay: `${i * 90}ms` }}
     >
       {/* Map */}
-      <div className="relative h-[150px] overflow-hidden border-b border-[#0A1220]/06">
+      <div className="relative h-[100px] overflow-hidden border-b border-[#0A1220]/06">
         <iframe
           src={s.src}
           className="absolute inset-0 w-full h-full"
@@ -1131,7 +1131,7 @@ function StoreCard({ s, i }) {
         )}
       </div>
 
-      <div className="p-5 flex-1 flex flex-col">
+      <div className="p-4 flex-1 flex flex-col">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h3 className="font-semibold text-[18px] tracking-tight text-[#0A1220]">{s.name}</h3>
@@ -1223,9 +1223,9 @@ function Stores() {
     : STORES
 
   return (
-    <section id="stores" className="relative py-16 md:py-20 px-6 md:px-10 bg-[#F4F7FA]">
+    <section id="stores" className="relative py-12 md:py-14 px-6 md:px-10 bg-[#F4F7FA]">
       <div className="mx-auto max-w-[1240px]">
-        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8 md:mb-10">
+        <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-6 md:mb-8">
           <div>
             <h2 className="display h-title text-[#0A1220]">
               Three stores.<br/><span className="text-[#0A1220]/40">One promise.</span>
