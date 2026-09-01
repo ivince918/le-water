@@ -1,6 +1,6 @@
 # Le Water — Project Handoff
 
-_Last updated: 2026-08-25_
+_Last updated: 2026-09-01_
 
 Public marketing site for Le Water, a family-owned water store with 3 Fremont/Newark
 locations. Doubles as a member self-service surface (phone → gallon balance lookup)
@@ -60,6 +60,36 @@ section you scroll to, so the genuinely visible budget is **663px**, not 745.
 - **`#stores` was trimmed to exactly 745px and then reverted on purpose.** Getting there
   needed 100px maps (from 200px) and they were too short to read. 1041px and one small
   scroll is the accepted trade. Do not "fix" this again without asking.
+
+#### Uniform section height was tried and reverted (2026-08-30). Read this before retrying.
+
+The 708-1041 spread is uneven because gallery ran 80px padding and reviews 56px (squeezed
+to fit 745) while every other section ran 128px. The fix attempted was a `.slab` class:
+`min-height: 950px` + column-flex centring on all seven sections below the hero, 768px and
+up. It worked mechanically — all seven landed at exactly 950, spread 0px, page 7558 ->
+8119, identical hydrated and JS-disabled, no CLS. It shipped to production and **Brian
+reverted it on sight** (`3464921`, reverted by `e3e64c0`).
+
+**Why it failed, and it is not the heights:**
+
+- **The background rhythm carries the section boundaries, and equal heights destroy it.**
+  `#gallery` and `#reviews` are *both* tinted and adjacent. At 708+726 that reads as two
+  sections; at 950+950 the 1900px tint run reads as one wall. Length variation was doing
+  half the work of the alternation.
+- Equalising every block removes the other half. Same-length tint/white/tint/white with no
+  size cue is flatter than an uneven rhythm, not cleaner.
+
+**So the real constraint, which was undocumented until now:** the homepage alternates
+tint (`#F4F7FA`) and white as its section-boundary signal — gallery tint, reviews tint,
+balance white, stores tint, plans white, bottles tint, faq white. Note it does **not**
+actually alternate: gallery and reviews are a double-tint. That pairing survives only
+because the two sections are different heights. **Any height change must re-solve the
+backgrounds in the same pass.** Do not hold them constant and hope.
+
+**If this is retried:** fix the double-tint first (give one of gallery/reviews its own
+background, or merge them), then equalise, and review **seam screenshots** — the boundary
+between two sections — not each section in isolation. Isolated screenshots are what let
+this ship; every one of them looked correct.
 
 ### Entity reclaim (the legacy names)
 
@@ -446,8 +476,16 @@ Full detail: `lewaterstore.com-audit/findings/competitor-water-emporium.md` (git
    changes, re-request indexing for `/` and `/contact` first (they changed most).
 4. ~~**No social OG image**~~ — **resolved.** `og.png` is live at exactly 1200x630 (29KB) with `og:image:width`/`height`/`alt` and `twitter:card summary_large_image` on every page. Link previews work.
 5. **GitHub auto-deploy still not connected — and it fails silently.** Confirmed 2026-08-25: `git push origin main` succeeds and `origin/main` matches local HEAD, but Vercel creates **no deployment at all** (verified via the deployments API — zero entries after the push). A push therefore *looks* shipped and is not. Until the Vercel GitHub app is granted access to `ivince918/le-water`, every change needs a manual CLI deploy.
-   **The first `npx vercel@latest deploy --prod --yes` of a session usually returns an error object; a straight retry succeeds.** Seen on every deploy Aug 25-30. Always confirm afterwards by comparing the live asset hash to `dist/assets/*.js`.
-   To connect it: Vercel → project → Settings → Git → Connect Git Repository, then github.com/settings/installations → Vercel → Configure → grant access to the repo (an org owner must approve if `ivince918` is an org). Verify with a trivial push — the current failure is silent.
+   **The first `npx vercel@latest deploy --prod --yes` of a session often returns an error object; a straight retry succeeds.** Seen Aug 25-30, but *not* on either deploy of Aug 30 pm — both went through on the first call. Treat it as a known flake, not a rule. Always confirm afterwards by comparing the live asset hash to `dist/assets/*.js` and grepping the build log for `prerender:` + `Build Completed`.
+
+   **Root cause found 2026-08-30, and the old instructions above were wrong — Brian cannot do this himself.** Verified:
+   - `ivince918` is a **personal User account**, not an org (`gh api /repos/ivince918/le-water --jq .owner.type`).
+   - Brian's GitHub `brianle423` has `push: true, admin: false` on the repo.
+   - The Vercel project lives in **Brian's** team (`brianle423s-projects`) with no Git repo attached.
+   - `npx vercel@latest git connect --yes` fails: *"Failed to connect ivince918/le-water to project."* That is the permission wall, not a typo.
+   - Connecting requires **admin** on the repo. On a personal-account repo, collaborators only ever get write. **There is no admin role to grant Brian while the repo lives under `ivince918`.** No amount of clicking in Vercel or GitHub settings fixes this.
+
+   Three ways out: (a) Vincent transfers the repo to `brianle423` (Settings → General → Danger Zone → Transfer; keeps history and redirects), then Brian installs github.com/apps/vercel on `le-water` and runs `vercel git connect --yes`; (b) move it to a shared org with both as owners — better for a family-business asset; (c) leave it and keep deploying by CLI. Verify with `git commit --allow-empty && git push` then `npx vercel@latest ls le-water` — a deployment must appear within ~30s. **The failure is silent, so this check is not optional.**
 6. Loader intro `translateY(-60px)` (`.loader-stage` in index.css) is an eyeball-centered value; nudge if needed.
 7. **Bottle prices are still "Ask at the counter".** `water dispenser` (38/wk), `water gallon`
    and `water jar` all draw impressions with nothing to land on. Publishing prices would also
@@ -474,6 +512,10 @@ Full detail: `lewaterstore.com-audit/findings/competitor-water-emporium.md` (git
   `document` in a render path — `useHashRoute`'s lazy `useState(() => window.location.hash)`
   crashed the build until it was guarded. `useEffect` bodies are safe. If `npm run build`
   dies in `dist-ssr/entry-server.js`, this is why.
+- **Screenshot section seams, not sections.** A layout change that looked correct in seven
+  isolated per-section screenshots shipped a visibly broken background rhythm, because the
+  defect lived at the boundaries. Capture the joins, or a full-page strip, before deploying
+  anything that changes section height, padding or order.
 - **Confirm deploys from the Vercel build log, not the CLI.** A failed build still prints
   "Production ready" while leaving the old deployment live — that happened once already,
   when the prerender launched Chrome from a macOS path on their Linux builders.
