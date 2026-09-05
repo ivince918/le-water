@@ -1,10 +1,25 @@
 # Le Water — Project Handoff
 
-_Last updated: 2026-09-01_
+_Last updated: 2026-09-05_
 
 Public marketing site for Le Water, a family-owned water store with 3 Fremont/Newark
 locations. Doubles as a member self-service surface (phone → gallon balance lookup)
 against the live POS database.
+
+## Recent updates (Sep 5, 2026) — em dashes out of the page titles
+
+Every page title carried an em dash: `Le Water Store &mdash; Water Refill in Newark, CA`.
+Brian asked for a colon instead. Changed on all 8 pages, in `<title>`, `og:title` and
+`twitter:title`, plus the homepage `og:image:alt`. Commit `78197bb`, live and verified on
+all 8 URLs.
+
+- **Scope was titles only.** The on-page `<h1>`s never had em dashes, so nothing visible on
+  the page moved. Body-copy `&mdash;` was left alone deliberately: the legacy-name bullets in
+  `/contact`, a few paragraphs in `/privacy` and `/accessibility`, and the noscript store list
+  in `index.html`. If those should go too, it is a separate pass.
+- Titles are edited in **8 separate files**, not one template. `index.html` is the SPA shell;
+  the other seven live at `public/<page>/index.html` and each repeats the string three times.
+  Grep for `og:title` before assuming you got them all.
 
 ## Recent updates (Aug 30, 2026) — prerender, entity reclaim, section fit
 
@@ -225,6 +240,13 @@ previous deployment live. Also compare `dist/assets/*.js` to the hash on the liv
 npx --yes vercel@latest deploy --prod --yes    # from le-water/ ; auto-links project le-water, aliases lewaterstore.com
 ```
 
+- **"Not authorized" on deploy means a stale link, not a permissions problem.** Hit this on 2026-09-05: `npx vercel --prod` returned `{"status":"error","reason":"deploy_failed","message":"Not authorized"}` while `npx vercel whoami` printed `brianle423` and `npx vercel project ls` showed `le-water` right there under `brianle423s-projects`. The cached OIDC token in `.vercel/` had expired. Re-link and the same command works:
+
+  ```bash
+  npx vercel link --yes --project le-water --scope brianle423s-projects
+  ```
+
+  It rewrites `.vercel/project.json` with identical ids and drops a fresh `VERCEL_OIDC_TOKEN` into `.env.local` (both gitignored). Do not go hunting for a scope or ownership problem first.
 - **Auth:** the Vercel CLI OAuth token in `~/Library/Application Support/com.vercel.cli/auth.json` is NOT valid as `VERCEL_TOKEN` for the CLI — **let the CLI use its native auth; do NOT set `VERCEL_TOKEN`**. That SAME token DOES work as a `Bearer` against `api.vercel.com` REST (used it to toggle deployment protection + read project state).
 - **Deployment protection:** disabled (`ssoProtection: null`) so the public site + `/api/balance` are reachable.
 - **To connect GitHub auto-deploy later:** grant Vercel's GitHub app access to `ivince918/le-water` in Vercel project settings; then pushes ship automatically and CLI deploys become optional.
