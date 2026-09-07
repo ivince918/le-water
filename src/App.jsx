@@ -1354,10 +1354,12 @@ function BottlesSection() {
 const FAQS = [
   { q: 'What is Le Water?', a: 'Le Water is a family-owned water store with three refill locations in Fremont and Newark. Bring any container and we refill it with purified or alkaline drinking water, dispensed fresh on the spot.' },
   { q: 'How much does a water refill cost?', a: 'Purified water is $0.50 a gallon, or $0.375 a gallon on a prepaid plan. Alkaline water is $1.30 a gallon, or $0.90 a gallon prepaid. Bring any container and we fill it at the counter.' },
-  { q: 'Do you offer alkaline water?', a: 'Yes. Every location carries both. Purified is $0.50 a gallon ($0.375 prepaid) and alkaline is $1.30 a gallon ($0.90 prepaid).' },
+  { q: 'Is there a membership or prepaid plan?', a: 'Yes. A prepaid plan is 120 gallons of purified water for $45, or 100 gallons of alkaline for $90. That works out to $0.375 a gallon purified and $0.90 a gallon alkaline, so members save over 25 percent against walk-in pricing. There is no card to carry: the balance follows your phone number and can be spent at any of our three stores.' },
+  { q: 'Can I get water when the store is closed?', a: 'Yes. Every location has a self-serve water vending machine outside, available 24 hours a day even when the store is closed. The machines take cash.' },
+  { q: 'How do I check my prepaid gallon balance?', a: 'Check it on lewaterstore.com. Enter your phone number in the balance checker on the homepage and your remaining gallons come back on the spot, with no account or app needed. The balance follows your phone number to any of our three stores.' },
   { q: 'Where are your water stores located?', a: 'Three Le Water Store locations: 35762 Fremont Blvd, Fremont; 39409 Fremont Blvd, Fremont; and 39131 Cedar Blvd, Newark. The Fremont stores are open 10am to 7pm daily and Newark is open 10am to 6:30pm daily.' },
+  { q: 'Do you offer alkaline water?', a: 'Yes. Every location carries both. Purified water is $0.50 a gallon ($0.375 prepaid) and mineral-rich alkaline water is $1.30 a gallon ($0.90 prepaid).' },
   { q: 'Do I need to bring my own bottle?', a: 'Bring any clean container and we refill it, or buy a new 1, 3, or 5 gallon bottle at the counter.' },
-  { q: 'How do I check my prepaid gallon balance?', a: 'Enter your phone number in the balance checker on this page. Your prepaid balance follows your phone number to any of our three stores.' },
 ]
 function FAQ() {
   return (
