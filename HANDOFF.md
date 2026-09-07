@@ -1,10 +1,130 @@
 # Le Water — Project Handoff
 
-_Last updated: 2026-09-05_
+_Last updated: 2026-09-07_
 
 Public marketing site for Le Water, a family-owned water store with 3 Fremont/Newark
 locations. Doubles as a member self-service surface (phone → gallon balance lookup)
 against the live POS database.
+
+## Recent updates (Sep 6-7, 2026) — full SEO audit, Search Console access, and three real bugs
+
+Full audit in `lewaterstore.com-audit/` (report, action plan, `audit-data.json`, 10 findings
+files, 20 screenshots). August artifacts archived under `archive-2026-08-25/`, not overwritten.
+
+### Search Console is now wired up, and it corrected the audit
+
+Tier 1 Google credentials are configured at `~/.config/claude-seo/google-api.json`
+(OAuth token + API key). The authorized account holds **siteOwner on five properties**:
+`lewaterstore.com`, `ketmarketing.co`, `sweetiicoffee.com`, `vintagecafewestminster.com`,
+`hoangleservices.com`. Search Console, URL Inspection, Sitemaps, Indexing API, PageSpeed
+and CrUX all work. All free, no billing account required.
+
+**Setup gotcha, will bite again:** the OAuth client lives in Brian's dad's Cloud project
+(that project holds the GBP review API allowlist, so a fresh project would mean re-applying).
+Dad's Google account `lehiep67@gmail.com` is enrolled in **Advanced Protection**, which
+refuses third-party OAuth apps outright — `Error 400: policy_enforced`, unfixable from the
+consent screen. The fix is to keep the project but **sign in as `brile761@gmail.com`** at the
+account chooser, with that address added under OAuth consent screen → Test users. The app and
+the signing-in user are independent.
+
+**First-party data (trailing 28d, pulled 2026-09-07). This contradicts two audit conclusions:**
+
+| Metric | Value |
+|---|---|
+| Clicks | 59 |
+| Impressions | 2,453 |
+| CTR | 2.4% |
+| Average position | 3.7 |
+
+1. **The legacy names already rank to this site.** "the water spot" position **1.0**,
+   "le pure water" **1.9**, "le water store" **3.0**. The audit's SXO pass claimed the domain
+   "never surfaced directly, even for its own brand name" — that was inferred from SERP
+   composition and is **false**. Yelp ranks *and* the site ranks. The Yelp cleanup drops from
+   CRITICAL to MEDIUM: still a data-accuracy problem (the 25c/gal figure is wrong and
+   quotable), no longer a ranking blocker.
+2. **The problem is CTR, not position.** Brand CTR 6.2%, **non-brand CTR 0.8% across 1,429
+   impressions**. Position 3.7 should return 7-11%. The site is shown constantly and not clicked.
+3. `/fremont-north` and `/newark` had **zero clicks on 343 combined impressions**.
+4. **CrUX returns no data for this origin** (below Google's traffic threshold), so the
+   audit's 11.1s mobile LCP is Lighthouse lab simulation and **cannot be validated against
+   real users. Do not quote it as a real-world number.**
+
+### Shipped
+
+**`5f12b55` — audit remediation.**
+- `public/llms.txt` added, leading with membership, 24-hour vending, balance checker.
+  **Do not sell this as a Google or AI Overviews lever.** Google's AI optimization guide
+  (2026-06-29) states Search ignores it, including for generative features. It is for
+  ChatGPT/Perplexity/Claude coverage only.
+- FAQ expanded 6 → 8 questions, reordered so membership, 24-hour vending and the balance
+  checker sit at positions 3-5. Schema/visible parity verified for all 8 (Google requires it,
+  and it had already drifted on the alkaline answer).
+- **Horizontal overflow at 390px fixed.** `.ft-links`, the footer nav, was `display:flex`
+  with no `flex-wrap`, totalling 401-404px against a 390px viewport and overflowing 35-38px
+  on 4 pages. "Accessibility" was the link breaching the edge. Re-measured: 0px.
+- **Font duplication fixed — this was a real bug.** 7 self-hosted woff2 files were only
+  **2 unique files** (`md5` identical): the same Inter variable font served 4 times under
+  weight-named URLs, Montserrat 3 times. Both are genuine variable fonts (`fvar`/`gvar`/`STAT`),
+  so the 7 static `@font-face` rules collapsed to 2 with weight ranges (`400 700`, `500 700`).
+  **304KB → 84KB, ~220KB off every cold load.** Verified: requests 7 → 2, all four weights
+  still render, hero pixel-equivalent to production.
+- `/our-water` Article `headline` said "Reverse Osmosis and Alkaline Water, Explained" while
+  the visible `<h1>` said "How we make every gallon". Aligned; old value kept as
+  `alternativeHeadline`.
+
+**`eaa837a` — meta descriptions rewritten for CTR.** Driven by the 0.8% non-brand number.
+The homepage description was 222 chars against a ~155 cutoff, so "Open daily, with 24-hour
+vending outside every store" — the one differentiating line — was cut from every result.
+
+| Page | Was | Now |
+|---|---|---|
+| home | 222 | 133 |
+| `/fremont-north` | 165 | 144 |
+| `/fremont-central` | 167 | 145 |
+| `/newark` | 163 | 144 |
+
+Price, hours and the vending fact all land inside the first **120 chars**, because that is
+where mobile truncates and mobile is 1,527 of 2,453 impressions. Location pages now lead with
+a local anchor (Nicolet/Brookvale, the FoodMaxx centre near the Crossroads, Cedar at Cherry in
+Lion Supermarket Plaza) instead of repeating the brand already shown in the title.
+**Titles deliberately left alone** — brand-led titles were a considered decision in `e8c0642`
+and brand CTR (6.2%) does not contradict it.
+
+**Measure this.** Re-pull Search Console in 2-4 weeks and compare non-brand CTR against the
+0.8% baseline. Expect partial credit: Google rewrites descriptions roughly half the time.
+
+### Still open from the audit
+
+Highest value first. Full list in `lewaterstore.com-audit/ACTION-PLAN.md`.
+
+- **Heading text concatenates on extraction.** Headings split words across `<span>`/`<br/>`
+  with no whitespace, so tag-stripping yields `Where pure waterflows daily`,
+  `Frequently askedquestions`, `Le Water StoreWater refill in North Fremont`. Affects the H1
+  on 4 pages. Google copes; simpler AI pipelines do not. A space or `&nbsp;` at the boundary
+  fixes it with zero visual change.
+- **The three owner priorities are all below the fold on every viewport** — membership at
+  ~6.6 screens deep on mobile, 24-hour vending with *zero* above-fold presence anywhere.
+  Fixing this is a hero redesign: **show Brian a render first.**
+- Responsive images are still absent (~2,000ms of recoverable LCP). **Do not simply re-add
+  `srcset`** — it was tried and reverted for visibly softening the gallery. Measure the real
+  rendered slot sizes first.
+- Homepage still has two H1s (prerendered hero + `<noscript>` fallback).
+- Same `@id` declared with different properties on homepage vs location pages (`makesOffer`
+  on one, legacy `alternateName` on the other). Not fragmentation, but undefined behavior.
+- 5 now-unreferenced numbered woff2 files and the dead `public/fonts/fonts.css` were left in
+  place for one deploy cycle so cached HTML would not 404. **Safe to delete now.**
+
+### Corrections to earlier findings, so they are not re-reported
+
+- The Google Maps iframes on the location pages **already carry `loading="lazy"`**. The audit's
+  performance pass called them eager-loaded; that is wrong. Chrome simply loads lazy iframes
+  aggressively on fast connections.
+- The balance lookup was flagged "security-weak" by the SXO pass. `DEPLOY.md` documents
+  deliberate hardening (service-role only, minimal response with no name/id/history echoed,
+  IP rate limiting, tested). Worth a considered privacy review, not an emergency.
+- `aggregateRating` is **correctly absent**. Self-serving review markup on
+  `Organization`/`LocalBusiness` violates Google policy and Google surfaces the live GBP
+  rating anyway. Do not "fix" this.
 
 ## Recent updates (Sep 5, 2026) — em dashes out of the page titles
 
@@ -488,17 +608,36 @@ Full detail: `lewaterstore.com-audit/findings/competitor-water-emporium.md` (git
 
 1. **REAL PHOTOS — done for the hero, gallery and location pages (2026-08-25).** Still stock-free but thin in two places: the **Bottles product cards** (`PRODUCTS`) have no photos yet, and three shots are missing from every store — **water actually dispensing from a tap**, a **dusk exterior with the sign lit**, and (North Fremont only) any third distinct interior. North Fremont has just 6 usable photos, 3 of them exteriors, so its gallery pairs a wide counter with a taps close-up of the same counter.
 2. **New-customer offer CTA (still open).** The Lion acquisition promo ($50 / 150 gal + free jug) is NOT on the site. It's the main acquisition lever for a local store; recommend a hero banner or dedicated strip.
-3. **GBP / Yelp / citations — the highest-leverage work left, and none of it is on the site.**
-   In priority order: (a) claim + rename the two **unclaimed Yelp listings** (The Water Spot,
-   Pure Water) — free, and they hold better ratings than the claimed one; (b) finish the
-   **Newark GBP rename** off "Lion Pure Water"; (c) merge the **three duplicate Nextdoor
-   Newark listings**; (d) lift **Central Fremont from 4.0** — it is the store competing
-   head-on with Water Emporium's 4.6; (e) **Newark review velocity** (21 vs 61 and 69).
-   See "Search performance & competitors" above. Sitemap is submitted; after the Aug 30
-   changes, re-request indexing for `/` and `/contact` first (they changed most).
+3. **GBP / Yelp / citations — downgraded 2026-09-07, and partly done.**
+   Search Console shows the legacy names already rank to this site ("the water spot" 1.0,
+   "le pure water" 1.9), so this is a **data-accuracy** problem, not the ranking blocker the
+   Aug notes assumed.
+   - **(a) Yelp profiles: claimed, renames requested by Brian 2026-09-06.** Pending re-index.
+     **The rename does NOT touch the pricing or hours fields.** The Le Pure Water listing
+     still states **25c/20c per gallon against a real $0.50/$0.375**, and a listing shows
+     **10am-8pm against a real 10am-7pm**. Those are separate attributes and must be edited
+     directly. That, not the name, is what a customer or an AI actually quotes.
+   - (b) finish the **Newark GBP rename** off "Lion Pure Water";
+   - (c) merge the **three duplicate Nextdoor Newark listings**;
+   - (d) lift **Central Fremont from 4.0** — competing head-on with Water Emporium's 4.6;
+   - (e) **Newark review velocity** (21 vs 61 and 69).
+   - (f) A possible **fourth** legacy name, "California Pure Water", surfaced in a YellowPages
+     URL slug and reportedly matches the physical storefront sign. **Unconfirmed — verify with
+     the owners before it goes anywhere near schema.** A wrong `alternateName` worsens exactly
+     the entity confusion this work is meant to fix.
+   - Also wrong on the Lion Supermarket plaza directory: **street number 39055, real is 39131**.
+   Sitemap is submitted. The **Indexing API is now authorized**, so re-indexing can be
+   requested programmatically rather than through the console.
 4. ~~**No social OG image**~~ — **resolved.** `og.png` is live at exactly 1200x630 (29KB) with `og:image:width`/`height`/`alt` and `twitter:card summary_large_image` on every page. Link previews work.
 5. **GitHub auto-deploy still not connected — and it fails silently.** Confirmed 2026-08-25: `git push origin main` succeeds and `origin/main` matches local HEAD, but Vercel creates **no deployment at all** (verified via the deployments API — zero entries after the push). A push therefore *looks* shipped and is not. Until the Vercel GitHub app is granted access to `ivince918/le-water`, every change needs a manual CLI deploy.
-   **The first `npx vercel@latest deploy --prod --yes` of a session often returns an error object; a straight retry succeeds.** Seen Aug 25-30, but *not* on either deploy of Aug 30 pm — both went through on the first call. Treat it as a known flake, not a rule. Always confirm afterwards by comparing the live asset hash to `dist/assets/*.js` and grepping the build log for `prerender:` + `Build Completed`.
+   **The first `npx vercel@latest deploy --prod --yes` of a session often returns an error object; a straight retry succeeds.** Seen Aug 25-30, but *not* on either deploy of Aug 30 pm — both went through on the first call. Treat it as a known flake, not a rule.
+   **Confirmed again 2026-09-07, and the error message is actively misleading.** The CLI
+   printed `"message": "Not authorized"`, which reads like a permissions problem and sent one
+   session down a long wrong path (checking `whoami`, `teams ls`, concluding the project lived
+   under a different team — it does not; `le-water` is in `brianle423s-projects` and always
+   has been). `--debug` showed the real response: `{"error":{"code":"missing_files"}}`, which is
+   normal upload negotiation. **Do not diagnose the account on "Not authorized". Just retry,
+   and use `--debug` before believing any auth-shaped error from this CLI.** Always confirm afterwards by comparing the live asset hash to `dist/assets/*.js` and grepping the build log for `prerender:` + `Build Completed`.
 
    **Root cause found 2026-08-30, and the old instructions above were wrong — Brian cannot do this himself.** Verified:
    - `ivince918` is a **personal User account**, not an org (`gh api /repos/ivince918/le-water --jq .owner.type`).
@@ -530,6 +669,15 @@ Full detail: `lewaterstore.com-audit/findings/competitor-water-emporium.md` (git
 
 ## Gotchas
 
+- **`md5` the fonts before trusting the font setup.** The self-hosted set shipped as 7 files
+  that were only **2 unique** — the same Inter variable font under `inter-400/500/600/700.woff2`
+  and the same Montserrat under three names. Identical byte sizes across weights (48432 x4,
+  35508 x3) is the tell. It rendered correctly, so nothing looked wrong; it just cost 220KB
+  per cold load. Fixed 2026-09-07 by collapsing to 2 `@font-face` rules with weight ranges.
+  **If anyone re-adds per-weight files, check they are actually different files first.**
+- **`@font-face` blocks are inlined in all 8 HTML files, not shared.** `public/fonts/fonts.css`
+  exists but **nothing references it** — it is dead. Edit the inline `<style>` in each page, and
+  grep before assuming you got them all (same trap as the `og:title` note above).
 - **The build prerenders `/`, so `src/App.jsx` runs in Node.** No unguarded `window` or
   `document` in a render path — `useHashRoute`'s lazy `useState(() => window.location.hash)`
   crashed the build until it was guarded. `useEffect` bodies are safe. If `npm run build`
